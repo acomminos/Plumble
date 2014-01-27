@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+	<string-array
+	    name="audioInputNames">
+	    <item>Voice Activity</item>
+	    <item>Push to Talk</item>
+        <item>Continuous</item>
+	</string-array>
+	
+	<string-array
+	    name="audioInputValues">
+	    <item>voiceActivity</item>
+	    <item>ptt</item>
+        <item>continuous</item>
+	</string-array>
+
+    <string-array
+        name="audioInputQualityNames">
+        <!-- Experimental -->
+        <item>128000Hz (experimental)</item>
+        <item>96000Hz (experimental)</item>
+        <item>72000Hz (experimental)</item>
+
+        <item>48000Hz</item>
+        <item>44100Hz</item>
+        <item>22050Hz</item>
+        <item>16000Hz</item>
+        <item>11025Hz</item>
+        <item>8000Hz</item>
+    </string-array>
+
+    <string-array
+        name="audioInputQualityValues">
+        <!-- Experimental -->
+        <item>128000</item>
+        <item>96000</item>
+        <item>72000</item>
+
+        <item>48000</item>
+        <item>44100</item>
+        <item>22050</item>
+        <item>16000</item>
+        <item>11025</item>
+        <item>8000</item>
+    </string-array>
+	
+	<string-array
+	    name="themeNames">
+	    <item>Light</item>
+	    <item>Dark</item>
+        <item>Solarized Light</item>
+        <item>Solarized Dark</item>
+	</string-array>
+	
+	<string-array
+	    name="themeValues">
+	    <item>lightDark</item>
+	    <item>dark</item>
+        <item>solarizedLight</item>
+        <item>solarizedDark</item>
+	</string-array>
+	
+	<string-array name="callModeNames">
+	    <item>Speakerphone</item>
+	    <item>Voice Call</item>
+	</string-array>
+	
+	<string-array name="callModeValues">
+	    <item>speakerphone</item>
+	    <item>voice</item>
+	</string-array>
+	
+	<string-array name="hotCornerNames">
+	    <item>None</item>
+	    <item>Top Left</item>
+	    <item>Bottom Left</item>
+	    <item>Top Right</item>
+	    <item>Bottom Right</item>
+	</string-array>
+	
+	<string-array name="hotCornerValues">
+	    <item>none</item>
+	    <item>topLeft</item>
+	    <item>bottomLeft</item>
+	    <item>topRight</item>
+	    <item>bottomRight</item>
+	</string-array>
+	
+	<string name="authentication">Authentication</string>
+	<string name="authenticationSum">Manage and create certificates</string>
+	<string name="certificateFile">Certificate File</string>
+	<string name="certificateFileSum">The path of the P12 certificate you wish to use, placed in the \&quot;Plumble\&quot; folder on external storage.</string>
+	<string name="certificatePassword">Certificate Password</string>
+	<string name="certificatePasswordSum">The password for your PKCS12 certificate. (optional)</string>
+	<string name="audioInput">Audio Input</string>
+	<string name="audioInputMethodSum">The way audio is sent to the server.</string>
+	<string name="audioInputMethod">Input Method</string>
+    <string name="audioInputVolume">Microphone Volume</string>
+    <string name="audioInputVolumeSum">Microphone volume multiplier used to artificially normalize audio.</string>
+	<string name="callMode">Call Mode</string>
+	<string name="callModeSum">The call mode of Plumble, whether to act as a voice call or speakerphone.</string>
+	<string name="detectionThreshold">Detection Threshold</string>
+	<string name="detectionThresholdSum">The minimum amplitude required for voice to be detected (only applicable for voice activity).</string>
+	<string name="pttKey">Push to Talk Key</string>
+	<string name="pttKeySum">A hardware key to bind to Push to Talk.</string>
+	<string name="hotCorner">Push to Talk Hot Corner</string>
+	<string name="hotCornerSum">A specified corner of the screen that, when pressed down, will push to talk throughout Android.</string>
+	<string name="general">General</string>
+	<string name="generalSum">Adjust general settings</string>
+	<string name="appearance">Appearance</string>
+	<string name="appearanceSum">Tweak the app\'s visuals</string>
+	<string name="themeSum">The app-wide theme.</string>
+	<string name="theme">Theme</string>
+	<string name="advancedAudio">Advanced</string>
+    <string name="forceTcp">Force TCP</string>
+    <string name="forceTcpSum">Whether to force TCP (disable UDP) communications.</string>
+	<string name="audio">Audio</string>
+	<string name="audioSum">Adjust audio input and output</string>
+	<string name="audioQuality">Input Quality</string>
+	<string name="noCert">No Certificate</string>
+	<string name="rowheight">Channel Row Height</string>
+	<string name="rowheightSum">The height of a row in channel selection.</string>
+	<string name="colorizechannels">Colorize channels</string>
+	<string name="colorizechannelsSum">Whether to use color to highlight root channels and active channels.</string>
+	<string name="colorthreshold">Secondary Color Threshold</string>
+	<string name="colorthresholdSum">If this number of users is reached in a channel, the channel name appears red.</string>
+	<string name="chatNotifications">Chat Notifications</string>
+	<string name="chatNotificationsSum">Show notifications when a user posts in chat.</string>
+    <string name="defaultUsername">Default Username</string>
+    <string name="defaultUsernameSum">The default username to use when connecting to servers.</string>
+    <string name="defaultUsernameDefault">Plumble_User</string>
+	<string name="certificateGenerate">Generate Certificate</string>
+	<string name="certificateGenerateSum">Generates a new self-signed Plumble certificate. Recommended for beginners.</string>
+	<string name="pttSettings">Push to Talk Settings</string>
+	<string name="pttSettingsSum">Configure Push to Talk if it is enabled.</string>
+	<string name="voiceActivitySettings">Voice Activity Settings</string>
+	<string name="voiceActivitySettingsSum">Configure Voice Activity if it is enabled.</string>
+	<string name="audioOutput">Audio Output</string>
+	<string name="disableOpus">Disable Opus Codec</string>
+	<string name="disableOpusSum">Disable Opus support for Mumble 1.2.4 servers.</string>
+	<string name="hidePtt">Hide Push to Talk Button</string>
+	<string name="hidePttSum">Hides the push to talk button when in push to talk mode. Useful if you use hot corners or a hardware key exclusively.</string>
+    <string name="useTts">Text-to-Speech</string>
+    <string name="useTtsSum">Enable Text-to-Speech for incoming messages.</string>
+    <string name="togglePtt">Toggle Push to Talk</string>
+    <string name="togglePttSum">Toggles push to talk on and off when pressed.</string>
+    <string name="autoReconnect">Auto Reconnect</string>
+    <string name="autoReconnectSum">Automatically try to re-establish a connection when the server connection is lost.</string>
+    <string name="useTor">Connect via Tor</string>
+    <string name="useTorSum">Requires Orbot app</string>
+
+    <!-- About -->
+    <string name="about">About</string>
+    <string name="aboutSum">Legal and acknowledgments</string>
+    <string name="copyright">Copyright &#169; Andrew Comminos 2013</string>
+    <string name="acknowledgements">Acknowledgments</string>
+    <string name="acknowledgementsSum">See who contributed to Plumble</string>
+    <string name="acknowledgements_link">https://raw.github.com/Morlunk/Plumble/master/THANKS</string>
+    <string name="licenses">Licenses</string>
+    <string name="license_gplv3">GNU General Public License v3.0</string>
+    <string name="license_gplv3_link">https://www.gnu.org/copyleft/gpl.html</string>
+    <string name="license_apache2">Apache License Version 2.0</string>
+    <string name="license_apache2_link">https://www.apache.org/licenses/LICENSE-2.0.html</string>
+</resources>

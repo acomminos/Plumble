@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="voiceActivity"
+        android:entries="@array/audioInputNames"
+        android:entryValues="@array/audioInputValues"
+        android:key="audioInputMethod"
+        android:summary="@string/audioInputMethodSum"
+        android:title="@string/audioInputMethod" />
+
+    <!-- TODO add an actual min of 8000hz -->
+    <ListPreference
+        android:key="input_quality"
+        android:defaultValue="48000"
+        android:title="@string/audioQuality"
+        android:summary="@string/audioQualitySum"
+        android:entries="@array/audioInputQualityNames"
+        android:entryValues="@array/audioInputQualityValues"/>
+
+    <PreferenceCategory android:title="@string/voiceActivitySettings"
+        android:key="vad_settings">
+        <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
+            multiplier="0.1"
+            android:defaultValue="50"
+            android:key="vadThreshold"
+            android:max="100"
+            android:summary="@string/detectionThresholdSum"
+            android:title="@string/detectionThreshold"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pttSettings"
+        android:key="ptt_settings">
+        <com.morlunk.mumbleclient.preference.KeySelectDialogPreference
+            android:key="talkKey"
+            android:summary="@string/pttKeySum"
+            android:title="@string/pttKey" />
+
+        <ListPreference
+            android:defaultValue="none"
+            android:entries="@array/hotCornerNames"
+            android:entryValues="@array/hotCornerValues"
+            android:key="hotCorner"
+            android:summary="@string/hotCornerSum"
+            android:title="@string/hotCorner"/>
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="hidePtt"
+            android:summary="@string/hidePttSum"
+            android:title="@string/hidePtt" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="togglePtt"
+            android:summary="@string/togglePttSum"
+            android:title="@string/togglePtt" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/advancedAudio" >
+
+        <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
+            android:title="@string/audioInputVolume"
+            android:summary="@string/audioInputVolumeSum"
+            android:key="inputVolume"
+            android:max="200"
+            android:defaultValue="100"
+            android:text="%"/>
+
+        <!-- TODO: REIMPLEMENT -->
+        <!--
+        <ListPreference
+            android:defaultValue="speakerphone"
+            android:dialogTitle="@string/callMode"
+            android:entries="@array/callModeNames"
+            android:entryValues="@array/callModeValues"
+            android:key="callMode"
+            android:summary="@string/callModeSum"
+            android:title="@string/callMode" />
+            -->
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="disableOpus"
+            android:summary="@string/disableOpusSum"
+            android:title="@string/disableOpus" />
+    </PreferenceCategory>
+</PreferenceScreen>

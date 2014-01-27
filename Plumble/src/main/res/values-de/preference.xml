@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+	<string-array
+	    name="audioInputNames">
+	    <item>Sprachaktivierung</item>
+	    <item>zum Sprechen drücken</item>
+        <item>Continuous</item>
+	</string-array>
+	
+	<string-array
+	    name="audioInputValues">
+	    <item>voiceActivity</item>
+	    <item>ptt</item>
+        <item>continuous</item>
+	</string-array>
+	
+	<string-array
+	    name="themeNames">
+	    <item>Hell-Dunkel</item>
+	    <item>Dunkel</item>
+	</string-array>
+	
+	<string-array
+	    name="themeValues">
+	    <item>lightDark</item>
+	    <item>dark</item>
+	</string-array>
+	
+	<string-array name="callModeNames">
+	    <item>Freisprechen</item>
+	    <item>Telefonanruf</item>
+	</string-array>
+	
+	<string-array name="callModeValues">
+	    <item>speakerphone</item>
+	    <item>voice</item>
+	</string-array>
+	
+	<string-array name="hotCornerNames">
+	    <item>Keine</item>
+	    <item>Oben Links</item>
+	    <item>Unten Links</item>
+	    <item>Oben Rechts</item>
+	    <item>Unten Rechts</item>
+	</string-array>
+	
+	<string-array name="hotCornerValues">
+	    <item>none</item>
+	    <item>topLeft</item>
+	    <item>bottomLeft</item>
+	    <item>topRight</item>
+	    <item>bottomRight</item>
+	</string-array>
+
+	<string-array name="rowheightText">
+		<item>Niedrig</item>
+		<item>Mittel</item>
+		<item>Höher</item>
+		<item>Sehr hoch</item>
+	</string-array>
+	
+	<string-array name="rowheightValues">
+		<item>30</item>
+		<item>35</item>
+		<item>40</item>
+		<item>50</item>
+	</string-array>
+
+	<string name="authentication">Authentifizierung</string>
+	<string name="certificateFile">Zertifikatsdatei</string>
+	<string name="certificateFileSum">Das gewünschte P12 Zertifikats aus dem \"Plumble\" Verzeichnis auf dem externen Speicher.</string>
+	<string name="certificatePassword">Zertifikatspasswort</string>
+	<string name="certificatePasswordSum">Das Passwort für dein PKCS12 Zertifikat. (optional)</string>
+	<string name="audioInput">Audioeingabe</string>
+	<string name="audioInputMethodSum">Wann Sprache übertragen werden soll.</string>
+	<string name="audioInputMethod">Eingabemethode</string>
+	<string name="callMode">Gesprächsmodus</string>
+	<string name="callModeSum">Der Gesprächsmodus von Plumble: Entweder wie bei einem Telefonanruf oder bei Freisprechen verhalten.</string>
+	<string name="detectionThreshold">Signalwerterkennung</string>
+	<string name="detectionThresholdSum">Der minimalste benötigte Ausschlag, um als Sprache erkannt zu werden (nur bei Sprachaktivierung).</string>
+	<string name="pttKey">Sprechtaste</string>
+	<string name="pttKeySum">Eine Hardwaretaste für die Sprachaktivierung. (optional)</string>
+	<string name="hotCorner">Bildschirmecke als Sprechtaste</string>
+	<string name="hotCornerSum">Eine festgelegte Ecke des Bildschirms die beim drücken als Sprechtaste genutzt wird.</string>
+	<string name="appearance">Aussehen</string>
+	<string name="themeSum">Das Erscheinungsbild der Kanalansicht.</string>
+	<string name="theme">Erscheinungsbild</string>
+	<string name="advancedAudio">Erweiterte Audioeigenschaften</string>
+    <string name="forceTcp">Erzwinge TCP</string>
+    <string name="forceTcpSum">Es wird ausschließlich TCP benutzt und UDP wird abgeschaltet.</string>
+    <string name="audioQuality">Audio Qualität</string>
+	<string name="noCert">Kein Zertifikat</string>
+	<string name="rowheight">Zeilenhöhe in Kanalauswahl</string>
+	<string name="rowheightSum">Legt die Höhe einer Zeile in der Kanalauswahl fest.</string>
+	<string name="colorizechannels">Kanäle in der Auswahl einfärben</string>
+	<string name="colorizechannelsSum">Hauptkanäle werden gelb, benutzte Kanäle cyan und stark genutzte Kanäle in Rot dargestellt.</string>
+	<string name="colorthreshold">Limit für zweite Farbe</string>
+	<string name="colorthresholdSum">Wenn diese Anzahl Benutzer erreicht ist, wird der Kanal in der Kanalauswahl Rot dargestellt.</string>
+	<string name="chatNotifications">Chat Mitteilung</string>
+	<string name="chatNotificationsSum">Zeige eine Mitteilung wenn ein Benutzer im Chat schreibt.</string>
+	<string name="certificateGenerate">Zertifikat erzeugen</string>
+	<string name="certificateGenerateSum">Erzeugt ein self-signed Plumble Zertifikat. Empfohlen für unerfahrene Benutzer.</string>
+	<string name="pttSettings">Push to Talk Einstellungen</string>
+	<string name="pttSettingsSum">Konfigurieren von Push to Talk falls eingeschaltet.</string>
+	<string name="voiceActivitySettings">Einstellunge Sprachaktivierung</string>
+	<string name="voiceActivitySettingsSum">Konfiguration der Sprachaktivierung falls eingeschaltet.</string>
+	<string name="audioOutput">Audio Ausgabe</string>
+	<string name="disableOpus">Opus Codec deaktivieren</string>
+	<string name="disableOpusSum">Opus unterstüzung für Mumble 1.2.4 Server deaktivieren. Hilfreich bei Schwierigkeiten mit dem Ton auf Mumble 1.2.4 Servern.</string>
+	<string name="hidePtt">Verstecke die Push to Talk Taste</string>
+	<string name="hidePttSum">Versteckt die Push to Talk Taste. Nützlich bei Verwendung von Bildschirmecken oder Hardwaretasten zur Sprachaktivierung.</string>
+	<string name="useTts">Text-zu-Sprache</string>
+	<string name="useTtsSum">Aktiviert Text-zu-Sprache für eingehende Nachrichten.</string>
+	<string name="togglePtt">Push to Talk Taste feststellen</string>
+	<string name="togglePttSum">Die Sprachübertragung wird beim drücken der Push to Talk Taste dauerhaft aktiviert/deaktiviert.</string>
+</resources>

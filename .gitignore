@@ -1,0 +1,12 @@
+# Gradle / Android Studio
+build/
+.idea/
+.gradle/
+*.iml
+signing.gradle
+
+# Android
+local.properties
+
+# Java
+*.class

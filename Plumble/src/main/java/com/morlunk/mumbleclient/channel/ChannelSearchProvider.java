@@ -1,0 +1,152 @@
+/*
+ * Copyright (C) 2014 Andrew Comminos
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.morlunk.mumbleclient.channel;
+
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.ContentProvider;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.net.Uri;
+import android.os.IBinder;
+import android.os.RemoteException;
+
+import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.User;
+import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.service.PlumbleService;
+
+import java.util.List;
+import java.util.Locale;
+
+public class ChannelSearchProvider extends ContentProvider {
+	
+	public static final String INTENT_DATA_CHANNEL = "channel";
+	public static final String INTENT_DATA_USER = "user";
+
+	private ServiceConnection conn = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			mService = (IJumbleService) service;
+            synchronized (mServiceLock) {
+                mServiceLock.notify();
+            }
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			mService = null;
+		}
+	};
+	
+	private IJumbleService mService;
+	
+	@Override
+	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getType(Uri uri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Uri insert(Uri uri, ContentValues values) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean onCreate() {
+		return true;
+	}
+
+    private Object mServiceLock = new Object();
+	
+
+	@Override
+	public Cursor query(Uri uri, String[] projection, String selection,
+			String[] selectionArgs, String sortOrder) {	
+		
+		// Try to connect to the service. Wait for conn to establish.
+		if(mService == null) {
+			Intent serviceIntent = new Intent(getContext(), PlumbleService.class);
+			getContext().bindService(serviceIntent, conn, 0);
+
+            synchronized (mServiceLock) {
+                try {
+                    mServiceLock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+		}
+		
+		String query = "";
+		for(int x=0;x<selectionArgs.length;x++) {
+			query += selectionArgs[x];
+			if(x != selectionArgs.length-1)
+				query += " ";
+		}
+		
+		query = query.toLowerCase(Locale.getDefault());
+		
+		MatrixCursor cursor = new MatrixCursor(new String[] { "_ID", SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA, SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_ICON_1, SearchManager.SUGGEST_COLUMN_TEXT_2, SearchManager.SUGGEST_COLUMN_INTENT_DATA });
+
+        List<Channel> channels;
+        List<User> users;
+        try {
+            channels = mService.getChannelList();
+            users = mService.getUserList();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        for(int x=0;x<channels.size();x++) {
+			Channel channel = channels.get(x);
+			String channelNameLower = channel.getName().toLowerCase(Locale.getDefault());
+			if(channelNameLower.contains(query))
+				cursor.addRow(new Object[] { x, INTENT_DATA_CHANNEL, channel.getName(), R.drawable.ic_action_channels, getContext().getString(R.string.search_channel_users, channel.getSubchannelUserCount()), channel.getId() });
+		}
+
+		for(int x=0;x<users.size();x++) {
+			User user = users.get(x);
+			String userNameLower = user.getName().toLowerCase(Locale.getDefault());
+			if(userNameLower.contains(query))
+				cursor.addRow(new Object[] { x, INTENT_DATA_USER, user.getName(), R.drawable.ic_action_user_dark, getContext().getString(R.string.user), user.getSession() });
+		}
+		
+		return cursor;
+	}
+
+	@Override
+	public int update(Uri uri, ContentValues values, String selection,
+			String[] selectionArgs) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

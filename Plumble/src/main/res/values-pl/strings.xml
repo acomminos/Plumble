@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+    <string name="channels">Kanały</string>
+    <string name="no_servers">Żaden serwer nie został dodany.\nNaciśnij przycisk \'Dodaj\', aby dodać serwer.</string>
+    <string name="server_add">Dodaj serwer</string>
+    <string name="server_password">Hasło (Opcjonalne)</string>
+    <string name="server_username">Nazwa użytkownika</string>
+    <string name="server_port">Port</string>
+    <string name="server_host">Adres (IP lub domena)</string>
+    <string name="server_label">Etykieta</string>
+    <string name="app_name">Plumble</string>
+    <string name="chatReceiverLabel">Odbiorca</string>
+    <string name="chatReceiverPrompt">Wybierz odbiorcę</string>
+    <string name="default_server_port">64738</string>
+    <string name="fragment_chat">Czat</string>
+    <string name="fragment_channel">Kanał</string>
+    <string name="hello_world">Witaj Świecie!</string>
+    <string name="menu_settings">Ustawienia</string>
+    <string name="pressKey">Naciśnij sprzętowy przycisk by go wybrać.</string>
+    <string name="pressKeyInfo">Uwaga: Ze względu na ograniczenia w systemie Android aplikacja musi być otwarta, aby można było używać sprzętowego przycisku.</string>
+    <string name="ptt">Aktywacja przyciskiem</string>
+    <string name="mute">Wycisz</string>
+    <string name="deafen">Ogłusz</string>
+    <string name="disconnect">Rozłącz</string>
+    <string name="disconnectSure">Na pewno chcesz się rozłączyć?</string>
+    <string name="save">Zapisz</string>
+    <string name="add">Dodaj</string>
+    <string name="preferences">Konfiguracja</string>
+    <string name="togglelocalmute">Przełącz lokalne wyciszenie</string>
+    <string name="chat">Czat</string>
+    <string name="perm_denied">Brak dostępu!</string>
+    <string name="connectionRefused">Połączenie Odrzucone</string>
+    <string name="confirm_delete_server">Usunąć ten serwer?</string>
+    <string name="disconnected">Rozłączono</string>
+    <string name="kicked_message">Zostałeś wykopany z serwera z powodu: %s</string>
+    <string name="loading">Ładowanie…</string>
+    <string name="reset_key">Resetuj</string>
+    <string name="externalStorageUnavailable">Pamięć zewnętrzna jest niedostępna, nie można załadować certyfikatu</string>
+    <string name="audioQualitySum">Bitrate dźwięku, którego będzie używał Plumble (w kbit/s)</string>
+    <string name="addFavorite">Dodaj do ulubionych</string>
+    <string name="removeFavorite">Usuń z ulubionych</string>
+    <string name="viewFavorites">Ulubione</string>
+    <string name="favorites">Ulubione</string>
+    <string name="favoriteRemoved">Usunięto z ulubionych</string>
+    <string name="favoriteAdded">Dodano do ulubionych</string>
+    <string name="noFavorites">Brak ulubionych kanałów</string>
+    <string name="accessTokens">Hasła dostępu</string>
+    <string name="accessAdd">Dodaj hasło dostępu</string>
+    <string name="pushToTalkHint">(zaznacz, aby przełączać)</string>
+    <string name="messageReceived">Nowa wiadomość</string>
+    <string name="general">Ogólne</string>
+    <string name="generateCert">Generuj certyfikat</string>
+    <string name="generateCertSuccess">Twój certyfikat został utworzony i zapisany jako %s!</string>
+    <string name="generateCertFailure">Generowanie certyfikatu nie powiodło się.</string>
+    <string name="generateCertProgress">Trwa generowanie certyfikatu…</string>
+    <string name="search">Szukaj</string>
+    <string name="searchHint">Wyszukiwanie kanału</string>
+    <string name="undocumentedWakeLock">Niestety, Plumble nie jest w stanie zapewnić obsługi sensora zbliżeniowego w twoim urządzeniu. Proszę zmienić tryb wyjścia dźwięku na głośnik.</string>
+    <string name="recordingVolume">Opcja pozwala na regulację poziomu głośności mikrofonu.</string>
+    <string name="quickConnect">Szybkie połączenie</string>
+    <string name="connect">Połącz</string>
+    <string name="connectToServer">Połącz do serwera</string>
+    <string name="edit">Edytuj</string>
+    <string name="delete">Usuń</string>
+    <string name="retry">Ponów</string>
+    <string name="messageToUser">Wiadomość do: \'%s\'</string>
+    <string name="messageToChannel">Wiadomość do kanału \'%s\'</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="clearChat">Wyczyść czat</string>
+    <string name="connected">Połączony</string>
+    <string name="plumbleConnected">Plumble - Połączono</string>
+    <string name="lostConnection">Utracono połączenie z serwerem.</string>
+    <string name="resume">Wznów</string>
+    <string name="channel">Kanał</string>
+    <string name="server">Serwer</string>
+    <string name="chat_message">Do %1$s: %2$s</string>
+    <string name="chat_notify_moved">%1$s został przeniesiony z kanału %2$s przez %3$s.</string>
+    <string name="chat_notify_muted_deafened">Ogłuszono oraz wyciszono mikrofon.</string>
+    <string name="chat_notify_muted">Wyciszono mikrofon.</string>
+    <string name="chat_notify_unmuted">Wyłączono wyciszenie mikrofonu.</string>
+    <string name="chat_notify_unmuted_undeafened">Wyłączono ogłuszenie oraz wyciszenie mikrofonu.</string>
+    <string name="chat_notify_now_muted_deafened">%s jest teraz ogłuszony oraz wyciszony.</string>
+    <string name="chat_notify_now_muted">%s jest teraz wyciszony.</string>
+    <string name="chat_notify_now_unmuted">%s nie jest już wyciszony.</string>
+    <string name="chat_notify_now_unmuted_undeafened">%s nie jest już ogłuszony.</string>
+    <string name="chat_notify_connected">%s połączony.</string>
+    <string name="chat_notify_disconnected">%s rozłączony.</string>
+    <string name="unknown">Nieznany</string>
+    <string name="server_list_title_favorite">ULUBIONE</string>
+    <string name="server_list_title_lan">LAN</string>
+    <string name="server_list_title_public_internet">SERWERY PUBLICZNE</string>
+    <string name="ping">Ping</string>
+    <string name="sort">Sortuj</string>
+    <string name="sortBy">Sortuj po…</string>
+    <string name="name">Nazwie</string>
+    <string name="country">Kraju</string>
+    <string name="share">Udostępnij</string>
+    <string name="shareMessage">Dołącz na ten serwer z Plumble! %s</string>
+    <string name="noServerInfo">Użyj Ping, aby zebrać informacje</string>
+    <string name="status_notify_muted_and_deafened">Ogłuszony oraz wyciszony mikrofon.</string>
+    <string name="status_notify_muted">Wyciszony mikrofon</string>
+    <string name="comment">Komentarz</string>
+    <string name="close">Zamknij</string>
+    <string name="retrieving">Trwa pobieranie…</string>
+    <string name="search_name">Nazwa</string>
+    <string name="search_country">Kraj</string>
+    <string name="preferences_immutable">Ta opcja nie może zostać zmieniona podczas połączenia z serwerem.</string>
+    <string name="fullscreen">Pełny ekran</string>
+    <string name="fullscreen_chat">Czat</string>
+    <string name="fullscreen_channel">Kanał</string>
+    <string name="fetchingServers">Proszę czekać, trwa pobieranie listy publicznych serwerów.</string>
+    <string name="information">Informacje</string>
+    <string name="register">Rejestracja</string>
+    <string name="userControl">Kontrola użytkownika</string>
+    <string name="registerSelfSuccess">Wysłano żądanie rejestracji</string>
+    <string name="error_fetching_servers">Wystąpił błąd podczas pobierania publicznej listy serwerów!\nSprawdź swoje połączenie z internetem.</string>
+    <string name="coming_soon">Funkcja będzie dostępna wkrótce.</string>
+    <string name="channel_user_row_chat">CZAT</string>
+    <string name="channel_user_row_mute">WYCISZ</string>
+    <string name="channel_user_row_muted">WYCISZONY</string>
+    <string name="channel_user_row_comment">KOMENTARZ</string>
+    <string name="channel_user_row_registered">ZAREJESTROWANY</string>
+</resources>

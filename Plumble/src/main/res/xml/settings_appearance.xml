@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="lightDark"
+        android:entries="@array/themeNames"
+        android:entryValues="@array/themeValues"
+        android:key="theme"
+        android:summary="@string/themeSum"
+        android:title="@string/theme" />
+    <!--
+    <ListPreference
+        android:defaultValue="35"
+        android:entries="@array/rowheightText"
+        android:entryValues="@array/rowheightValues"
+        android:key="channellistrowheight"
+        android:summary="@string/rowheightSum"
+        android:title="@string/rowheight" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="colorizechannellist"
+        android:summary="@string/colorizechannelsSum"
+        android:title="@string/colorizechannels" />
+
+    <EditTextPreference
+        android:defaultValue="5"
+        android:inputType="number"
+        android:key="colorthresholdnumusers"
+        android:summary="@string/colorthresholdSum"
+        android:title="@string/colorthreshold" />
+    -->
+</PreferenceScreen>

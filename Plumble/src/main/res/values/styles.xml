@@ -1,0 +1,110 @@
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android" tools:ignore="NewApi">
+    <style name="Plumble.BorderlessButton" parent="@android:style/Widget">
+        <item name="android:background">@drawable/selectable_background</item>
+    </style>
+
+    <style name="Plumble.Card" parent="@android:style/Widget">
+        <item name="android:background">?attr/cardBackground</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
+    <style name="Plumble.HorizontalProgressBar" parent="@android:style/Widget.ProgressBar.Horizontal"></style>
+    
+    <style name="Theme.Plumble" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColorPrimary">#000</item>
+        <item name="android:textColorSecondary">#666</item>
+        <item name="android:textColorPrimaryInverse">#FFF</item>
+        <item name="android:textColorSecondaryInverse">#AAA</item>
+        <item name="highlightColor">#33b5e5</item>
+        <item name="secondaryBackground">#333333</item>
+        <item name="cardBackground">#FFFFFF</item>
+    </style>
+
+    <style name="Theme.Plumble.Dark" parent="@style/Theme.AppCompat">
+        <item name="android:textColorPrimary">#FFF</item>
+        <item name="android:textColorSecondary">#DDD</item>
+        <item name="android:textColorPrimaryInverse">#FFF</item>
+        <item name="android:textColorSecondaryInverse">#AAA</item>
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/black</item>
+        <item name="secondaryBackground">#000000</item>
+        <item name="cardBackground">#111111</item>
+    </style>
+
+    <!-- Solarized theme sets based off of Ethan Schoonover's work: http://ethanschoonover.com/solarized -->
+
+    <style name="Theme.Plumble.Solarized.Light" parent="@style/Theme.AppCompat.Light">
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:textColorPrimary">@color/solarized_base00</item>
+        <item name="android:textColorSecondary">@color/solarized_base01</item>
+        <item name="android:textColorPrimaryInverse">?android:textColorPrimary</item>
+        <item name="android:textColorSecondaryInverse">?android:textColorSecondary</item>
+
+        <item name="android:windowBackground">@color/solarized_base3</item>
+        <item name="android:colorBackground">@color/solarized_base3</item>
+
+        <item name="android:actionBarStyle">@style/SolarizedLightActionBar</item>
+        <item name="actionBarStyle">@style/SolarizedLightActionBar</item>
+
+        <item name="highlightColor">@color/solarized_base2</item>
+        <item name="secondaryBackground">@color/solarized_base3</item>
+        <item name="cardBackground">@color/solarized_base2</item>
+    </style>
+
+    <style name="Theme.Plumble.Solarized.Dark" parent="@style/Theme.AppCompat">
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:textColorPrimary">@color/solarized_base0</item>
+        <item name="android:textColorSecondary">@color/solarized_base1</item>
+        <item name="android:textColorPrimaryInverse">?android:textColorPrimary</item>
+        <item name="android:textColorSecondaryInverse">?android:textColorSecondary</item>
+
+        <item name="android:windowBackground">@color/solarized_base03</item>
+        <item name="android:colorBackground">@color/solarized_base03</item>
+
+        <item name="android:actionBarStyle">@style/SolarizedDarkActionBar</item>
+        <item name="actionBarStyle">@style/SolarizedDarkActionBar</item>
+
+        <item name="highlightColor">@color/solarized_base02</item>
+        <item name="secondaryBackground">@color/solarized_base03</item>
+        <item name="cardBackground">@color/solarized_base02</item>
+    </style>
+
+    <style name="SolarizedLightActionBar" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/solarized_base2</item>
+        <item name="background">@color/solarized_base2</item>
+        <item name="android:titleTextStyle">@style/SolarizedLightActionBarText</item>
+        <item name="titleTextStyle">@style/SolarizedLightActionBarText</item>
+    </style>
+
+    <style name="SolarizedLightActionBarText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/solarized_base00</item>
+    </style>
+
+    <style name="SolarizedDarkActionBar" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/solarized_base02</item>
+        <item name="background">@color/solarized_base02</item>
+        <item name="android:titleTextStyle">@style/SolarizedDarkActionBarText</item>
+        <item name="titleTextStyle">@style/SolarizedDarkActionBarText</item>
+    </style>
+
+    <style name="SolarizedDarkActionBarText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/solarized_base0</item>
+    </style>
+</resources>

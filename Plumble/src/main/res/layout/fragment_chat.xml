@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_height="fill_parent"
+	android:layout_width="fill_parent"
+    tools:ignore="NewApi" 
+    android:divider="?android:attr/dividerVertical"
+    android:showDividers="middle" >
+
+    <ListView
+        android:id="@+id/chat_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:dividerHeight="4dp"
+        android:divider="@android:color/transparent"
+        android:clipToPadding="false"
+        android:padding="8dp"
+        tools:listitem="@layout/list_chat_item"></ListView>
+
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+    	android:divider="?android:attr/dividerHorizontal"
+    	android:showDividers="middle">
+
+		<EditText
+		    android:id="@+id/chatTextEdit"
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+            android:minHeight="48dp"
+		    android:hint="@string/messageToChannel"
+		    android:inputType="textAutoCorrect"
+		    android:imeOptions="actionSend"
+	    	android:layout_marginLeft="10dp"
+	    	android:layout_marginRight="10dp" >
+		</EditText>
+
+		<ImageButton
+		    android:id="@+id/chatTextSend"
+            style="@android:style/Widget.Holo.Light.Button.Borderless.Small"
+		    android:layout_width="48dp"
+		    android:layout_height="wrap_content"
+		    android:src="@drawable/ic_action_send"
+            android:tint="?android:attr/textColorPrimary"
+		    android:enabled="false"/>
+
+	</LinearLayout>
+</LinearLayout>

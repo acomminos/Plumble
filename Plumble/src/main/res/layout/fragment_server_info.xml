@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Version"
+            android:textSize="24sp"
+            android:fontFamily="sans-serif-condensed"
+            android:layout_marginBottom="8dp"/>
+        <TextView
+            android:id="@+id/server_info_protocol"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Protocol 1.2.4."
+            android:layout_marginBottom="8dp"
+            />
+
+        <TextView
+            android:id="@+id/server_info_os_version"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Debian GNU/Linux 7.0 (wheezy)"
+            android:layout_marginBottom="8dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Control channel"
+            android:textSize="24sp"
+            android:fontFamily="sans-serif-condensed"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="16dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Encrypted with 256 bit AES256-SHA"
+            android:layout_marginBottom="8dp"
+            />
+
+        <TextView
+            android:id="@+id/server_info_tcp_latency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="108.51 ms average latency (69.84 deviation)"
+            android:layout_marginBottom="8dp"
+            />
+        <TextView
+            android:id="@+id/server_info_host"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Remote host www.morlunk.com (port 64738)"
+            android:layout_marginBottom="8dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Voice channel"
+            android:textSize="24sp"
+            android:fontFamily="sans-serif-condensed"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="16dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Encrypted with 128 bit OCB-AES128"
+            android:layout_marginBottom="8dp"
+            />
+
+        <TextView
+            android:id="@+id/server_info_udp_latency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="105.76 ms average latency (20.34 deviation)"
+            android:layout_marginBottom="8dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Audio bandwidth"
+            android:textSize="24sp"
+            android:fontFamily="sans-serif-condensed"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="16dp" />
+        <TextView
+            android:id="@+id/server_info_max_bandwidth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Maximum 72.0kbit/s"
+            android:layout_marginBottom="8dp"
+            />
+
+        <TextView
+            android:id="@+id/server_info_current_bandwidth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Current 54.8kbit/s"
+            android:layout_marginBottom="8dp"
+            />
+
+        <TextView
+            android:id="@+id/server_info_codec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Codec: Opus"
+            android:layout_marginBottom="8dp"
+            />
+
+    </LinearLayout>
+</ScrollView>

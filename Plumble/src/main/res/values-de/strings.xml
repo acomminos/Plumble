@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+    <string name="channels">Räume</string>
+    <string name="no_servers">keine Server hinzugefügt</string>
+    <string name="server_add">Server hinzufügen</string>
+    <string name="server_password">Passwort (Optional)</string>
+    <string name="server_username">Benutzername</string>
+    <string name="server_port">Port</string>
+    <string name="server_host">Adresse</string>
+    <string name="server_label">Beschriftung (Optional)</string>
+    <string name="app_name">Plumble</string>
+    <string name="chatReceiverLabel">Empfänger</string>
+    <string name="chatReceiverPrompt">Empfänger wählen</string>
+    <string name="default_server_port">64738</string>
+    <string name="fragment_chat">Chat</string>
+    <string name="fragment_channel">Raum</string>
+    <string name="hello_world">Hallo Welt!</string>
+    <string name="menu_settings">Einstellungen</string>
+    <string name="pressKey">Drücke eine Hardwaretaste für die Sprachaktivierung (PTT).</string>
+    <string name="pressKeyInfo">Hinweis: Aufgrund der Limitierungen von Android muss die App geöffnet sein, um eine Hardwaretaste für die Sprachaktivierung (PTT) zu nutzen.</string>
+    <string name="ptt">Sprechen</string>
+    <string name="mute">Stumm stellen</string>
+    <string name="deafen">Taub stellen</string>
+    <string name="disconnect">Verbindung trennen</string>
+    <string name="disconnectSure">Bist du dir sicher, dass du die Verbindung zu Mumble trennen möchtest?</string>
+    <string name="save">Speichern</string>
+    <string name="add">Hinzufügen</string>
+    <string name="preferences">Einstellungen</string>
+    <string name="togglelocalmute">lokale Stummschaltung wechseln</string>
+    <string name="chat">Chat</string>
+    <string name="perm_denied">Zugriff verboten!</string>
+    <string name="connectionRefused">Verbindung abgelehnt</string>
+    <string name="confirm_delete_server">Bist du dir sicher, dass du diesen Server löschen möchtest?</string>
+    <string name="disconnected">Getrennt</string>
+    <string name="kicked_message">Kicked vom Server. Grund: %s</string>
+    <string name="loading">Lade...</string>
+    <string name="reset_key">Keine Hardware Taste</string>
+    <string name="externalStorageUnavailable">Externer Speicher nicht verfügbar, kann Zertifikat nicht laden</string>
+    <string name="audioQualitySum">Die Audio Bitrate die Plumble zu nutzen versuchen wird.</string>
+    <string name="addFavorite">Favorit hinzufügen</string>
+    <string name="removeFavorite">Favorit entfernen</string>
+    <string name="viewFavorites">View Favorites</string>
+    <string name="favorites">Favoriten</string>
+    <string name="favoriteRemoved">Favorit entfernt.</string>
+    <string name="favoriteAdded">Favorit zugefügt.</string>
+    <string name="noFavorites">Keine Favoriten gespeichert.</string>
+    <string name="accessTokens">Access Tokens</string>
+    <string name="accessAdd">Access Token hinzufügen</string>
+    <string name="pushToTalkHint">(checkbox setzen zum einrasten der Taste)</string>
+    <string name="messageReceived">Neue Mitteilung</string>
+    <string name="general">General</string>
+    <string name="generateCert">Zertifikat erzeugen</string>
+    <string name="generateCertSuccess">Dein Zertifikat wurde gesetzt und gespeichert unter %s!</string>
+    <string name="generateCertFailure">Zertifikat konnte nicht erzeugt werden.</string>
+    <string name="generateCertProgress">Erzeuge Zertifikat...</string>
+    <string name="search">Suche Kanal</string>
+    <string name="searchHint">Kanalsuche</string>
+    <string name="undocumentedWakeLock">Leider kann auf deinem Gerät der Proximity Sensor nicht genutzt werden um den Standby zu verhindern. Bitte ändere den Modus zu \'Freisprechen\'.</string>
+    <string name="recordingVolume">Aufnahmelautstärke Boost</string>
+    <string name="quickConnect">Schnelle Verbindung</string>
+    <string name="connect">Verbinden</string>
+    <string name="connectToServer">Verbindung zum Server</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="delete">Löschen</string>
+    <string name="retry">Erneut versuchen</string>
+    <string name="messageToUser">Schreibe Mitteilung an \'%s\'</string>
+    <string name="messageToChannel">Schreibe Mitteilung an Kanal \'%s\'</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="clearChat">Chatverlauf löschen</string>
+    <string name="connected">Verbunden</string>
+    <string name="plumbleConnected">Plumble ist Verbunden</string>
+    <string name="lostConnection">Verbindung zum Server wurde unterbrochen.</string>
+    <string name="resume">Wiederaufnehmen</string>
+    <string name="channel">Kanal</string>
+    <string name="server">Server</string>
+    <string name="chat_message">An %1$s: %2$s</string>
+    <string name="chat_notify_moved">%1$s wurde von %3$s aus %2$s verschoben.</string>
+    <string name="chat_notify_muted_deafened">Stumm und taub.</string>
+    <string name="chat_notify_muted">Stumm.</string>
+    <string name="chat_notify_unmuted">Nicht stumm.</string>
+    <string name="chat_notify_unmuted_undeafened">Nicht stumm und nicht taub.</string>
+    <string name="chat_notify_now_muted_deafened">%s ist nun stumm und taub.</string>
+    <string name="chat_notify_now_muted">%s ist nun stumm.</string>
+    <string name="chat_notify_now_unmuted">%s ist nicht mehr stumm.</string>
+    <string name="chat_notify_now_unmuted_undeafened">%s ist nicht mehr stumm und nicht mehr taub.</string>
+    <string name="chat_notify_connected">%s ist verbunden.</string>
+    <string name="chat_notify_disconnected">%s hat den Server verlassen.</string>
+    <string name="unknown">Unbekannt</string>
+    <string name="server_list_title_favorite">FAVORITEN</string>
+    <string name="server_list_title_lan">LAN</string>
+    <string name="server_list_title_public_internet">INTERNET - ÖFFENTLICH</string>
+    <string name="ping">Ping</string>
+    <string name="sort">Sortierung</string>
+    <string name="sortBy">Sortieren nach…</string>
+    <string name="name">Name</string>
+    <string name="country">Land</string>
+    <string name="share">Teilen</string>
+    <string name="shareMessage">Trete diesem Server mit Plumble bei %s</string>
+    <string name="noServerInfo">Pingen um Informationen abzurufen</string>
+    <string name="status_notify_muted_and_deafened">Stumm und taub.</string>
+    <string name="status_notify_muted">Stumm.</string>
+    <string name="comment">Kommentar</string>
+    <string name="close">Schließen</string>
+    <string name="retrieving">Empfangen…</string>
+    <string name="search_name">Name</string>
+    <string name="search_country">Land</string>
+    <string name="preferences_immutable">Diese Einstellung kann nicht geändert werden, solange du mit einem Server verbunden bist.</string>
+    <string name="fullscreen">Vollbild</string>
+    <string name="fullscreen_chat">Chat</string>
+    <string name="fullscreen_channel">Kanal</string>
+    <string name="fetchingServers">Bitte warten, die Liste der öffentlichen Server wird abgerufen.</string>
+    <string name="information">Informationen</string>
+    <string name="register">Registrieren</string>
+    <string name="userControl">Benutzerkontrolle</string>
+    <string name="registerSelfSuccess">Registrationsanfrage gesendet</string>
+    <string name="error_fetching_servers">Fehler beim Abrufen der Serverliste!\nÜberprüfe deine Internetverbindung.</string>
+    <string name="coming_soon">Diese Funktion ist demnächst verfügbar.</string>
+    <string name="channel_user_row_chat">CHAT</string>
+    <string name="channel_user_row_mute">STUMM STELLEN</string>
+    <string name="channel_user_row_muted">STUMM</string>
+    <string name="channel_user_row_comment">KOMMENTAR</string>
+    <string name="channel_user_row_registered">REGISTRIERT</string>
+</resources>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+    <header
+        android:title="@string/general"
+        android:summary="@string/generalSum"
+        android:fragment="com.morlunk.mumbleclient.preference.Preferences$PlumblePreferenceFragment">
+        <extra android:name="settings" android:value="general"></extra>
+    </header>
+    <header
+        android:title="@string/authentication"
+        android:summary="@string/authenticationSum"
+        android:fragment="com.morlunk.mumbleclient.preference.Preferences$PlumblePreferenceFragment">
+        <extra android:name="settings" android:value="authentication"></extra>
+    </header>
+    <header
+        android:title="@string/audio"
+        android:summary="@string/audioSum"
+        android:fragment="com.morlunk.mumbleclient.preference.Preferences$PlumblePreferenceFragment">
+        <extra android:name="settings" android:value="audio"></extra>
+    </header>
+    <header
+        android:title="@string/appearance"
+        android:summary="@string/appearanceSum"
+        android:fragment="com.morlunk.mumbleclient.preference.Preferences$PlumblePreferenceFragment">
+        <extra android:name="settings" android:value="appearance"></extra>
+    </header>
+    <header
+        android:title="@string/about"
+        android:summary="@string/aboutSum"
+        android:fragment="com.morlunk.mumbleclient.preference.Preferences$PlumblePreferenceFragment">
+        <extra android:name="settings" android:value="about"></extra>
+    </header>
+</preference-headers>

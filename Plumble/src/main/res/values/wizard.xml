@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="wizard_next">Next</string>
+    <string name="wizard_back">Back</string>
+    <string name="wizard_cancel">Cancel</string>
+    <string name="wizard_finish">Finish</string>
+    <string name="wizard_confirm_close">Are you sure you wish to quit the setup wizard? You can resume it at any time in the app\'s settings.</string>
+
+    <!-- Welcome screen -->
+    <string name="wizard_welcome_title">Welcome to Plumble</string>
+
+    <!-- Certificate setup -->
+    <string name="wizard_certificate_title">Create a Certificate</string>
+
+    <!-- Audio setup -->
+    <string name="wizard_audio_title">Setup Audio</string>
+
+    <!-- General settings -->
+    <string name="wizard_general_title">Useful Options</string>
+</resources>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:ignore="NewApi"
+    style="@style/Plumble.Card">
+
+    <LinearLayout
+        android:id="@+id/server_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="18dp"
+            android:paddingLeft="18dp"
+            android:paddingRight="18dp"
+            android:paddingTop="10dp" >
+
+            <TextView
+                android:id="@+id/server_row_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-light"
+                android:gravity="left|center_vertical"
+                android:lines="1"
+                android:text="@string/server_host"
+                android:textColor="?android:textColorSecondary"
+                android:textSize="24sp" />
+
+            <RelativeLayout
+                android:id="@+id/server_row_info"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:paddingBottom="2dp" >
+
+                <TextView
+                    android:id="@+id/server_row_version_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="center_vertical"
+                    android:textColor="?android:textColorSecondary"
+                    android:text="Version status"
+                    android:layout_alignParentLeft="true"/>
+
+                <TextView
+                    android:id="@+id/server_row_usercount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:ellipsize="marquee"
+                    android:focusable="false"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="center_vertical"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
+                    android:textColor="?android:textColorSecondary"
+                    android:layout_toRightOf="@id/server_row_version_status"
+                    android:layout_marginLeft="8dp"
+                    android:text="15/100" />
+
+                <TextView
+                    android:id="@+id/server_row_latency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="sans-serif-light"
+                    android:textColor="?android:textColorSecondary"
+                    android:text="100ms"
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"/>
+
+                <ProgressBar
+                    android:id="@+id/server_row_ping_progress"
+                    style="@style/Plumble.HorizontalProgressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="invisible"
+                    android:indeterminate="true" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:paddingBottom="4dp" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_user_light"
+                    android:tint="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/server_row_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:textColorSecondary"
+                    android:text="@string/server_username"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_server_light"
+                    android:tint="?android:attr/textColorPrimary" />
+
+                <TextView
+                    android:id="@+id/server_row_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:textColorSecondary"
+                    android:text="@string/server_host"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- We can't have a focusable element in a GridView item -->
+
+    <ImageView
+        android:id="@+id/server_row_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="8dp"
+        android:paddingTop="4dp"
+        android:layout_alignTop="@id/server_card"
+        android:layout_alignRight="@id/server_card"
+        android:src="@drawable/ic_card_overflow" />
+
+</RelativeLayout>

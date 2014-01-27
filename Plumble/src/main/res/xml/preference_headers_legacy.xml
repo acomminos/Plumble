@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:title="@string/general"
+        android:summary="@string/generalSum">
+        <intent
+            android:targetPackage="com.morlunk.mumbleclient"
+            android:targetClass="com.morlunk.mumbleclient.preference.Preferences"
+            android:action="com.morlunk.mumbleclient.app.PREFS_GENERAL"/>
+    </Preference>
+    <Preference
+        android:title="@string/authentication"
+        android:summary="@string/authenticationSum">
+        <intent
+            android:targetPackage="com.morlunk.mumbleclient"
+            android:targetClass="com.morlunk.mumbleclient.preference.Preferences"
+            android:action="com.morlunk.mumbleclient.app.PREFS_AUTHENTICATION"/>
+    </Preference>
+    <Preference
+        android:title="@string/audio"
+        android:summary="@string/audioSum">
+        <intent
+            android:targetPackage="com.morlunk.mumbleclient"
+            android:targetClass="com.morlunk.mumbleclient.preference.Preferences"
+            android:action="com.morlunk.mumbleclient.app.PREFS_AUDIO"/>
+    </Preference>
+    <Preference
+        android:title="@string/appearance"
+        android:summary="@string/appearanceSum">
+        <intent
+            android:targetPackage="com.morlunk.mumbleclient"
+            android:targetClass="com.morlunk.mumbleclient.preference.Preferences"
+            android:action="com.morlunk.mumbleclient.app.PREFS_APPEARANCE"/>
+    </Preference>
+    <Preference
+        android:title="@string/about"
+        android:summary="@string/aboutSum">
+        <intent
+            android:targetPackage="com.morlunk.mumbleclient"
+            android:targetClass="com.morlunk.mumbleclient.preference.Preferences"
+            android:action="com.morlunk.mumbleclient.app.PREFS_ABOUT"/>
+    </Preference>
+</PreferenceScreen>
