@@ -33,7 +33,7 @@ repositories {
 
 dependencies {
     compile project("libraries:Jumble")
-    compile project("libraries:libonionkit")
+    compile project("libraries:libonionkit:libonionkit")
     compile 'com.android.support:support-v4:19.0.+'
     compile 'com.android.support:appcompat-v7:19.0.+'
     compile 'com.google.guava:guava:15.+'
