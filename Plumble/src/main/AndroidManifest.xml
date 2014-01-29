@@ -18,8 +18,8 @@
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.morlunk.mumbleclient"
-    android:versionCode="53"
-    android:versionName="3.0.0-beta1" >
+    android:versionCode="54"
+    android:versionName="3.0.0-beta2" >
 
     <uses-sdk
         android:minSdkVersion="9"
