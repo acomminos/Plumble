@@ -62,6 +62,10 @@ android {
             packageName "com.morlunk.mumbleclient.jenkins"
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 // Add Jumble's built native libs - hack
