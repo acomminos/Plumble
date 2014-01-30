@@ -774,6 +774,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
                         break;
                     case MOVE_ID:
                         showChannelMoveDialog();
+                        break;
                     case PRIORITY_ID:
                         getService().setPrioritySpeaker(mUser.getSession(), !mUser.isPrioritySpeaker());
                         break;
