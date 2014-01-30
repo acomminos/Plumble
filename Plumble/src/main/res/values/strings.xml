@@ -189,6 +189,7 @@
     <string name="user_menu_ban">Ban</string>
     <string name="user_menu_mute">Mute</string>
     <string name="user_menu_deafen">Deafen</string>
+    <string name="user_menu_move">Move</string>
     <string name="user_menu_priority_speaker">Priority Speaker</string>
     <string name="user_menu_local_mute">Local Mute</string>
     <string name="user_menu_ignore_messages">Ignore Messages</string>

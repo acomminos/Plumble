@@ -54,6 +54,8 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
@@ -76,15 +78,16 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
             BAN_ID = 1,
             MUTE_ID = 2,
             DEAFEN_ID = 3,
-            PRIORITY_ID = 4,
-            LOCAL_MUTE_ID = 5,
-            IGNORE_MESSAGES_ID = 6,
-            CHANGE_COMMENT_ID = 7,
-            VIEW_COMMENT_ID = 8,
-            RESET_COMMENT_ID = 9,
-            SEND_MESSAGE_ID = 10,
-            USER_INFORMATION_ID = 11,
-            REGISTER_ID = 12;
+            MOVE_ID = 4,
+            PRIORITY_ID = 5,
+            LOCAL_MUTE_ID = 6,
+            IGNORE_MESSAGES_ID = 7,
+            CHANGE_COMMENT_ID = 8,
+            VIEW_COMMENT_ID = 9,
+            RESET_COMMENT_ID = 10,
+            SEND_MESSAGE_ID = 11,
+            USER_INFORMATION_ID = 12,
+            REGISTER_ID = 13;
 
 	private IJumbleObserver mServiceObserver = new JumbleObserver() {
         @Override
@@ -507,6 +510,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         ChannelMenuItem banItem = new ChannelMenuItem(BAN_ID, getActivity().getString(R.string.user_menu_ban), R.drawable.ic_action_error);
         ChannelMenuItem muteItem = new ChannelMenuItem(MUTE_ID, getActivity().getString(R.string.user_menu_mute), R.drawable.ic_action_microphone);
         ChannelMenuItem deafItem = new ChannelMenuItem(DEAFEN_ID, getActivity().getString(R.string.user_menu_deafen), R.drawable.ic_action_headphones);
+        ChannelMenuItem moveItem = new ChannelMenuItem(MOVE_ID, getActivity().getString(R.string.user_menu_move), R.drawable.ic_action_send);
         ChannelMenuItem priorityItem = new ChannelMenuItem(PRIORITY_ID, getActivity().getString(R.string.user_menu_priority_speaker), R.drawable.ic_action_audio_on);
         ChannelMenuItem localMuteItem = new ChannelMenuItem(LOCAL_MUTE_ID, getActivity().getString(R.string.user_menu_local_mute), R.drawable.ic_action_audio_muted);
         ChannelMenuItem ignoreMessagesItem = new ChannelMenuItem(IGNORE_MESSAGES_ID, getActivity().getString(R.string.user_menu_ignore_messages), R.drawable.ic_action_bad);
@@ -524,6 +528,9 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
         if((getService().getPermissions() & (Permissions.Ban | Permissions.Write)) > 0)
             menuItems.add(banItem);
+
+        if((getService().getPermissions() & Permissions.Move) > 0)
+            menuItems.add(moveItem);
 
         menuItems.add(muteItem);
         menuItems.add(deafItem);
@@ -566,6 +573,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
         kickItem.enabled = !self;
         banItem.enabled = !self;
+        moveItem.enabled = !self;
         localMuteItem.enabled = !self;
         ignoreMessagesItem.enabled = !self;
         resetCommentItem.enabled = user.getCommentHash() != null && !user.getCommentHash().isEmpty() && (getService().getPermissions() & (Permissions.Move | Permissions.Write)) > 0;
@@ -764,6 +772,8 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
                     case DEAFEN_ID:
                         getService().setMuteDeafState(mUser.getSession(), mUser.isMuted(), !mUser.isDeafened());
                         break;
+                    case MOVE_ID:
+                        showChannelMoveDialog();
                     case PRIORITY_ID:
                         getService().setPrioritySpeaker(mUser.getSession(), !mUser.isPrioritySpeaker());
                         break;
@@ -842,6 +852,30 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
                 CommentFragment editCommentFragment = CommentFragment.newInstance(mUser.getSession(), mUser.getComment(), edit);
                 editCommentFragment.show(getChildFragmentManager(), CommentFragment.class.getName());
             }
+        }
+
+        private void showChannelMoveDialog() throws RemoteException {
+            AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
+            adb.setTitle(R.string.user_menu_move);
+            final List<Channel> channels = getService().getChannelList();
+            List<CharSequence> channelNames = Lists.transform(channels, new Function<Channel, CharSequence>() {
+                @Override
+                public CharSequence apply(Channel channel) {
+                    return channel.getName();
+                }
+            });
+            adb.setItems(channelNames.toArray(new CharSequence[channelNames.size()]), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Channel channel = channels.get(which);
+                    try {
+                        getService().moveUserToChannel(mUser.getSession(), channel.getId());
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            adb.show();
         }
     }
 }
