@@ -21,8 +21,8 @@
 	<string-array
 	    name="audioInputNames">
 	    <item>Sprachaktivierung</item>
-	    <item>zum Sprechen drücken</item>
-        <item>Continuous</item>
+	    <item>Push-To-Talk</item>
+        <item>Kontinuierlich</item>
 	</string-array>
 	
 	<string-array
@@ -31,6 +31,36 @@
 	    <item>ptt</item>
         <item>continuous</item>
 	</string-array>
+	
+	<string-array
+        name="audioInputQualityNames">
+        <!-- Experimental -->
+        <item>128000Hz (experimentell)</item>
+        <item>96000Hz (experimentell)</item>
+        <item>72000Hz (experimentell)</item>
+
+        <item>48000Hz</item>
+        <item>44100Hz</item>
+        <item>22050Hz</item>
+        <item>16000Hz</item>
+        <item>11025Hz</item>
+        <item>8000Hz</item>
+    </string-array>
+
+    <string-array
+        name="audioInputQualityValues">
+        <!-- Experimental -->
+        <item>128000</item>
+        <item>96000</item>
+        <item>72000</item>
+
+        <item>48000</item>
+        <item>44100</item>
+        <item>22050</item>
+        <item>16000</item>
+        <item>11025</item>
+        <item>8000</item>
+    </string-array>
 	
 	<string-array
 	    name="themeNames">
@@ -70,42 +100,36 @@
 	    <item>bottomRight</item>
 	</string-array>
 
-	<string-array name="rowheightText">
-		<item>Niedrig</item>
-		<item>Mittel</item>
-		<item>Höher</item>
-		<item>Sehr hoch</item>
-	</string-array>
-	
-	<string-array name="rowheightValues">
-		<item>30</item>
-		<item>35</item>
-		<item>40</item>
-		<item>50</item>
-	</string-array>
-
 	<string name="authentication">Authentifizierung</string>
+ 	<string name="authenticationSum">Zertifikate erstellen und verwalten</string>
 	<string name="certificateFile">Zertifikatsdatei</string>
-	<string name="certificateFileSum">Das gewünschte P12 Zertifikats aus dem \"Plumble\" Verzeichnis auf dem externen Speicher.</string>
+	<string name="certificateFileSum">Pfad des gewünschten P12-Zertifikats aus dem \"Plumble\" Verzeichnis auf dem externen Speicher.</string>
 	<string name="certificatePassword">Zertifikatspasswort</string>
-	<string name="certificatePasswordSum">Das Passwort für dein PKCS12 Zertifikat. (optional)</string>
+	<string name="certificatePasswordSum">Das Passwort für Ihr PKCS12 Zertifikat. (Optional)</string>
 	<string name="audioInput">Audioeingabe</string>
-	<string name="audioInputMethodSum">Wann Sprache übertragen werden soll.</string>
+	<string name="audioInputMethodSum">Wie Ton zum Server übertragen werden soll.</string>
 	<string name="audioInputMethod">Eingabemethode</string>
+	<string name="audioInputVolume">Aufnahmelautstärke</string>
+	<string name="audioInputVolumeSum">Aufnahmelautstärke erhöhen um den Ton künstlich zu regeln.</string>
 	<string name="callMode">Gesprächsmodus</string>
 	<string name="callModeSum">Der Gesprächsmodus von Plumble: Entweder wie bei einem Telefonanruf oder bei Freisprechen verhalten.</string>
 	<string name="detectionThreshold">Signalwerterkennung</string>
-	<string name="detectionThresholdSum">Der minimalste benötigte Ausschlag, um als Sprache erkannt zu werden (nur bei Sprachaktivierung).</string>
+	<string name="detectionThresholdSum">Der minimal benötigte Ausschlag, um als Sprache erkannt zu werden (nur bei Sprachaktivierung).</string>
 	<string name="pttKey">Sprechtaste</string>
-	<string name="pttKeySum">Eine Hardwaretaste für die Sprachaktivierung. (optional)</string>
+	<string name="pttKeySum">Eine Hardwaretaste für die Sprachaktivierung. (Optional)</string>
 	<string name="hotCorner">Bildschirmecke als Sprechtaste</string>
-	<string name="hotCornerSum">Eine festgelegte Ecke des Bildschirms die beim drücken als Sprechtaste genutzt wird.</string>
+	<string name="hotCornerSum">Eine Bildschirmecke festlegen, welche App-Übergreifend als Sprechtaste verwendet werden kann.</string>
+	<string name="general">Allgemein</string>
+    <string name="generalSum">Allgemeine Einstellungen anpassen</string>
 	<string name="appearance">Aussehen</string>
-	<string name="themeSum">Das Erscheinungsbild der Kanalansicht.</string>
+	<string name="appearanceSum">Das Aussehen der App anpassen.</string>
 	<string name="theme">Erscheinungsbild</string>
-	<string name="advancedAudio">Erweiterte Audioeigenschaften</string>
+	<string name="themeSum">Das Erscheinungsbild der App anpassen</string>
+	<string name="advancedAudio">Erweiterte Audioeinstellungen</string>
     <string name="forceTcp">Erzwinge TCP</string>
-    <string name="forceTcpSum">Es wird ausschließlich TCP benutzt und UDP wird abgeschaltet.</string>
+    <string name="forceTcpSum">Ausschließlich TCP benutzten (und UDP ausschalten).</string>
+    <string name="audio">Audio</string>
+    <string name="audioSum">Audioeingabe und Audioausgabe anpassen.</string>
     <string name="audioQuality">Audio Qualität</string>
 	<string name="noCert">Kein Zertifikat</string>
 	<string name="rowheight">Zeilenhöhe in Kanalauswahl</string>
@@ -114,21 +138,41 @@
 	<string name="colorizechannelsSum">Hauptkanäle werden gelb, benutzte Kanäle cyan und stark genutzte Kanäle in Rot dargestellt.</string>
 	<string name="colorthreshold">Limit für zweite Farbe</string>
 	<string name="colorthresholdSum">Wenn diese Anzahl Benutzer erreicht ist, wird der Kanal in der Kanalauswahl Rot dargestellt.</string>
-	<string name="chatNotifications">Chat Mitteilung</string>
-	<string name="chatNotificationsSum">Zeige eine Mitteilung wenn ein Benutzer im Chat schreibt.</string>
+	<string name="chatNotifications">Chat Benachrichtigung</string>
+	<string name="chatNotificationsSum">Bei eingehenden Nachrichten eine Benachrichtigung anzeigen.</string>
+	<string name="defaultUsername">Standard Benutzername</string>
+    <string name="defaultUsernameSum">Der standard Benutzername, welcher beim Verbinden zu Servern verwendet wird.</string>
+    <string name="defaultUsernameDefault">Plumble_Benutzer</string>
 	<string name="certificateGenerate">Zertifikat erzeugen</string>
-	<string name="certificateGenerateSum">Erzeugt ein self-signed Plumble Zertifikat. Empfohlen für unerfahrene Benutzer.</string>
-	<string name="pttSettings">Push to Talk Einstellungen</string>
-	<string name="pttSettingsSum">Konfigurieren von Push to Talk falls eingeschaltet.</string>
-	<string name="voiceActivitySettings">Einstellunge Sprachaktivierung</string>
-	<string name="voiceActivitySettingsSum">Konfiguration der Sprachaktivierung falls eingeschaltet.</string>
+	<string name="certificateGenerateSum">Erzeugt ein selbstsigniertes Plumble Zertifikat. Für unerfahrene Benutzer empfohlen.</string>
+	<string name="pttSettings">Push-To-Talk Einstellungen</string>
+	<string name="pttSettingsSum">Konfigurieren von Push-To-Talk, sofern eingeschaltet.</string>
+	<string name="voiceActivitySettings">Sprachaktivierungs-Einstellungen</string>
+	<string name="voiceActivitySettingsSum">Konfiguration der Sprachaktivierung, sofern eingeschaltet.</string>
 	<string name="audioOutput">Audio Ausgabe</string>
 	<string name="disableOpus">Opus Codec deaktivieren</string>
-	<string name="disableOpusSum">Opus unterstüzung für Mumble 1.2.4 Server deaktivieren. Hilfreich bei Schwierigkeiten mit dem Ton auf Mumble 1.2.4 Servern.</string>
-	<string name="hidePtt">Verstecke die Push to Talk Taste</string>
-	<string name="hidePttSum">Versteckt die Push to Talk Taste. Nützlich bei Verwendung von Bildschirmecken oder Hardwaretasten zur Sprachaktivierung.</string>
-	<string name="useTts">Text-zu-Sprache</string>
-	<string name="useTtsSum">Aktiviert Text-zu-Sprache für eingehende Nachrichten.</string>
-	<string name="togglePtt">Push to Talk Taste feststellen</string>
-	<string name="togglePttSum">Die Sprachübertragung wird beim drücken der Push to Talk Taste dauerhaft aktiviert/deaktiviert.</string>
+	<string name="disableOpusSum">Opus Unterstützung für Mumble 1.2.4 Server deaktivieren. Hilfreich bei Problemen mit dem Ton auf Mumble 1.2.4 Servern.</string>
+	<string name="hidePtt">Verstecke die Push-To-Talk Taste</string>
+	<string name="hidePttSum">Versteckt die Push-To-Talk Taste. Nützlich bei Verwendung von Bildschirmecken oder Hardwaretasten zur Sprachaktivierung.</string>
+	<string name="useTts">Text-Zu-Sprache</string>
+	<string name="useTtsSum">Aktiviert Text-Zu-Sprache für eingehende Nachrichten.</string>
+	<string name="togglePtt">Push-To-Talk Taste feststellen</string>
+	<string name="togglePttSum">Die Sprachübertragung wird beim Drücken der Push-To-Talk Taste dauerhaft aktiviert/deaktiviert.</string>
+	<string name="autoReconnect">Automatisch Wiederverbinden</string>
+    <string name="autoReconnectSum">Nach einem Verbindungsbbruch automatisch wiederzuverbinden.</string>
+    <string name="useTor">Über Tor verbinden</string>
+    <string name="useTorSum">Orbot wird benötigt</string>
+
+    <!-- About -->
+    <string name="about">Über</string>
+    <string name="aboutSum">Rechtliches und Danksagungen</string>
+    <string name="copyright">Copyright &#169; Andrew Comminos 2013</string>
+    <string name="acknowledgements">Danksagungen</string>
+    <string name="acknowledgementsSum">Sehen Sie wer zu Plumble beigetragen hat</string>
+    <string name="acknowledgements_link">https://raw.github.com/Morlunk/Plumble/master/THANKS</string>
+    <string name="licenses">Lizenzen</string>
+    <string name="license_gplv3">GNU General Public License v3.0</string>
+    <string name="license_gplv3_link">https://www.gnu.org/copyleft/gpl.html</string>
+    <string name="license_apache2">Apache License Version 2.0</string>
+    <string name="license_apache2_link">https://www.apache.org/licenses/LICENSE-2.0.html</string>
 </resources>

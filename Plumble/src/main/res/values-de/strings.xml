@@ -17,44 +17,44 @@
   -->
 
 <resources>
-
-    <string name="channels">Räume</string>
-    <string name="no_servers">keine Server hinzugefügt</string>
+    <!-- Common -->
+    <string name="app_name">Plumble</string>
+    <string name="channels">Kanäle</string>
+    <string name="no_servers">Keine Server hinzugefügt.\nDrücken Sie auf \'+\' in der Aktionsleiste.</string>
     <string name="server_add">Server hinzufügen</string>
     <string name="server_password">Passwort (Optional)</string>
     <string name="server_username">Benutzername</string>
     <string name="server_port">Port</string>
     <string name="server_host">Adresse</string>
     <string name="server_label">Beschriftung (Optional)</string>
-    <string name="app_name">Plumble</string>
-    <string name="chatReceiverLabel">Empfänger</string>
-    <string name="chatReceiverPrompt">Empfänger wählen</string>
+    <string name="connecting">Verbinden</string>
+    <string name="connecting_to_server">Zu Server %1$s:%2$s verbinden</string>  
     <string name="default_server_port">64738</string>
     <string name="fragment_chat">Chat</string>
     <string name="fragment_channel">Raum</string>
-    <string name="hello_world">Hallo Welt!</string>
     <string name="menu_settings">Einstellungen</string>
-    <string name="pressKey">Drücke eine Hardwaretaste für die Sprachaktivierung (PTT).</string>
-    <string name="pressKeyInfo">Hinweis: Aufgrund der Limitierungen von Android muss die App geöffnet sein, um eine Hardwaretaste für die Sprachaktivierung (PTT) zu nutzen.</string>
+    <string name="pressKey">Drücke eine Hardwaretaste für die Sprachaktivierung (PTT)</string>
+    <string name="pressKeyInfo">Hinweis: Aufgrund der Limitierungen von Android muss die App geöffnet sein, um eine Hardwaretaste für die Sprachaktivierung (PTT) zu nutzen</string>
     <string name="ptt">Sprechen</string>
     <string name="mute">Stumm stellen</string>
     <string name="deafen">Taub stellen</string>
     <string name="disconnect">Verbindung trennen</string>
-    <string name="disconnectSure">Bist du dir sicher, dass du die Verbindung zu Mumble trennen möchtest?</string>
+    <string name="disconnectSure">Sind Sie sicher, dass Sie die Verbindung trennen möchten?</string>
     <string name="save">Speichern</string>
     <string name="add">Hinzufügen</string>
     <string name="preferences">Einstellungen</string>
     <string name="togglelocalmute">lokale Stummschaltung wechseln</string>
     <string name="chat">Chat</string>
-    <string name="perm_denied">Zugriff verboten!</string>
+    <string name="perm_denied">Zugriff verweigert!</string>
     <string name="connectionRefused">Verbindung abgelehnt</string>
-    <string name="confirm_delete_server">Bist du dir sicher, dass du diesen Server löschen möchtest?</string>
+    <string name="confirm_delete_server">Sind sie sicher, dass Sie diesen Server entfernen möchten?</string>
+    <string name="confirm_delete_channel">Sind Sie sicher, dass Sie diesen Kanal entfernen möchten?</string>
     <string name="disconnected">Getrennt</string>
-    <string name="kicked_message">Kicked vom Server. Grund: %s</string>
-    <string name="loading">Lade...</string>
+    <string name="kicked_message">Vom Server geworfen. Grund: %s</string>
+    <string name="loading">Lade…</string>
     <string name="reset_key">Keine Hardware Taste</string>
     <string name="externalStorageUnavailable">Externer Speicher nicht verfügbar, kann Zertifikat nicht laden</string>
-    <string name="audioQualitySum">Die Audio Bitrate die Plumble zu nutzen versuchen wird.</string>
+    <string name="audioQualitySum">Bevorzugte Audio-Bitrate</string>
     <string name="addFavorite">Favorit hinzufügen</string>
     <string name="removeFavorite">Favorit entfernen</string>
     <string name="viewFavorites">View Favorites</string>
@@ -62,20 +62,19 @@
     <string name="favoriteRemoved">Favorit entfernt.</string>
     <string name="favoriteAdded">Favorit zugefügt.</string>
     <string name="noFavorites">Keine Favoriten gespeichert.</string>
-    <string name="accessTokens">Access Tokens</string>
-    <string name="accessAdd">Access Token hinzufügen</string>
+    <string name="accessTokens">Zugriffscodes</string>
+    <string name="accessAdd">Zugriffscode hinzufügen</string>
     <string name="pushToTalkHint">(checkbox setzen zum einrasten der Taste)</string>
     <string name="messageReceived">Neue Mitteilung</string>
-    <string name="general">General</string>
     <string name="generateCert">Zertifikat erzeugen</string>
-    <string name="generateCertSuccess">Dein Zertifikat wurde gesetzt und gespeichert unter %s!</string>
+    <string name="generateCertSuccess">Ihr Zertifikat wurde generiert und %s gespeichert!</string>
     <string name="generateCertFailure">Zertifikat konnte nicht erzeugt werden.</string>
-    <string name="generateCertProgress">Erzeuge Zertifikat...</string>
-    <string name="search">Suche Kanal</string>
-    <string name="searchHint">Kanalsuche</string>
+    <string name="generateCertProgress">Erzeuge Zertifikat…</string>
+    <string name="search">Suche</string>
+    <string name="searchHint">Suche nach Kanälen und Benutzern</string>
     <string name="undocumentedWakeLock">Leider kann auf deinem Gerät der Proximity Sensor nicht genutzt werden um den Standby zu verhindern. Bitte ändere den Modus zu \'Freisprechen\'.</string>
     <string name="recordingVolume">Aufnahmelautstärke Boost</string>
-    <string name="quickConnect">Schnelle Verbindung</string>
+    <string name="quickConnect">Schnell verbinden</string>
     <string name="connect">Verbinden</string>
     <string name="connectToServer">Verbindung zum Server</string>
     <string name="edit">Bearbeiten</string>
@@ -88,11 +87,11 @@
     <string name="clearChat">Chatverlauf löschen</string>
     <string name="connected">Verbunden</string>
     <string name="plumbleConnected">Plumble ist Verbunden</string>
+    <string name="plumbleConnecting">Plumble verbindet</string>
     <string name="lostConnection">Verbindung zum Server wurde unterbrochen.</string>
     <string name="resume">Wiederaufnehmen</string>
     <string name="channel">Kanal</string>
     <string name="server">Server</string>
-    <string name="chat_message">An %1$s: %2$s</string>
     <string name="chat_notify_moved">%1$s wurde von %3$s aus %2$s verschoben.</string>
     <string name="chat_notify_muted_deafened">Stumm und taub.</string>
     <string name="chat_notify_muted">Stumm.</string>
@@ -114,7 +113,7 @@
     <string name="name">Name</string>
     <string name="country">Land</string>
     <string name="share">Teilen</string>
-    <string name="shareMessage">Trete diesem Server mit Plumble bei %s</string>
+    <string name="shareMessage">Trete diesem Server mit Plumble bei! %s</string>
     <string name="noServerInfo">Pingen um Informationen abzurufen</string>
     <string name="status_notify_muted_and_deafened">Stumm und taub.</string>
     <string name="status_notify_muted">Stumm.</string>
@@ -123,7 +122,7 @@
     <string name="retrieving">Empfangen…</string>
     <string name="search_name">Name</string>
     <string name="search_country">Land</string>
-    <string name="preferences_immutable">Diese Einstellung kann nicht geändert werden, solange du mit einem Server verbunden bist.</string>
+    <string name="preferences_immutable">Diese Einstellung kann nicht geändert werden, solange Sie mit einem Server verbunden sind.</string>
     <string name="fullscreen">Vollbild</string>
     <string name="fullscreen_chat">Chat</string>
     <string name="fullscreen_channel">Kanal</string>
@@ -132,11 +131,94 @@
     <string name="register">Registrieren</string>
     <string name="userControl">Benutzerkontrolle</string>
     <string name="registerSelfSuccess">Registrationsanfrage gesendet</string>
-    <string name="error_fetching_servers">Fehler beim Abrufen der Serverliste!\nÜberprüfe deine Internetverbindung.</string>
+    <string name="error_fetching_servers">Fehler beim Abrufen der Serverliste!\nPrüfen Sie Ihre Internetverbindung.</string>
     <string name="coming_soon">Diese Funktion ist demnächst verfügbar.</string>
-    <string name="channel_user_row_chat">CHAT</string>
-    <string name="channel_user_row_mute">STUMM STELLEN</string>
-    <string name="channel_user_row_muted">STUMM</string>
-    <string name="channel_user_row_comment">KOMMENTAR</string>
-    <string name="channel_user_row_registered">REGISTRIERT</string>
+    <string name="search_channel_users">%d Benutzer</string>
+    <string name="reconnecting">Wiederverbinden in %d Sekunden.</string>
+    <string name="tapToReconnect">Zum Wiederverbinden drücken</string>
+    <string name="overlay">Overlay</string>
+    <string name="hint_reason">Grund</string>
+    <string name="hint_ptt">Push-To-Talk</string>
+	<string name="hint_ptt_summary">Drücken Sie diese Taste zum Sprechen. Doppelt drücken zum einrasten.</string>
+    <string name="hint_server_add">Willkommen bei Plumble</string>
+    <string name="hint_server_add_summary">Drücken Sie auf \'+\' in der Aktionsleiste um einen Server in den Favoriten zu hinterlegen.</string>
+    <string name="hint_switching">Wechseln zwischen Ansichten</string>
+    <string name="hint_switching_summary">Diese Schaltflächen oder Wischgesten verwenden, um zwischen der Chat- und Kanalansicht zu wechseln.</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="reconnect">Wiederverbinden</string>
+    <string name="reconnect_dialog_message">Sie sind bereits mit einem Server verbunden. Möchten Sie zu diesem Server wechseln?</string>
+    <string name="confirm_reset_comment">Kommentar von %s wirklich zurücksetzen?</string>
+    <string name="confirm">Bestätigen</string>
+    <string name="expand">Erweitern</string>
+    <string name="temporary">Temporär</string>
+    <string name="position">Position</string>
+    <string name="channel_edit">Kanal bearbeiten</string>
+    <string name="channel_add">Kanal hinzufügen</string>
+    <string name="tts_failed">PTT konnte nicht gestartet werden</string>
+    <string name="mumble_url_parse_failed">Konnte Mumble URL nicht verarbeiten!</string>
+    <string name="first_run_generate_certificate_title">Willkommen bei Plumble! </string>
+    <string name="first_run_generate_certificate">Es wird sehr empfohlen ein Zertifikat zu generieren. Manche Server setzen ein Zertifikat voraus.</string>
+    <string name="generate">Generieren</string>
+
+    <!-- Drawer pane -->
+    <string name="drawer_open">Drawer öffnen</string>
+    <string name="drawer_close">Drawer schließen</string>
+    <string name="drawer_not_connected">Nicht verbunden</string>
+    <string name="drawer_server">Server</string>
+    <string name="drawer_info">Informationen</string>
+    <string name="drawer_tokens">Zugriffscodes</string>
+    <string name="drawer_pinned">Gepinnte Kanäle</string>
+    <string name="drawer_header_servers">Server</string>
+    <string name="drawer_favorites">Favoriten</string>
+    <string name="drawer_lan">LAN</string>
+    <string name="drawer_public">Öffentliche Server</string>
+
+    <!-- Chat formatting -->
+    <string name="chat_message_tree">(Baum)</string>
+    <string name="chat_message_channel">(Kanal)</string>
+    <string name="chat_message_to">%1$s → %2$s</string>
+
+    <!-- User menu -->
+    <string name="user_menu_admin">Admin</string>
+    <string name="user_menu_kick">Kicken</string>
+    <string name="user_menu_ban">Bannen</string>
+    <string name="user_menu_mute">Stumm</string>
+    <string name="user_menu_deafen">Taub</string>
+    <string name="user_menu_move">Verschieben</string>
+    <string name="user_menu_priority_speaker">Bevorzugter Sprecher</string>
+    <string name="user_menu_local_mute">Lokal Stumm</string>
+    <string name="user_menu_ignore_messages">Nachrichten blockieren</string>
+    <string name="user_menu_change_comment">Kommentar ändern</string>
+    <string name="user_menu_view_comment">Kommentar anzeigen</string>
+    <string name="user_menu_reset_comment">Kommentar zurücksetzen</string>
+    <string name="user_menu_send_message">Nachricht senden</string>
+    <string name="user_menu_information">Informationen</string>
+    <string name="user_menu_register">Registrieren</string>
+    <string name="user_menu_registered">Registriert</string>
+
+    <!-- Channel menu -->
+    <string name="channel_menu_pin">Pin</string>
+
+    <!-- Comment Fragment -->
+    <string name="comment_view">ANZEIGEN</string>
+    <string name="comment_edit_source">QUELLTEXT BEARBEITEN</string>
+    <string name="comment_view_source">QUELLTEXT ANZEIGEN</string>
+    
+    <!-- Server Info Fragment -->
+    <string name="server_info_protocol">Protokoll %s.</string>
+    <string name="server_info_version">%1$s (%2$s)</string>
+    <string name="server_info_latency">%.2f ms Latenz</string>
+    <string name="server_info_host">Gegenstelle %1$s (Port %2$d)</string>
+    <string name="server_info_codec">Codec: %s</string>
+    <string name="server_info_max_bandwidth">Maximum %.1f kbit/s</string>
+    <string name="server_info_current_bandwidth">Aktuell %.1f kbit/s</string>
+
+    <!-- Server matching -->
+    <string name="server_match">Server suchen</string>
+    <string name="server_match_progress">Suche Server…</string>
+    <string name="server_match_found">Server gefunden</string>
+    <string name="server_match_not_found">Server nicht gefunden</string>
+    <string name="server_match_expand_country">Konnte keinen optimalen Server in Ihrem Land finden. Suche auf die ganze Welt ausweiten?</string>
+    <string name="server_match_info">Name: %1$s\nAdresse: %2$s:%3$d\nBenutzer: %4$d / %5$d\nVersion: %6$s \nLand: %7$s \nLatenz: %8$d ms</string>
+    <string name="server_match_description">Plumble kann automatisch nach einem leeren Server suchen, optimiert nach Serverstandort, Version und Latenz.</string>
 </resources>
