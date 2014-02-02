@@ -51,7 +51,7 @@
 
         <activity android:name=".wizard.WizardActivity"/>
 
-        <activity android:name=".preference.Preferences"
+        <activity android:name="com.morlunk.mumbleclient.preference.Preferences"
                 android:parentActivityName=".app.PlumbleActivity"/>
 
         <service
