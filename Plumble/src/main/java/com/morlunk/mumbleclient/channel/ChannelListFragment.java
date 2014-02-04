@@ -406,7 +406,9 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         }
 
         int permissions = channel.getPermissions();
-        menu.getMenu().findItem(R.id.menu_channel_add).setVisible((permissions & (Permissions.MakeChannel | Permissions.MakeTempChannel)) > 0);
+
+        // This breaks uMurmur ACL. Put in a fix based on server version perhaps?
+        //menu.getMenu().findItem(R.id.menu_channel_add).setVisible((permissions & (Permissions.MakeChannel | Permissions.MakeTempChannel)) > 0);
         menu.getMenu().findItem(R.id.menu_channel_edit).setVisible((permissions & Permissions.Write) > 0);
         menu.getMenu().findItem(R.id.menu_channel_remove).setVisible((permissions & Permissions.Write) > 0);
 
