@@ -358,6 +358,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+            mChannelOverlay.setPushToTalkShown(inputMethod == Constants.TRANSMIT_PUSH_TO_TALK);
         }
         else if(Settings.PREF_THRESHOLD.equals(key))
             try {

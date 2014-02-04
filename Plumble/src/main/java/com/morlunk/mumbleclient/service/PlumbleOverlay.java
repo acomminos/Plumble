@@ -28,10 +28,12 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.net.JumbleObserver;
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.channel.ChannelAdapter;
 
 /**
@@ -99,13 +101,14 @@ public class PlumbleOverlay {
                 if(MotionEvent.ACTION_DOWN == event.getAction()) {
                     mInitialX = event.getRawX() - mOverlayParams.x;
                     mInitialY = event.getRawY() - mOverlayParams.y;
-                }
-                else if(MotionEvent.ACTION_MOVE == event.getAction()) {
+                    return true;
+                } else if(MotionEvent.ACTION_MOVE == event.getAction()) {
                     mOverlayParams.x = (int) (event.getRawX() - mInitialX);
                     mOverlayParams.y = (int) (event.getRawY() - mInitialY);
                     mWindowManager.updateViewLayout(mOverlayView, mOverlayParams);
+                    return true;
                 }
-                return true;
+                return false;
             }
         });
 
@@ -155,22 +158,24 @@ public class PlumbleOverlay {
         mTalkButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(MotionEvent.ACTION_DOWN == event.getAction()) {
-                    try {
+                try {
+                    if(MotionEvent.ACTION_DOWN == event.getAction()) {
                         mService.getBinder().setTalkingState(true);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                } else if(MotionEvent.ACTION_UP == event.getAction()) {
-                    try {
+                        return true;
+                    } else if(MotionEvent.ACTION_UP == event.getAction()) {
                         mService.getBinder().setTalkingState(false);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+                        return true;
                     }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
                 }
                 return false;
             }
         });
+
+        Settings settings = Settings.getInstance(service);
+        boolean usingPtt = Settings.ARRAY_INPUT_METHOD_PTT.equals(settings.getInputMethod());
+        setPushToTalkShown(usingPtt);
 
         mCloseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -226,5 +231,9 @@ public class PlumbleOverlay {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setPushToTalkShown(boolean showPtt) {
+        mTalkButton.setVisibility(showPtt ? View.VISIBLE : View.GONE);
     }
 }
