@@ -84,6 +84,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     private BroadcastReceiver mNotificationReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if(!isConnected()) return;
             try {
                 if(BROADCAST_MUTE.equals(intent.getAction())) {
                     User user = getBinder().getSessionUser();
@@ -118,6 +119,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             String tickerMessage = null;
             if(reconnecting) tickerMessage += "\n"+getString(R.string.reconnecting, PlumbleActivity.RECONNECT_DELAY/1000);
             else tickerMessage = getString(R.string.plumbleDisconnected);
+            if(mNotificationReceiver == null) createNotification();
             updateNotificationTicker(tickerMessage);
             updateNotificationState();
             if(!reconnecting) hideNotification();
@@ -199,12 +201,6 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     }
 
     @Override
-    public void connect() {
-        super.connect();
-        createNotification(); // TODO: move this to a better place!
-    }
-
-    @Override
     public void onDestroy() {
         stopForeground(true);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -222,7 +218,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     @Override
     public void onConnectionEstablished() {
         super.onConnectionEstablished();
-        updateNotificationTicker(getString(R.string.plumbleConnected));
+        createNotification();
         try {
             // Restore mute/deafen state
             Settings settings = Settings.getInstance(this);
@@ -387,7 +383,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     public void createNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(R.drawable.ic_stat_notify);
-        builder.setTicker(getResources().getString(R.string.plumbleConnecting));
+        builder.setTicker(getResources().getString(R.string.plumbleConnected));
         builder.setContentTitle(getResources().getString(R.string.app_name));
         builder.setContentText(getResources().getString(R.string.connected));
         builder.setPriority(NotificationCompat.PRIORITY_HIGH);
@@ -398,15 +394,17 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         Intent deafenIntent = new Intent(BROADCAST_DEAFEN);
         Intent overlayIntent = new Intent(BROADCAST_TOGGLE_OVERLAY);
 
-        builder.addAction(R.drawable.ic_action_microphone,
-                getString(R.string.mute), PendingIntent.getBroadcast(this, 1,
-                muteIntent, PendingIntent.FLAG_CANCEL_CURRENT));
-        builder.addAction(R.drawable.ic_action_audio_on,
-                getString(R.string.deafen), PendingIntent.getBroadcast(this, 1,
-                deafenIntent, PendingIntent.FLAG_CANCEL_CURRENT));
-        builder.addAction(R.drawable.ic_action_channels,
-                getString(R.string.overlay), PendingIntent.getBroadcast(this, 2,
-                overlayIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+        if(isConnected()) {
+            builder.addAction(R.drawable.ic_action_microphone,
+                    getString(R.string.mute), PendingIntent.getBroadcast(this, 1,
+                    muteIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+            builder.addAction(R.drawable.ic_action_audio_on,
+                    getString(R.string.deafen), PendingIntent.getBroadcast(this, 1,
+                    deafenIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+            builder.addAction(R.drawable.ic_action_channels,
+                    getString(R.string.overlay), PendingIntent.getBroadcast(this, 2,
+                    overlayIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+        }
 
         Intent channelListIntent = new Intent(this, PlumbleActivity.class);
 
