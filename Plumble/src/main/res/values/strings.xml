@@ -226,4 +226,6 @@
     <string name="server_match_expand_country">Couldn\'t find any optimal servers in your country. Expand search worldwide?</string>
     <string name="server_match_info">Name: %1$s\nHost: %2$s:%3$d\nUsers: %4$d / %5$d\nVersion: %6$s \nCountry: %7$s \nLatency: %8$d ms</string>
     <string name="server_match_description">Plumble can automatically find you an empty server, optimizing based on the server\'s location, version, and latency.</string>
+    <string name="certificate_not_valid">Could not load certificate \'%s\'!</string>
+    <string name="invalid_password">Invalid password.</string>
 </resources>

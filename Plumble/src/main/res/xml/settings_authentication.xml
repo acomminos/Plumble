@@ -29,12 +29,6 @@
         android:title="@string/certificateFile" />
 
     <EditTextPreference
-        android:key="certificatePassword"
-        android:password="true"
-        android:summary="@string/certificatePasswordSum"
-        android:title="@string/certificatePassword" />
-
-    <EditTextPreference
         android:key="defaultUsername"
         android:summary="@string/defaultUsernameSum"
         android:title="@string/defaultUsername"

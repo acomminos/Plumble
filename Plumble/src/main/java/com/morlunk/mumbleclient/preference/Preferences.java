@@ -18,6 +18,10 @@
 package com.morlunk.mumbleclient.preference;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.os.Build;
@@ -29,16 +33,27 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.text.InputType;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import info.guardianproject.onionkit.ui.OrbotHelper;
 
+/**
+ * This entire class is a mess.
+ * FIXME. Please.
+ */
 public class Preferences extends PreferenceActivity {
 
     public static final String ACTION_PREFS_GENERAL = "com.morlunk.mumbleclient.app.PREFS_GENERAL";
@@ -100,6 +115,32 @@ public class Preferences extends PreferenceActivity {
                 return true;
             }
         });
+        certificatePathPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                // Unset password
+                SharedPreferences preferences = preference.getSharedPreferences();
+                preferences.edit()
+                        .putString(Settings.PREF_CERT_PASSWORD, "")
+                        .commit();
+
+                if("".equals(newValue)) return true; // No certificate
+                File cert = new File((String)newValue);
+                try {
+                    boolean needsPassword = PlumbleCertificateManager.isPasswordRequired(cert);
+                    if(!needsPassword) return true;
+
+                    // If we need a password, prompt the user. Do NOT change the preference until
+                    // the password has been provided.
+                    promptCertificatePassword(preference.getContext(), (ListPreference) preference, cert);
+
+                } catch (Exception e) {
+                    Toast.makeText(preference.getContext(), preference.getContext().getString(R.string.certificate_not_valid, cert.getName()), Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        });
 
         // Make sure media is mounted, otherwise do not allow certificate loading.
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -113,6 +154,48 @@ public class Preferences extends PreferenceActivity {
             certificatePathPreference.setEnabled(false);
             certificatePathPreference.setSummary(R.string.externalStorageUnavailable);
         }
+    }
+
+    /**
+     * Prompts the user for the given certificate's password, setting the certificate as
+     * active if the password is correct.
+     */
+    private static void promptCertificatePassword(final Context context, final ListPreference certificatePreference, final File certificate) {
+        AlertDialog.Builder adb = new AlertDialog.Builder(context);
+        adb.setTitle(R.string.certificatePassword);
+
+        final EditText passwordField = new EditText(context);
+        passwordField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        adb.setView(passwordField);
+
+        adb.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String password = passwordField.getText().toString();
+                boolean passwordValid = false;
+                try {
+                    passwordValid = PlumbleCertificateManager.isPasswordValid(certificate, password);
+                } catch (KeyStoreException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } finally {
+                    if(passwordValid) {
+                        certificatePreference.setValue(certificate.getAbsolutePath());
+                        certificatePreference.getSharedPreferences().edit()
+                                .putString(Settings.PREF_CERT_PASSWORD, password)
+                                .commit();
+                    } else {
+                        Toast.makeText(context, R.string.invalid_password, Toast.LENGTH_SHORT).show();
+                        promptCertificatePassword(context, certificatePreference, certificate);
+                    }
+                }
+            }
+        });
+        adb.setNegativeButton(android.R.string.cancel, null);
+        adb.show();
     }
 
     private static void configureOrbotPreferences(PreferenceScreen screen) {

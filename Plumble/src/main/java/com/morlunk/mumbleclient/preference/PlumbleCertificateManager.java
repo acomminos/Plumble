@@ -25,8 +25,11 @@ import org.spongycastle.operator.OperatorCreationException;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -39,7 +42,6 @@ public class PlumbleCertificateManager {
 
 	private static final String PLUMBLE_CERTIFICATE_FOLDER = "Plumble";
 	private static final String PLUMBLE_CERTIFICATE_FORMAT = "plumble-%d.p12";
-	private static final String PLUMBLE_CERTIFICATE_EXTENSION = "p12";
 	
 	/**
 	 * Generates a new X.509 passwordless certificate in PKCS12 format for connection to a Mumble server.
@@ -57,7 +59,7 @@ public class PlumbleCertificateManager {
 	}
 	
 	/**
-	 * Returns a list of certificates in the {@value #PLUMBLE_CERTIFICATE_FOLDER} folder on external storage, ending with {@value #PLUMBLE_CERTIFICATE_EXTENSION}.
+	 * Returns a list of certificates in the {@value #PLUMBLE_CERTIFICATE_FOLDER} folder on external storage, ending with pfx or p12.
 	 * @return A list of {@link File} objects containing certificates.
 	 */
 	public static List<File> getAvailableCertificates() {
@@ -66,14 +68,53 @@ public class PlumbleCertificateManager {
 		File[] p12Files = certificateDirectory.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
-				return pathname.getName().endsWith(PLUMBLE_CERTIFICATE_EXTENSION);
+				return pathname.getName().endsWith("pfx") ||
+                       pathname.getName().endsWith("p12");
 			}
 		});
 		
 		return Arrays.asList(p12Files);
 	}
-	
-	/**
+
+    /**
+     * Checks to see if the certificate at the given path is password protected.
+     * @param certificateFile A PKCS12 certificate.
+     * @return true if the certificate is password protected, false otherwise.
+     */
+    public static boolean isPasswordRequired(File certificateFile) throws KeyStoreException, IOException, NoSuchAlgorithmException {
+        KeyStore p12store = KeyStore.getInstance("PKCS12");
+        FileInputStream inputStream = new FileInputStream(certificateFile);
+        try {
+            p12store.load(inputStream, new char[0]);
+            return false; // If loading succeeded, we can be assured that no password was required.
+        } catch (IOException e) {
+            e.printStackTrace();
+            return true; // FIXME: this is a very coarse attempt at password detection.
+        } catch (CertificateException e) {
+            e.printStackTrace();
+            return true; // FIXME: this is a very coarse attempt at password detection.
+        }
+    }
+
+    /**
+     * Checks to see if the certificate at the given path is password protected.
+     * @param certificateFile A PKCS12 certificate.
+     * @param password A password for the certificate.
+     * @return true if the password is valid, false otherwise.
+     */
+    public static boolean isPasswordValid(File certificateFile, String password) throws KeyStoreException, IOException, NoSuchAlgorithmException {
+        KeyStore p12store = KeyStore.getInstance("PKCS12");
+        FileInputStream inputStream = new FileInputStream(certificateFile);
+        try {
+            p12store.load(inputStream, password.toCharArray());
+            return true; // If loading succeeded, we can be assured that the password is valid
+        } catch (CertificateException e) {
+            e.printStackTrace();
+            return false; // FIXME: this is a very coarse attempt at password detection.
+        }
+    }
+
+    /**
 	 * Returns the certificate directory, {@value #PLUMBLE_CERTIFICATE_FOLDER}, on external storage.
 	 * Will create if does not exist, and throw an assert if the external storage is not mounted.
 	 * @return The {@link File} object of the directory.
