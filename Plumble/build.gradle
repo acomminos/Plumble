@@ -55,10 +55,18 @@ android {
 
     productFlavors {
         official {
+            versionCode 55
+            versionName "3.0.0-beta3"
             packageName "com.morlunk.mumbleclient"
         }
 
         jenkins {
+            // Abuse Jenkins environment variables. Neat.
+            if(System.getProperties().containsKey("BUILD_NUMBER") &&
+                    System.getProperties().containsKey("BUILD_DISPLAY_NAME")) {
+                versionCode Integer.parseInt("$System.env.BUILD_NUMBER")
+                versionName "Nightly $System.env.BUILD_DISPLAY_NAME"
+            }
             packageName "com.morlunk.mumbleclient.jenkins"
         }
     }

@@ -21,41 +21,26 @@
     <Preference
         android:title="@string/general"
         android:summary="@string/generalSum">
-        <intent
-            android:targetPackage="com.morlunk.mumbleclient"
-            android:targetClass="com.morlunk.mumbleclient.preference.Preferences"
-            android:action="com.morlunk.mumbleclient.app.PREFS_GENERAL"/>
+        <intent android:action="com.morlunk.mumbleclient.app.PREFS_GENERAL"/>
     </Preference>
     <Preference
         android:title="@string/authentication"
         android:summary="@string/authenticationSum">
-        <intent
-            android:targetPackage="com.morlunk.mumbleclient"
-            android:targetClass="com.morlunk.mumbleclient.preference.Preferences"
-            android:action="com.morlunk.mumbleclient.app.PREFS_AUTHENTICATION"/>
+        <intent android:action="com.morlunk.mumbleclient.app.PREFS_AUTHENTICATION"/>
     </Preference>
     <Preference
         android:title="@string/audio"
         android:summary="@string/audioSum">
-        <intent
-            android:targetPackage="com.morlunk.mumbleclient"
-            android:targetClass="com.morlunk.mumbleclient.preference.Preferences"
-            android:action="com.morlunk.mumbleclient.app.PREFS_AUDIO"/>
+        <intent android:action="com.morlunk.mumbleclient.app.PREFS_AUDIO"/>
     </Preference>
     <Preference
         android:title="@string/appearance"
         android:summary="@string/appearanceSum">
-        <intent
-            android:targetPackage="com.morlunk.mumbleclient"
-            android:targetClass="com.morlunk.mumbleclient.preference.Preferences"
-            android:action="com.morlunk.mumbleclient.app.PREFS_APPEARANCE"/>
+        <intent android:action="com.morlunk.mumbleclient.app.PREFS_APPEARANCE"/>
     </Preference>
     <Preference
         android:title="@string/about"
         android:summary="@string/aboutSum">
-        <intent
-            android:targetPackage="com.morlunk.mumbleclient"
-            android:targetClass="com.morlunk.mumbleclient.preference.Preferences"
-            android:action="com.morlunk.mumbleclient.app.PREFS_ABOUT"/>
+        <intent  android:action="com.morlunk.mumbleclient.app.PREFS_ABOUT"/>
     </Preference>
 </PreferenceScreen>
