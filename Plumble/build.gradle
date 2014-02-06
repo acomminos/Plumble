@@ -65,7 +65,7 @@ android {
             env = System.getenv()
             if(env.containsKey("BUILD_NUMBER") && env.containsKey("BUILD_DISPLAY_NAME")) {
                 versionCode Integer.parseInt(env.get("BUILD_NUMBER"))
-                versionName "Nightly " + env.get("BUILD_DISPLAY_NAME")
+                versionName env.get("BUILD_DISPLAY_NAME")
             } else {
                 versionCode 0
                 versionName "Unknown Nightly"
