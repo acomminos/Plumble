@@ -62,10 +62,13 @@ android {
 
         jenkins {
             // Abuse Jenkins environment variables. Neat.
-            if(System.getProperties().containsKey("BUILD_NUMBER") &&
-                    System.getProperties().containsKey("BUILD_DISPLAY_NAME")) {
-                versionCode Integer.parseInt("$System.env.BUILD_NUMBER")
-                versionName "Nightly $System.env.BUILD_DISPLAY_NAME"
+            env = System.getenv()
+            if(env.containsKey("BUILD_NUMBER") && env.containsKey("BUILD_DISPLAY_NAME")) {
+                versionCode Integer.parseInt(env.get("BUILD_NUMBER"))
+                versionName "Nightly " + env.get("BUILD_DISPLAY_NAME")
+            } else {
+                versionCode 0
+                versionName "Unknown Nightly"
             }
             packageName "com.morlunk.mumbleclient.jenkins"
         }
