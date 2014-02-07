@@ -96,6 +96,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
     private ProgressDialog mConnectingDialog;
     private AlertDialog mErrorDialog;
+    private AlertDialog.Builder mDisconnectPromptBuilder;
 
     /** List of fragments to be notified about service state changes. */
     private List<JumbleServiceFragment> mServiceFragments = new ArrayList<JumbleServiceFragment>();
@@ -229,6 +230,22 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 }
             }
         });
+
+        AlertDialog.Builder dadb = new AlertDialog.Builder(this);
+        dadb.setMessage(R.string.disconnectSure);
+        dadb.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    if(mService != null && mService.isConnected()) mService.disconnect();
+                    loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        dadb.setNegativeButton(android.R.string.cancel, null);
+        mDisconnectPromptBuilder = dadb;
 
         // Restore old fragment or load server list (default)
         int fragmentId = DrawerAdapter.ITEM_FAVOURITES;
@@ -395,6 +412,19 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             e.printStackTrace();
         }
         return super.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        try {
+            if(mService.isConnected()) {
+                mDisconnectPromptBuilder.show();
+                return;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        super.onBackPressed();
     }
 
     @Override
