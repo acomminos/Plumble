@@ -228,4 +228,5 @@
     <string name="server_match_description">Plumble can automatically find you an empty server, optimizing based on the server\'s location, version, and latency.</string>
     <string name="certificate_not_valid">Could not load certificate \'%s\'!</string>
     <string name="invalid_password">Invalid password.</string>
+    <string name="send_message">Send message</string>
 </resources>

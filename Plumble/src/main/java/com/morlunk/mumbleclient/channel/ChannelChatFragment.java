@@ -40,6 +40,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -56,6 +58,7 @@ import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.net.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
+import com.morlunk.mumbleclient.util.MumbleImageGetter;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -276,33 +279,13 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
 
     private static class ChannelChatAdapter extends ArrayAdapter<Message> {
 
-        /**
-         * Image getter to read base64 image data from messages.
-         */
-        private Html.ImageGetter mImageGetter = new Html.ImageGetter() {
-
-            @Override
-            public Drawable getDrawable(String source) {
-                try {
-                    String decodedSource = URLDecoder.decode(source, "UTF-8"); // Decode from URL encoding
-                    String base64 = decodedSource.split(",")[1]; // Take the binary data only, not the img src header
-                    byte[] src = Base64.decode(base64, Base64.DEFAULT);
-                    Bitmap bmp = BitmapFactory.decodeByteArray(src, 0, src.length);
-                    BitmapDrawable drawable = new BitmapDrawable(getContext().getResources(), bmp);
-                    DisplayMetrics metrics = getContext().getResources().getDisplayMetrics(); // Use display metrics to scale image to mdpi
-                    drawable.setBounds(0, 0, (int)((float)drawable.getIntrinsicWidth()*metrics.density), (int)((float)drawable.getIntrinsicHeight()*metrics.density));
-                    return drawable;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
-        };
+        private MumbleImageGetter mImageGetter;
         private IJumbleService mService;
 
         public ChannelChatAdapter(Context context, IJumbleService service, List<Message> messages) {
             super(context, 0, new ArrayList<Message>(messages));
             mService = service;
+            mImageGetter = new MumbleImageGetter(context);
         }
 
         @Override

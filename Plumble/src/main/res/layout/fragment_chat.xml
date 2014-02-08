@@ -37,6 +37,16 @@
         android:padding="8dp"
         tools:listitem="@layout/list_chat_item"></ListView>
 
+    <!--
+    <TextView
+        android:id="@+id/chat_target"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="To: Richard Matthew Stallman"
+        android:fontFamily="sans-serif-light"
+        android:padding="4dp"/>
+    -->
+
 	<LinearLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
@@ -49,7 +59,8 @@
 		    android:layout_height="wrap_content"
 		    android:layout_weight="1"
             android:minHeight="48dp"
-		    android:hint="@string/messageToChannel"
+		    android:hint="@string/send_message"
+            android:textAppearance="?android:attr/textAppearanceSmall"
 		    android:inputType="textAutoCorrect"
 		    android:imeOptions="actionSend"
 	    	android:layout_marginLeft="10dp"
@@ -58,9 +69,9 @@
 
 		<ImageButton
 		    android:id="@+id/chatTextSend"
-            style="@android:style/Widget.Holo.Light.Button.Borderless.Small"
+            style="@style/Plumble.BorderlessButton"
 		    android:layout_width="48dp"
-		    android:layout_height="wrap_content"
+		    android:layout_height="48dp"
 		    android:src="@drawable/ic_action_send"
             android:tint="?android:attr/textColorPrimary"
 		    android:enabled="false"/>
