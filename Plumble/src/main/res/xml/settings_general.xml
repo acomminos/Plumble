@@ -28,6 +28,13 @@
         android:key="useTts"
         android:summary="@string/useTtsSum"
         android:title="@string/useTts" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="load_images"
+        android:summary="@string/loadImagesSum"
+        android:title="@string/loadImages"/>
+
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="autoReconnect"

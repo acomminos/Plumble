@@ -179,4 +179,6 @@
     <string name="license_gplv3_link">https://www.gnu.org/copyleft/gpl.html</string>
     <string name="license_apache2">Apache License Version 2.0</string>
     <string name="license_apache2_link">https://www.apache.org/licenses/LICENSE-2.0.html</string>
+    <string name="loadImagesSum">Whether to load external images in chat.</string>
+    <string name="loadImages">Load External Images</string>
 </resources>

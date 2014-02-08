@@ -105,6 +105,9 @@ public class Settings {
     public static final String PREF_FIRST_RUN = "firstRun";
     public static final Boolean DEFAULT_FIRST_RUN = true;
 
+    public static final String PREF_LOAD_IMAGES = "load_images";
+    public static final boolean DEFAULT_LOAD_IMAGES = true;
+
     private final SharedPreferences preferences;
 
     private static Settings settings;
@@ -235,6 +238,10 @@ public class Settings {
 
     public boolean isFirstRun() {
         return preferences.getBoolean(PREF_FIRST_RUN, DEFAULT_FIRST_RUN);
+    }
+
+    public boolean shouldLoadExternalImages() {
+        return preferences.getBoolean(PREF_LOAD_IMAGES, DEFAULT_LOAD_IMAGES);
     }
 
     public void setMutedAndDeafened(boolean muted, boolean deafened) {

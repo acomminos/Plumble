@@ -27,6 +27,8 @@ import android.text.Html;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 
+import com.morlunk.mumbleclient.Settings;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -47,10 +49,12 @@ public class MumbleImageGetter implements Html.ImageGetter {
     private static final int MAX_LENGTH = 64000;
 
     private Context mContext;
+    private Settings mSettings;
     private Map<String, Drawable> mBitmapCache;
 
     public MumbleImageGetter(Context context) {
         mContext = context;
+        mSettings = Settings.getInstance(context);
         mBitmapCache = new HashMap<String, Drawable>();
 
         // We have to enable network on the main thread here. FIXME
@@ -71,13 +75,12 @@ public class MumbleImageGetter implements Html.ImageGetter {
             return null;
         }
 
-        Bitmap bitmap;
+        Bitmap bitmap = null;
         if(decodedSource.startsWith("data:image")) {
             bitmap = getBase64Image(decodedSource.split(",")[1]);
-        } else {
+        } else if(mSettings.shouldLoadExternalImages()) {
             bitmap = getURLImage(decodedSource);
         }
-
         if(bitmap == null) return null;
 
         BitmapDrawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
