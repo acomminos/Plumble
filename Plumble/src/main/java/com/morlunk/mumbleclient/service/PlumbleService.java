@@ -376,6 +376,12 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
                 mTTS = null;
             }
         }
+        else if(Settings.PREF_AMPLITUDE_BOOST.equals(key))
+            try {
+                getBinder().setAmplitudeBoost(mSettings.getAmplitudeBoostMultiplier());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
     }
 
     /**

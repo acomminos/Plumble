@@ -152,8 +152,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             mConnectingDialog.dismiss();
 
             AlertDialog.Builder ab = new AlertDialog.Builder(PlumbleActivity.this);
+            ab.setTitle(R.string.connectionRefused);
             if(!reconnecting) {
-                ab.setTitle(R.string.connectionRefused);
                 ab.setMessage(message);
                 ab.setPositiveButton(android.R.string.ok, null);
             } else {
@@ -566,6 +566,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         connectIntent.putExtra(JumbleService.EXTRAS_CLIENT_NAME, getString(R.string.app_name)+" "+applicationVersion);
         connectIntent.putExtra(JumbleService.EXTRAS_TRANSMIT_MODE, inputMethod);
         connectIntent.putExtra(JumbleService.EXTRAS_DETECTION_THRESHOLD, mSettings.getDetectionThreshold());
+        connectIntent.putExtra(JumbleService.EXTRAS_AMPLITUDE_BOOST, mSettings.getAmplitudeBoostMultiplier());
         connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE, mSettings.getCertificate());
         connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE_PASSWORD, mSettings.getCertificatePassword());
         connectIntent.putExtra(JumbleService.EXTRAS_AUTO_RECONNECT, mSettings.isAutoReconnectEnabled());
