@@ -223,7 +223,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         MenuItem deafenItem = menu.findItem(R.id.menu_deafen_button);
 
         try {
-            if(getService() != null && getService().getSessionUser() != null && getService().isConnected()) {
+            if(getService() != null && getService().isConnected() && getService().getSessionUser() != null) {
                 User self = getService().getSessionUser();
                 muteItem.setIcon(self.isSelfMuted() ? R.drawable.ic_action_microphone_muted : R.drawable.ic_action_microphone);
                 deafenItem.setIcon(self.isSelfDeafened() ? R.drawable.ic_action_audio_muted : R.drawable.ic_action_audio);
