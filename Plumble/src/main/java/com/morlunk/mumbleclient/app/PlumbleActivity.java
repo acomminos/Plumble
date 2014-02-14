@@ -217,6 +217,12 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        // Tint logo to theme
+        int iconColor = getTheme().obtainStyledAttributes(new int[] { android.R.attr.textColorPrimaryInverse }).getColor(0, -1);
+        Drawable logo = getResources().getDrawable(R.drawable.ic_home);
+        logo.setColorFilter(iconColor, PorterDuff.Mode.MULTIPLY);
+        getSupportActionBar().setLogo(logo);
+
         mConnectingDialog = new ProgressDialog(this);
         mConnectingDialog.setIndeterminate(true);
         mConnectingDialog.setCancelable(true);
