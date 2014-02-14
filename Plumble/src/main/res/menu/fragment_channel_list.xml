@@ -18,7 +18,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:plumble="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_mute_button" android:title="@string/mute" plumble:showAsAction="ifRoom" android:icon="@drawable/ic_action_microphone"></item>
-    <item android:id="@+id/menu_deafen_button" android:title="@string/deafen" plumble:showAsAction="ifRoom" android:icon="@drawable/ic_action_audio_on"></item>
+    <item android:id="@+id/menu_deafen_button" android:title="@string/deafen" plumble:showAsAction="ifRoom" android:icon="@drawable/ic_action_audio"></item>
     <item android:id="@+id/menu_search" android:title="@string/search" plumble:actionViewClass="android.support.v7.widget.SearchView" plumble:showAsAction="ifRoom|collapseActionView" android:icon="@drawable/ic_action_search"></item>
     <item android:id="@+id/menu_bluetooth" android:title="@string/bluetooth" android:checkable="true" plumble:showAsAction="never"></item>
 </menu>

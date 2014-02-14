@@ -219,21 +219,18 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-//
-//        Mute/deaf opacity conflicts with color drawable mutation
-//        MenuItem muteItem = menu.findItem(R.id.menu_mute_button);
-//        MenuItem deafenItem = menu.findItem(R.id.menu_deafen_button);
-//
-//        try {
-//            if(getService() != null && getService().getSessionUser() != null && getService().isConnected()) {
-//                User self = getService().getSessionUser();
-//                muteItem.getIcon().mutate().setAlpha(self.isSelfMuted() ? 100 : 255);
-//                deafenItem.getIcon().mutate().setAlpha(self.isSelfDeafened() ? 100 : 255);
-//            }
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
+        MenuItem muteItem = menu.findItem(R.id.menu_mute_button);
+        MenuItem deafenItem = menu.findItem(R.id.menu_deafen_button);
+
+        try {
+            if(getService() != null && getService().getSessionUser() != null && getService().isConnected()) {
+                User self = getService().getSessionUser();
+                muteItem.setIcon(self.isSelfMuted() ? R.drawable.ic_action_microphone_muted : R.drawable.ic_action_microphone);
+                deafenItem.setIcon(self.isSelfDeafened() ? R.drawable.ic_action_audio_muted : R.drawable.ic_action_audio);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 
         try {
             if(getService() != null) {
@@ -243,6 +240,10 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+
+        // Calling the parent class's implementation after setting proper drawables permits us to
+        // tint the mute and deafen icons.
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
