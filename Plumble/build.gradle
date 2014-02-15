@@ -55,8 +55,8 @@ android {
 
     productFlavors {
         official {
-            versionCode 55
-            versionName "3.0.0-beta3"
+            versionCode 56
+            versionName "3.0.0-beta4"
             packageName "com.morlunk.mumbleclient"
         }
 

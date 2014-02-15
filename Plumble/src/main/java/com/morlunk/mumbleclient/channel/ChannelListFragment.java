@@ -219,6 +219,8 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
         MenuItem muteItem = menu.findItem(R.id.menu_mute_button);
         MenuItem deafenItem = menu.findItem(R.id.menu_deafen_button);
 
@@ -240,10 +242,6 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-
-        // Calling the parent class's implementation after setting proper drawables permits us to
-        // tint the mute and deafen icons.
-        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
