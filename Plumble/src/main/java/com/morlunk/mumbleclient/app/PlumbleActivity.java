@@ -28,9 +28,13 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
+import android.media.AudioTrack;
+import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -557,8 +561,14 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             inputMethod = Constants.TRANSMIT_VOICE_ACTIVITY;
         if(Settings.ARRAY_INPUT_METHOD_PTT.equals(prefInputMethod))
             inputMethod = Constants.TRANSMIT_PUSH_TO_TALK;
-        if(Settings.ARRAY_INPUT_METHOD_CONTINUOUS.equals(prefInputMethod))
+        if(Settings.ARRAY_INPUT_METHOD_CONTINUOUS.equals(prefInputMethod) ||
+                Settings.ARRAY_INPUT_METHOD_HANDSET.equals(prefInputMethod))
             inputMethod = Constants.TRANSMIT_CONTINUOUS;
+
+        int audioSource = Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod()) ?
+                MediaRecorder.AudioSource.DEFAULT : MediaRecorder.AudioSource.MIC;
+        int audioStream = Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod()) ?
+                AudioManager.STREAM_VOICE_CALL : AudioManager.STREAM_MUSIC;
 
         String applicationVersion = "";
         try {
@@ -582,6 +592,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         connectIntent.putExtra(JumbleService.EXTRAS_FORCE_TCP, mSettings.isTcpForced());
         connectIntent.putExtra(JumbleService.EXTRAS_USE_TOR, mSettings.isTorEnabled());
         connectIntent.putStringArrayListExtra(JumbleService.EXTRAS_ACCESS_TOKENS, (ArrayList<String>) mDatabase.getAccessTokens(server.getId()));
+        connectIntent.putExtra(JumbleService.EXTRAS_AUDIO_SOURCE, audioSource);
+        connectIntent.putExtra(JumbleService.EXTRAS_AUDIO_STREAM, audioStream);
         connectIntent.setAction(JumbleService.ACTION_CONNECT);
         startService(connectIntent);
     }

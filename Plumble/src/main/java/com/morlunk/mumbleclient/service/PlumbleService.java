@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
@@ -51,6 +52,8 @@ import java.util.List;
  */
 public class PlumbleService extends JumbleService implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    /** Undocumented constant that permits a proximity-sensing wake lock. */
+    public static final int PROXIMITY_SCREEN_OFF_WAKE_LOCK = 32;
     public static final int TTS_THRESHOLD = 250; // Maximum number of characters to read
 
     public static final String BROADCAST_MUTE = "broadcast_mute";
@@ -71,6 +74,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     private View mHotCornerOverlay;
     /** Channel view overlay. */
     private PlumbleOverlay mChannelOverlay;
+    /** Proximity lock for handset mode. */
+    private PowerManager.WakeLock mProximityLock;
 
     private TextToSpeech mTTS;
     private TextToSpeech.OnInitListener mTTSInitListener = new TextToSpeech.OnInitListener() {
@@ -232,6 +237,11 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+
+        // Configure proximity sensor
+        if(Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod())) {
+            setProximitySensorOn(true);
+        }
     }
 
     @Override
@@ -251,6 +261,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             }
             mHotCornerEnabled = false;
         }
+
+        setProximitySensorOn(false);
 
         try {
             if(!getBinder().isReconnecting()) hideNotification();
@@ -351,8 +363,12 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
                 inputMethod = Constants.TRANSMIT_VOICE_ACTIVITY;
             if(Settings.ARRAY_INPUT_METHOD_PTT.equals(prefInputMethod))
                 inputMethod = Constants.TRANSMIT_PUSH_TO_TALK;
-            if(Settings.ARRAY_INPUT_METHOD_CONTINUOUS.equals(prefInputMethod))
+            if(Settings.ARRAY_INPUT_METHOD_CONTINUOUS.equals(prefInputMethod) ||
+                    Settings.ARRAY_INPUT_METHOD_HANDSET.equals(prefInputMethod))
                 inputMethod = Constants.TRANSMIT_CONTINUOUS;
+
+            setProximitySensorOn(Settings.ARRAY_INPUT_METHOD_HANDSET.equals(prefInputMethod));
+
             try {
                 getBinder().setTransmitMode(inputMethod);
             } catch (RemoteException e) {
@@ -468,5 +484,16 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
 
     public void hideNotification() {
         stopForeground(true);
+    }
+
+    private void setProximitySensorOn(boolean on) {
+        if(on) {
+            PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+            mProximityLock = pm.newWakeLock(PROXIMITY_SCREEN_OFF_WAKE_LOCK, "plumble_proximity");
+            mProximityLock.acquire();
+        } else {
+            if(mProximityLock != null) mProximityLock.release();
+            mProximityLock = null;
+        }
     }
 }

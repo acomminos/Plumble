@@ -31,14 +31,15 @@ import java.io.IOException;
  * @author morlunk
  */
 public class Settings {
-    public static final String PREF_CALL_MODE = "callMode";
-    public static final String ARRAY_CALL_MODE_SPEAKER = "speakerphone";
-    public static final String ARRAY_CALL_MODE_VOICE = "voice";
-
     public static final String PREF_INPUT_METHOD = "audioInputMethod";
+    /** Voice activity transmits depending on the amplitude of user input. */
     public static final String ARRAY_INPUT_METHOD_VOICE = "voiceActivity";
+    /** Push to talk transmits on command. */
     public static final String ARRAY_INPUT_METHOD_PTT = "ptt";
+    /** Continuous transmits always. */
     public static final String ARRAY_INPUT_METHOD_CONTINUOUS = "continuous";
+    /** Handset mode transmits always, using the proximity sensor and phone speaker. */
+    public static final String ARRAY_INPUT_METHOD_HANDSET = "handset";
 
     public static final String PREF_THRESHOLD = "vadThreshold";
     public static final int DEFAULT_THRESHOLD = 50;
@@ -124,10 +125,6 @@ public class Settings {
 
     public String getInputMethod() {
         return preferences.getString(PREF_INPUT_METHOD, ARRAY_INPUT_METHOD_VOICE);
-    }
-
-    public String getCallMode() {
-        return preferences.getString(PREF_CALL_MODE, ARRAY_CALL_MODE_SPEAKER);
     }
 
     public int getAudioQuality() {

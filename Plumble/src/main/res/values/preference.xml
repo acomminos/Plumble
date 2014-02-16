@@ -23,6 +23,7 @@
 	    <item>Voice Activity</item>
 	    <item>Push to Talk</item>
         <item>Continuous</item>
+        <item>Handset</item>
 	</string-array>
 	
 	<string-array
@@ -30,6 +31,7 @@
 	    <item>voiceActivity</item>
 	    <item>ptt</item>
         <item>continuous</item>
+        <item>handset</item>
 	</string-array>
 
     <string-array
@@ -111,8 +113,8 @@
 	<string name="certificatePassword">Certificate Password</string>
 	<string name="certificatePasswordSum">The password for your PKCS12 certificate. (optional)</string>
 	<string name="audioInput">Audio Input</string>
-	<string name="audioInputMethodSum">The way audio is sent to the server.</string>
-	<string name="audioInputMethod">Input Method</string>
+	<string name="audioInputMethodSum">The method of audio input.</string>
+	<string name="audioInputMethod">Transmit Mode</string>
     <string name="audioInputVolume">Microphone Volume</string>
     <string name="audioInputVolumeSum">Microphone volume multiplier used to artificially normalize audio.</string>
 	<string name="callMode">Call Mode</string>
