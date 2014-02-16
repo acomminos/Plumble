@@ -355,6 +355,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if(!isConnected()) return; // These properties should all be set on connect regardless.
+
         if(Settings.PREF_INPUT_METHOD.equals(key)) {
             /* Convert input method defined in settings to an integer format used by Jumble. */
             int inputMethod = 0;
