@@ -304,19 +304,16 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
             String targetMessage = null;
             boolean selfAuthored = false;
             try {
-                User actor = mService.getUser(message.getActor());
-                selfAuthored = actor != null && actor.getSession() == mService.getSession();
+                selfAuthored = message.getActor() == mService.getSession();
 
-                if(actor != null && (!message.getChannels().isEmpty() || !message.getTrees().isEmpty())) {
+                if((message.getChannels() != null && !message.getChannels().isEmpty()) || (message.getTrees() != null && !message.getTrees().isEmpty())) {
                     Channel currentChannel = message.getChannels().get(0);
-                    targetMessage = getContext().getString(R.string.chat_message_to, actor.getName(), currentChannel.getName());
-                } else if(actor != null && !message.getUsers().isEmpty()) {
+                    targetMessage = getContext().getString(R.string.chat_message_to, message.getActorName(), currentChannel.getName());
+                } else if(message.getUsers() != null && !message.getUsers().isEmpty()) {
                     User user = message.getUsers().get(0);
-                    targetMessage = getContext().getString(R.string.chat_message_to, actor.getName(), user.getName());
-                } else if(actor != null) {
-                    targetMessage = actor.getName();
+                    targetMessage = getContext().getString(R.string.chat_message_to, message.getActorName(), user.getName());
                 } else {
-                    targetMessage = getContext().getString(R.string.server);
+                    targetMessage = message.getActorName();
                 }
             } catch (RemoteException e) {
                 e.printStackTrace();
