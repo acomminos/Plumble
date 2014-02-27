@@ -39,10 +39,10 @@
         android:key="input_bitrate"
         android:title="@string/inputQuality"
         android:summary="@string/inputQualitySum"
-        multiplier="100"
-        max="960"
-        min="80"
-        android:defaultValue="40"
+        multiplier="1000"
+        max="96"
+        min="8"
+        android:defaultValue="4"
         android:text=" bps"/>
 
     <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
