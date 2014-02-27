@@ -172,7 +172,7 @@
     <!-- About -->
     <string name="about">About</string>
     <string name="aboutSum">Legal and acknowledgments</string>
-    <string name="copyright">Copyright &#169; Andrew Comminos 2013</string>
+    <string name="copyright">Copyright &#169; Andrew Comminos 2014</string>
     <string name="acknowledgements">Acknowledgments</string>
     <string name="acknowledgementsSum">See who contributed to Plumble</string>
     <string name="acknowledgements_link">https://raw.github.com/Morlunk/Plumble/master/THANKS</string>

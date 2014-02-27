@@ -166,7 +166,7 @@
     <!-- About -->
     <string name="about">Über</string>
     <string name="aboutSum">Rechtliches und Danksagungen</string>
-    <string name="copyright">Copyright &#169; Andrew Comminos 2013</string>
+    <string name="copyright">Copyright &#169; Andrew Comminos 2014</string>
     <string name="acknowledgements">Danksagungen</string>
     <string name="acknowledgementsSum">Sehen Sie wer zu Plumble beigetragen hat</string>
     <string name="acknowledgements_link">https://raw.github.com/Morlunk/Plumble/master/THANKS</string>
