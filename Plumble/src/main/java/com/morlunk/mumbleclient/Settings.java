@@ -113,7 +113,7 @@ public class Settings {
     public static final boolean DEFAULT_LOAD_IMAGES = true;
 
     public static final String PREF_FRAMES_PER_PACKET = "frames_per_packet";
-    public static final int DEFAULT_FRAMES_PER_PACKET = 2;
+    public static final int DEFAULT_FRAMES_PER_PACKET = 6;
 
     private final SharedPreferences preferences;
 

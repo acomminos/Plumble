@@ -42,7 +42,7 @@
         multiplier="1000"
         max="96"
         min="8"
-        android:defaultValue="4"
+        android:defaultValue="40"
         android:text=" bps"/>
 
     <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
@@ -50,7 +50,8 @@
         android:title="@string/framesPerPacket"
         android:summary="@string/framesPerPacketSum"
         max="6"
-        android:defaultValue="2"
+        min="1"
+        android:defaultValue="6"
         android:text=" frames"/>
 
     <PreferenceCategory android:title="@string/voiceActivitySettings"
