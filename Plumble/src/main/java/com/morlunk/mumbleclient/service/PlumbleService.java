@@ -269,6 +269,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+
+        stopSelf(); // Stop manual control of the service's lifecycle.
     }
 
     /**
