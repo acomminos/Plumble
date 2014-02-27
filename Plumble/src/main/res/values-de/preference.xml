@@ -130,7 +130,7 @@
     <string name="forceTcpSum">Ausschließlich TCP benutzten (und UDP ausschalten).</string>
     <string name="audio">Audio</string>
     <string name="audioSum">Audioeingabe und Audioausgabe anpassen.</string>
-    <string name="audioQuality">Audio Qualität</string>
+    <string name="audioSampleRate">Audio Qualität</string>
 	<string name="noCert">Kein Zertifikat</string>
 	<string name="rowheight">Zeilenhöhe in Kanalauswahl</string>
 	<string name="rowheightSum">Legt die Höhe einer Zeile in der Kanalauswahl fest.</string>

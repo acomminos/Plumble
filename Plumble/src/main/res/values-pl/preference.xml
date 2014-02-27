@@ -106,7 +106,7 @@
 	<string name="advancedAudio">Zaawansowane Ustawienia Dźwięku</string>
     <string name="forceTcp">Wymuś TCP</string>
     <string name="forceTcpSum">Definiuje czy wymuszać połączenie TCP (wyłącza UDP).</string>
-	<string name="audioQuality">Jakość dźwięku</string>
+	<string name="audioSampleRate">Jakość dźwięku</string>
 	<string name="noCert">Brak certyfikatu</string>
 	<string name="rowheight">Wysokość wiersza kanałów</string>
 	<string name="rowheightSum">Wysokość wiersza listy wyboru kanału.</string>

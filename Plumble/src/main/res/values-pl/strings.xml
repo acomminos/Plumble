@@ -54,7 +54,7 @@
     <string name="loading">Ładowanie…</string>
     <string name="reset_key">Resetuj</string>
     <string name="externalStorageUnavailable">Pamięć zewnętrzna jest niedostępna, nie można załadować certyfikatu</string>
-    <string name="audioQualitySum">Bitrate dźwięku, którego będzie używał Plumble (w kbit/s)</string>
+    <string name="audioSampleRateSum">Bitrate dźwięku, którego będzie używał Plumble (w kbit/s)</string>
     <string name="addFavorite">Dodaj do ulubionych</string>
     <string name="removeFavorite">Usuń z ulubionych</string>
     <string name="viewFavorites">Ulubione</string>

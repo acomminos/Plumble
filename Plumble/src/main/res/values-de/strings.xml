@@ -54,7 +54,7 @@
     <string name="loading">Lade…</string>
     <string name="reset_key">Keine Hardware Taste</string>
     <string name="externalStorageUnavailable">Externer Speicher nicht verfügbar, kann Zertifikat nicht laden</string>
-    <string name="audioQualitySum">Bevorzugte Audio-Bitrate</string>
+    <string name="audioSampleRateSum">Bevorzugte Audio-Bitrate</string>
     <string name="addFavorite">Favorit hinzufügen</string>
     <string name="removeFavorite">Favorit entfernen</string>
     <string name="viewFavorites">View Favorites</string>

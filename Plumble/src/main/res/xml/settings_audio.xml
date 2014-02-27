@@ -30,10 +30,28 @@
     <ListPreference
         android:key="input_quality"
         android:defaultValue="48000"
-        android:title="@string/audioQuality"
-        android:summary="@string/audioQualitySum"
-        android:entries="@array/audioInputQualityNames"
-        android:entryValues="@array/audioInputQualityValues"/>
+        android:title="@string/audioSampleRate"
+        android:summary="@string/audioSampleRateSum"
+        android:entries="@array/audioSampleRateNames"
+        android:entryValues="@array/audioSampleRateValues"/>
+
+    <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
+        android:key="input_bitrate"
+        android:title="@string/inputQuality"
+        android:summary="@string/inputQualitySum"
+        multiplier="100"
+        max="960"
+        min="80"
+        android:defaultValue="40"
+        android:text=" bps"/>
+
+    <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
+        android:key="frames_per_packet"
+        android:title="@string/framesPerPacket"
+        android:summary="@string/framesPerPacketSum"
+        max="6"
+        android:defaultValue="2"
+        android:text=" frames"/>
 
     <PreferenceCategory android:title="@string/voiceActivitySettings"
         android:key="vad_settings">
@@ -41,7 +59,7 @@
             multiplier="0.1"
             android:defaultValue="50"
             android:key="vadThreshold"
-            android:max="100"
+            max="100"
             android:summary="@string/detectionThresholdSum"
             android:title="@string/detectionThreshold"/>
     </PreferenceCategory>
@@ -77,17 +95,9 @@
             android:title="@string/audioInputVolume"
             android:summary="@string/audioInputVolumeSum"
             android:key="inputVolume"
-            android:max="200"
+            max="200"
             android:defaultValue="100"
             android:text="%"/>
-
-        <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
-            android:title="@string/framesPerPacket"
-            android:summary="@string/framesPerPacketSum"
-            android:key="frames_per_packet"
-            android:max="6"
-            android:defaultValue="2"
-            android:text=" frames"/>
 
         <!-- TODO: REIMPLEMENT -->
         <!--

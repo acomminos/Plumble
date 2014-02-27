@@ -33,7 +33,6 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.text.InputType;
 import android.widget.EditText;
@@ -215,7 +214,7 @@ public class Preferences extends PreferenceActivity {
         });
 
         // Scan each bitrate and determine if the device supports it
-        ListPreference inputQualityPreference = (ListPreference) screen.findPreference(Settings.PREF_INPUT_QUALITY);
+        ListPreference inputQualityPreference = (ListPreference) screen.findPreference(Settings.PREF_INPUT_RATE);
         String[] bitrateNames = new String[inputQualityPreference.getEntries().length];
         for(int x=0;x<inputQualityPreference.getEntries().length;x++) {
             int bitrate = Integer.parseInt(inputQualityPreference.getEntryValues()[x].toString());

@@ -54,7 +54,7 @@
     <string name="loading">Loading…</string>
     <string name="reset_key">Reset Key</string>
     <string name="externalStorageUnavailable">External storage unavailable, cannot load certificate</string>
-    <string name="audioQualitySum">The preferred audio bitrate. Not all bitrates are supported by all devices.</string>
+    <string name="audioSampleRateSum">The preferred audio sample rate. Not all rates are supported by all devices.</string>
     <string name="addFavorite">Add Favorite</string>
     <string name="removeFavorite">Remove Favorite</string>
     <string name="viewFavorites">View Favorites</string>
@@ -229,4 +229,6 @@
     <string name="certificate_not_valid">Could not load certificate \'%s\'!</string>
     <string name="invalid_password">Invalid password.</string>
     <string name="send_message">Send message</string>
+    <string name="inputQuality">Input Quality</string>
+    <string name="inputQualitySum">The target input quality in bps.</string>
 </resources>

@@ -35,7 +35,7 @@
 	</string-array>
 
     <string-array
-        name="audioInputQualityNames">
+        name="audioSampleRateNames">
         <!-- Experimental -->
         <item>128000Hz (experimental)</item>
         <item>96000Hz (experimental)</item>
@@ -50,7 +50,7 @@
     </string-array>
 
     <string-array
-        name="audioInputQualityValues">
+        name="audioSampleRateValues">
         <!-- Experimental -->
         <item>128000</item>
         <item>96000</item>
@@ -136,7 +136,7 @@
     <string name="forceTcpSum">Whether to force TCP (disable UDP) communications.</string>
 	<string name="audio">Audio</string>
 	<string name="audioSum">Adjust audio input and output</string>
-	<string name="audioQuality">Input Quality</string>
+	<string name="audioSampleRate">Input Sample Rate</string>
 	<string name="noCert">No Certificate</string>
 	<string name="rowheight">Channel Row Height</string>
 	<string name="rowheightSum">The height of a row in channel selection.</string>
@@ -168,7 +168,7 @@
     <string name="autoReconnectSum">Automatically try to re-establish a connection when the server connection is lost.</string>
     <string name="useTor">Connect via Tor</string>
     <string name="useTorSum">Requires Orbot app</string>
-    <string name="framesPerPacket">Frames per packet</string>
+    <string name="framesPerPacket">Frames per Packet</string>
     <string name="framesPerPacketSum">The number of audio frames per packet. A higher value results in less CPU usage and stuttering, but more latency.</string>
 
     <!-- About -->

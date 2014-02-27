@@ -61,8 +61,11 @@ public class Settings {
     public static final String PREF_PTT_TOGGLE = "togglePtt";
     public static final Boolean DEFAULT_PTT_TOGGLE = false;
 
-    public static final String PREF_INPUT_QUALITY = "input_quality";
-    public static final String DEFAULT_QUALITY = "48000";
+    public static final String PREF_INPUT_RATE = "input_quality";
+    public static final String DEFAULT_RATE = "48000";
+
+    public static final String PREF_INPUT_QUALITY = "input_bitrate";
+    public static final int DEFAULT_INPUT_QUALITY = 40000;
 
     public static final String PREF_AMPLITUDE_BOOST = "inputVolume";
     public static final Integer DEFAULT_AMPLITUDE_BOOST = 100;
@@ -130,8 +133,12 @@ public class Settings {
         return preferences.getString(PREF_INPUT_METHOD, ARRAY_INPUT_METHOD_VOICE);
     }
 
-    public int getAudioQuality() {
-        return Integer.parseInt(preferences.getString(Settings.PREF_INPUT_QUALITY, DEFAULT_QUALITY));
+    public int getInputSampleRate() {
+        return Integer.parseInt(preferences.getString(Settings.PREF_INPUT_RATE, DEFAULT_RATE));
+    }
+
+    public int getInputQuality() {
+        return preferences.getInt(Settings.PREF_INPUT_QUALITY, DEFAULT_INPUT_QUALITY);
     }
 
     public float getAmplitudeBoostMultiplier() {
