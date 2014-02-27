@@ -168,6 +168,8 @@
     <string name="autoReconnectSum">Automatically try to re-establish a connection when the server connection is lost.</string>
     <string name="useTor">Connect via Tor</string>
     <string name="useTorSum">Requires Orbot app</string>
+    <string name="framesPerPacket">Frames per packet</string>
+    <string name="framesPerPacketSum">The number of audio frames per packet. A higher value results in less CPU usage and stuttering, but more latency.</string>
 
     <!-- About -->
     <string name="about">About</string>

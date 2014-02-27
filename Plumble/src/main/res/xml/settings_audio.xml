@@ -81,6 +81,14 @@
             android:defaultValue="100"
             android:text="%"/>
 
+        <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
+            android:title="@string/framesPerPacket"
+            android:summary="@string/framesPerPacketSum"
+            android:key="frames_per_packet"
+            android:max="6"
+            android:defaultValue="2"
+            android:text=" frames"/>
+
         <!-- TODO: REIMPLEMENT -->
         <!--
         <ListPreference

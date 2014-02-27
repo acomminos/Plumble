@@ -594,6 +594,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         connectIntent.putStringArrayListExtra(JumbleService.EXTRAS_ACCESS_TOKENS, (ArrayList<String>) mDatabase.getAccessTokens(server.getId()));
         connectIntent.putExtra(JumbleService.EXTRAS_AUDIO_SOURCE, audioSource);
         connectIntent.putExtra(JumbleService.EXTRAS_AUDIO_STREAM, audioStream);
+        connectIntent.putExtra(JumbleService.EXTRAS_FRAMES_PER_PACKET, mSettings.getFramesPerPacket());
         connectIntent.setAction(JumbleService.ACTION_CONNECT);
         startService(connectIntent);
     }

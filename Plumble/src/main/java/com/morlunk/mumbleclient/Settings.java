@@ -109,6 +109,9 @@ public class Settings {
     public static final String PREF_LOAD_IMAGES = "load_images";
     public static final boolean DEFAULT_LOAD_IMAGES = true;
 
+    public static final String PREF_FRAMES_PER_PACKET = "frames_per_packet";
+    public static final int DEFAULT_FRAMES_PER_PACKET = 2;
+
     private final SharedPreferences preferences;
 
     private static Settings settings;
@@ -256,5 +259,9 @@ public class Settings {
 
     public void setFirstRun(boolean run) {
         preferences.edit().putBoolean(PREF_FIRST_RUN, run).commit();
+    }
+
+    public int getFramesPerPacket() {
+        return preferences.getInt(PREF_FRAMES_PER_PACKET, DEFAULT_FRAMES_PER_PACKET);
     }
 }
