@@ -78,7 +78,6 @@ public class ChannelUserWindow extends PopupWindow implements GridView.OnItemCli
     private FragmentManager mFragmentManager;
     private User mUser;
     private ChatTargetProvider mTargetProvider;
-    private List<ChannelMenuItem> mItems;
     private GridView mGridView;
 
     private Animation mSlideInAnimation;
@@ -88,8 +87,7 @@ public class ChannelUserWindow extends PopupWindow implements GridView.OnItemCli
     private JumbleObserver mPermissionObserver = new JumbleObserver() {
         @Override
         public void onChannelPermissionsUpdated(Channel channel) throws RemoteException {
-            mItems = configureMenu(); // Reconfigure menu to account for new permissions
-            mGridView.setAdapter(new PopupGridMenuAdapter(mContext, mItems));
+            configureMenu(); // Reconfigure menu to account for new permissions
         }
     };
 
@@ -100,21 +98,12 @@ public class ChannelUserWindow extends PopupWindow implements GridView.OnItemCli
         mUser = user;
         mTargetProvider = targetProvider;
 
-        try {
-            mService.registerObserver(mPermissionObserver);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        mItems = configureMenu();
-
         mSlideInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.slide_down);
         mSlideOutAnimation = AnimationUtils.loadAnimation(mContext, R.anim.slide_up);
 
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View menuView = inflater.inflate(R.layout.popup_menu, null, false);
         mGridView = (GridView) menuView.findViewById(R.id.user_menu_grid);
-        mGridView.setAdapter(new PopupGridMenuAdapter(mContext, mItems));
         mGridView.setOnItemClickListener(this);
 
         setContentView(menuView);
@@ -152,10 +141,10 @@ public class ChannelUserWindow extends PopupWindow implements GridView.OnItemCli
             public boolean onTouch(View v, MotionEvent event) {
                 Rect rect = new Rect();
                 v.getHitRect(rect);
-                if(event.getAction() == MotionEvent.ACTION_DOWN &&
-                        !rect.contains((int)event.getX(), (int)event.getY())) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN &&
+                        !rect.contains((int) event.getX(), (int) event.getY())) {
                     // Make sure we only play the animation once.
-                    if(getContentView().getAnimation() == null ||
+                    if (getContentView().getAnimation() == null ||
                             getContentView().getAnimation().hasEnded())
                         getContentView().startAnimation(mSlideOutAnimation); // Dismiss is done after animation, see above.
                     return true;
@@ -164,31 +153,63 @@ public class ChannelUserWindow extends PopupWindow implements GridView.OnItemCli
             }
         });
 
-        // Unregister listener on dismiss
-        setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                try {
-                    mService.unregisterObserver(mPermissionObserver);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        configureMenu();
     }
 
     @Override
     public void showAsDropDown(View anchor) {
+        super.showAsDropDown(anchor);
         // We only slide down the view inside of the PopupWindow so it clips to the PopupWindow.
         getContentView().startAnimation(mSlideInAnimation);
-        super.showAsDropDown(anchor);
+        try {
+            mService.registerObserver(mPermissionObserver);
+            updateChannelPermissions();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void showAtLocation(View parent, int gravity, int x, int y) {
+        super.showAtLocation(parent, gravity, x, y);
+        try {
+            mService.registerObserver(mPermissionObserver);
+            updateChannelPermissions();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        try {
+            mService.unregisterObserver(mPermissionObserver);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Asks the server for the current channel permissions if we don't have any.
+     * @return true if we asked the server for permissions.
+     */
+    private boolean updateChannelPermissions() throws RemoteException {
+        Channel channel = mService.getChannel(mUser.getChannelId());
+        int channelPermissions = channel.getPermissions();
+        if(channelPermissions == 0) {
+            // We'll create the menu once we get the proper permissions.
+            mService.requestPermissions(channel.getId());
+            return true;
+        }
+        return false;
     }
 
     /**
      * Configures the menu for the provided user, enabling allowed features and disabling/hiding others.
+     * Sets up the grid adapter and its items.
      */
-    private List<ChannelMenuItem> configureMenu() throws RemoteException {
-        // TODO: maybe make these all class members, there's no point in re-instantiating every time we want to make a menu.
+    private void configureMenu() throws RemoteException {
         List<ChannelMenuItem> menuItems = new ArrayList<ChannelMenuItem>();
         ChannelMenuItem kickItem = new ChannelMenuItem(KICK_ID, mContext.getString(R.string.user_menu_kick), R.drawable.ic_action_delete_dark);
         ChannelMenuItem banItem = new ChannelMenuItem(BAN_ID, mContext.getString(R.string.user_menu_ban), R.drawable.ic_action_error);
@@ -239,15 +260,7 @@ public class ChannelUserWindow extends PopupWindow implements GridView.OnItemCli
 
         Channel channel = mService.getChannel(mUser.getChannelId());
         int channelPermissions = channel.getPermissions();
-
-        if(channelPermissions == 0) {
-            mService.requestPermissions(channel.getId());
-            if(channel.getId() == 0)
-                channelPermissions = mService.getPermissions();
-            else
-                channelPermissions = Permissions.All;
-            channel.setPermissions(channelPermissions);
-        }
+        if(channel.getId() == 0) channelPermissions = mService.getPermissions();
 
         muteItem.enabled = ((channelPermissions & (Permissions.Write | Permissions.MuteDeafen)) > 0 && ((mUser.getSession() != mService.getSession()) || mUser.isMuted() || mUser.isSuppressed()));
         deafItem.enabled = ((channelPermissions & (Permissions.Write | Permissions.MuteDeafen)) > 0 && ((mUser.getSession() != mService.getSession()) || mUser.isDeafened()));
@@ -271,7 +284,7 @@ public class ChannelUserWindow extends PopupWindow implements GridView.OnItemCli
         ignoreMessagesItem.toggled = mUser.isLocalIgnored();
         sendMessageItem.toggled = mTargetProvider.getChatTarget() != null && mTargetProvider.getChatTarget().getUser() != null ? mTargetProvider.getChatTarget().getUser().getSession() == mUser.getSession() : false;
 
-        return menuItems;
+        mGridView.setAdapter(new PopupGridMenuAdapter(mContext, menuItems));
     }
 
     @Override
