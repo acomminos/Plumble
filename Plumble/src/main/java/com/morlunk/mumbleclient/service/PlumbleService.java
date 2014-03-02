@@ -151,7 +151,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
                 String formattedMessage = actorName + ": " + strippedMessage;
                 mUnreadMessages.add(formattedMessage);
 
-                if(mSettings.isChatNotifyEnabled()) {
+                if(mSettings.isChatNotifyEnabled() && mStatusNotificationBuilder != null) {
                     // Set the ticker to be the last message received
                     mStatusNotificationBuilder.setTicker(mUnreadMessages.get(mUnreadMessages.size() - 1));
                     updateNotificationState();
