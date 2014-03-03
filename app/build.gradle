@@ -32,8 +32,8 @@ repositories {
 }
 
 dependencies {
-    compile project("libraries:Jumble")
-    compile project("libraries:libonionkit:libonionkit")
+    compile project(":libraries:Jumble")
+    compile project(":libraries:libonionkit:libonionkit")
     compile 'com.android.support:support-v4:19.0.+'
     compile 'com.android.support:appcompat-v7:19.0.+'
     compile 'com.google.guava:guava:15.+'
@@ -77,10 +77,4 @@ android {
     lintOptions {
         abortOnError false
     }
-}
-
-// Add Jumble's built native libs - hack
-tasks.withType(com.android.build.gradle.tasks.PackageApplication) { pkgTask ->
-    pkgTask.jniFolders = new HashSet<File>()
-    pkgTask.jniFolders.add(new File(project("libraries:Jumble").buildDir, 'native-libs'))
 }

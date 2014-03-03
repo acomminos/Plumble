@@ -17,4 +17,4 @@
 
 
 
-include ':Plumble',':Plumble:libraries:libonionkit:libonionkit',':Plumble:libraries:Jumble'
+include ':libraries:libonionkit:libonionkit', ':libraries:Jumble', ':app'

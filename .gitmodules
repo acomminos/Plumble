@@ -1,6 +1,6 @@
-[submodule "Plumble/libraries/Jumble"]
-	path = Plumble/libraries/Jumble
+[submodule "libraries/Jumble"]
+	path = libraries/Jumble
 	url = https://www.github.com/Morlunk/Jumble.git
-[submodule "Plumble/libraries/libonionkit"]
-	path = Plumble/libraries/libonionkit
+[submodule "libraries/libonionkit"]
+	path = libraries/libonionkit
 	url = https://www.github.com/Morlunk/OnionKit.git

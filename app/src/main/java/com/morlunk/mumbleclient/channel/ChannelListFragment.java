@@ -19,19 +19,14 @@ package com.morlunk.mumbleclient.channel;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.PorterDuff;
-import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.RemoteException;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.PopupMenu;
@@ -40,22 +35,10 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
@@ -68,9 +51,6 @@ import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedChildClickListener;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedGroupClickListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ChannelListFragment extends JumbleServiceFragment implements OnNestedChildClickListener, OnNestedGroupClickListener, ChannelListAdapter.ChannelMenuListener, CommentFragment.CommentFragmentListener {
 

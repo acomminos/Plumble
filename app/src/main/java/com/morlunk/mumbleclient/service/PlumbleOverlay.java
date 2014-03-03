@@ -28,7 +28,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.net.JumbleObserver;
