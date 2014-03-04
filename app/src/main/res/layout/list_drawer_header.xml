@@ -33,9 +33,4 @@
             android:textStyle="bold"
             android:textSize="12sp"
             android:layout_gravity="left|center_vertical"/>
-
-    <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="?android:textColorSecondaryInverse"/>
 </LinearLayout>

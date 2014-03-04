@@ -29,6 +29,8 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.net.Permissions;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.util.JumbleServiceProvider;
 
@@ -62,6 +64,20 @@ public class ChannelEditFragment extends DialogFragment {
         mDescriptionField = (TextView) view.findViewById(R.id.channel_edit_description);
         mPositionField = (TextView) view.findViewById(R.id.channel_edit_position);
         mTemporaryBox = (CheckBox) view.findViewById(R.id.channel_edit_temporary);
+
+        try {
+            // If we can only make temporary channels, remove the option.
+            Channel parentChannel = mServiceProvider.getService().getChannel(getParent());
+            int combinedPermissions = mServiceProvider.getService().getPermissions() | parentChannel.getPermissions();
+            boolean canMakeChannel = (combinedPermissions & Permissions.MakeChannel) > 0;
+            boolean canMakeTempChannel = (combinedPermissions & Permissions.MakeTempChannel) > 0;
+            boolean onlyTemp = canMakeTempChannel && !canMakeChannel;
+            mTemporaryBox.setChecked(onlyTemp);
+            mTemporaryBox.setEnabled(!onlyTemp);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
         return new AlertDialog.Builder(getActivity())
                 .setTitle(isAdding() ? R.string.channel_add : R.string.channel_edit)
                 .setView(view)
