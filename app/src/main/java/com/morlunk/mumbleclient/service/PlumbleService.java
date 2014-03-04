@@ -365,9 +365,9 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             String prefInputMethod = mSettings.getInputMethod();
             if(Settings.ARRAY_INPUT_METHOD_VOICE.equals(prefInputMethod))
                 inputMethod = Constants.TRANSMIT_VOICE_ACTIVITY;
-            if(Settings.ARRAY_INPUT_METHOD_PTT.equals(prefInputMethod))
+            else if(Settings.ARRAY_INPUT_METHOD_PTT.equals(prefInputMethod))
                 inputMethod = Constants.TRANSMIT_PUSH_TO_TALK;
-            if(Settings.ARRAY_INPUT_METHOD_CONTINUOUS.equals(prefInputMethod) ||
+            else if(Settings.ARRAY_INPUT_METHOD_CONTINUOUS.equals(prefInputMethod) ||
                     Settings.ARRAY_INPUT_METHOD_HANDSET.equals(prefInputMethod))
                 inputMethod = Constants.TRANSMIT_CONTINUOUS;
 
