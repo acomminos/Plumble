@@ -28,6 +28,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.SearchView;
@@ -46,13 +47,14 @@ import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.net.JumbleObserver;
 import com.morlunk.jumble.net.Permissions;
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.channel.comment.ChannelDescriptionFragment;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedChildClickListener;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedGroupClickListener;
 
-public class ChannelListFragment extends JumbleServiceFragment implements OnNestedChildClickListener, OnNestedGroupClickListener, ChannelListAdapter.ChannelMenuListener, CommentFragment.CommentFragmentListener {
+public class ChannelListFragment extends JumbleServiceFragment implements OnNestedChildClickListener, OnNestedGroupClickListener, ChannelListAdapter.ChannelMenuListener {
 
 	private IJumbleObserver mServiceObserver = new JumbleObserver() {
         @Override
@@ -375,6 +377,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         //menu.getMenu().findItem(R.id.menu_channel_add).setVisible((permissions & (Permissions.MakeChannel | Permissions.MakeTempChannel)) > 0);
         menu.getMenu().findItem(R.id.menu_channel_edit).setVisible((permissions & Permissions.Write) > 0);
         menu.getMenu().findItem(R.id.menu_channel_remove).setVisible((permissions & Permissions.Write) > 0);
+        menu.getMenu().findItem(R.id.menu_channel_view_description).setVisible(channel.getDescription() != null || channel.getDescriptionHash() != null);
 
         menu.show();
     }
@@ -393,15 +396,6 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
     private boolean isShowingPinnedChannels() {
         return getArguments().getBoolean("pinned");
-    }
-
-    @Override
-    public void onCommentChanged(int session, String comment) {
-        try {
-            getService().setUserComment(session, comment);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     private class ChannelPopupMenuListener implements PopupMenu.OnMenuItemClickListener {
@@ -443,6 +437,14 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
                     });
                     adb.setNegativeButton(android.R.string.cancel, null);
                     adb.show();
+                    return true;
+                case R.id.menu_channel_view_description:
+                    Bundle commentArgs = new Bundle();
+                    commentArgs.putInt("channel", mChannel.getId());
+                    commentArgs.putString("comment", mChannel.getDescription());
+                    commentArgs.putBoolean("editing", false);
+                    ChannelDescriptionFragment commentFragment = (ChannelDescriptionFragment) Fragment.instantiate(getActivity(), ChannelDescriptionFragment.class.getName(), commentArgs);
+                    commentFragment.show(getChildFragmentManager(), ChannelDescriptionFragment.class.getName());
                     return true;
                 case R.id.menu_channel_send_message:
                     if(mTargetProvider.getChatTarget() != null &&

@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.morlunk.mumbleclient.channel;
+package com.morlunk.mumbleclient.channel.comment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,40 +30,39 @@ import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.TabHost;
 
+import com.morlunk.jumble.IJumbleObserver;
+import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.JumbleService;
+import com.morlunk.jumble.net.JumbleObserver;
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.util.JumbleServiceProvider;
 
 /**
  * Fragment to change your comment using basic WYSIWYG tools.
  * Created by andrew on 10/08/13.
  */
-public class CommentFragment extends DialogFragment {
+public abstract class AbstractCommentFragment extends DialogFragment {
 
-    public interface CommentFragmentListener {
-        public void onCommentChanged(int session, String comment);
-    }
-
-    private CommentFragmentListener mListener;
     private TabHost mTabHost;
     private WebView mCommentView;
     private EditText mCommentEdit;
+    private JumbleServiceProvider mProvider;
+    private String mComment;
 
-    public static CommentFragment newInstance(int session, String comment, boolean editing) {
-        CommentFragment fragment = new CommentFragment();
-        Bundle args = new Bundle();
-        args.putInt("session", session);
-        args.putString("comment", comment);
-        args.putBoolean("editing", editing);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mComment = getArguments().getString("comment");
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
         try {
-            mListener = (CommentFragmentListener) getParentFragment();
+            mProvider = (JumbleServiceProvider) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(getParentFragment().toString() + " must implement CommentFragmentListener");
+            throw new RuntimeException(activity.getClass().getName() + " must implement JumbleServiceProvider!");
         }
     }
 
@@ -72,11 +72,21 @@ public class CommentFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_comment, null, false);
 
         mCommentView = (WebView) view.findViewById(R.id.comment_view);
-        mCommentView.loadData(getComment(), "text/html", "UTF-8");
         mCommentEdit = (EditText) view.findViewById(R.id.comment_edit);
 
         mTabHost = (TabHost) view.findViewById(R.id.comment_tabhost);
         mTabHost.setup();
+
+        if(mComment == null) {
+            mCommentView.loadData("Loading...", null, null);
+            try {
+                requestComment(mProvider.getService());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        } else {
+            loadComment(mComment);
+        }
 
         TabHost.TabSpec viewTab = mTabHost.newTabSpec("View");
         viewTab.setIndicator(getString(R.string.comment_view));
@@ -97,7 +107,7 @@ public class CommentFragment extends DialogFragment {
                     mCommentView.loadData(mCommentEdit.getText().toString(), "text/html", "UTF-8");
                 } else if("Edit".equals(tabId) && "".equals(mCommentEdit.getText().toString())) {
                     // Load edittext content for the first time when the tab is selected, to improve performance with long messages.
-                    mCommentEdit.setText(getComment());
+                    mCommentEdit.setText(mComment);
                 }
             }
         });
@@ -110,7 +120,11 @@ public class CommentFragment extends DialogFragment {
             adb.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    mListener.onCommentChanged(getSession(), mCommentEdit.getText().toString());
+                    try {
+                        editComment(mProvider.getService(), mCommentEdit.getText().toString());
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }
@@ -118,15 +132,27 @@ public class CommentFragment extends DialogFragment {
         return adb.create();
     }
 
-    public int getSession() {
-        return getArguments().getInt("session");
-    }
-
-    public String getComment() {
-        return getArguments().getString("comment");
+    protected void loadComment(String comment) {
+        if(mCommentView == null) return;
+        mCommentView.loadData(comment, "text/html", "UTF-8");
+        mComment = comment;
     }
 
     public boolean isEditing() {
         return getArguments().getBoolean("editing");
     }
+
+    /**
+     * Requests a comment from the service. Will not be called if we already have a comment provided.
+     * This method is expected to set a callback that will call {@link com.morlunk.mumbleclient.channel.comment.AbstractCommentFragment#loadComment(String comment)}.
+     * @param service The bound Jumble service to use for remote calls.
+     */
+    public abstract void requestComment(IJumbleService service) throws RemoteException;
+
+    /**
+     * Asks the service to replace the comment.
+     * @param service The bound Jumble service to use for remote calls.
+     * @param comment The comment the user has defined.
+     */
+    public abstract void editComment(IJumbleService service, String comment) throws RemoteException;
 }

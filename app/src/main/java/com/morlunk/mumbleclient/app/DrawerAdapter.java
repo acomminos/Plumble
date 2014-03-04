@@ -143,8 +143,8 @@ public class DrawerAdapter extends ArrayAdapter<DrawerAdapter.DrawerRow> {
 
             // Set text and icon color+alpha based on enabled/disabled state
             int textColor = title.getCurrentTextColor();
-            textColor &= ~(0xFF << 60); // Clear alpha bits
-            textColor |= enabled ? 0xFF << 60 : 0x55 << 60; // Set alpha bits depending on whether the state is enabled or disabled
+            textColor &= 0x00FFFFFF; // Clear alpha bits
+            textColor |= enabled ? 0xFF000000 : 0x55000000; // Set alpha bits depending on whether the state is enabled or disabled
             title.setTextColor(textColor);
             icon.setColorFilter(textColor, PorterDuff.Mode.MULTIPLY);
 

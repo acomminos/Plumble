@@ -24,8 +24,10 @@ import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -49,6 +51,8 @@ import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.net.JumbleObserver;
 import com.morlunk.jumble.net.Permissions;
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.channel.comment.AbstractCommentFragment;
+import com.morlunk.mumbleclient.channel.comment.UserCommentFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -378,29 +382,12 @@ public class ChannelUserWindow extends PopupWindow implements GridView.OnItemCli
     }
 
     private void showUserComment(final boolean edit) {
-        if(mUser.getCommentHash() != null && mUser.getComment() == null) {
-            try {
-                final ProgressDialog dialog = ProgressDialog.show(mContext, null, mContext.getString(R.string.loading), true, true);
-                // Send a RequestBlob to the server to ask for the comment. Register a listener to show the edit dialog when we get the response.
-                mService.registerObserver(new JumbleObserver() {
-                    @Override
-                    public void onUserStateUpdated(User user) throws RemoteException {
-                        if(user.getSession() == mUser.getSession() && user.getComment() != null) {
-                            mService.unregisterObserver(this); // TODO if we don't get a response find a way to unregister this anyway
-                            dialog.dismiss();
-                            showUserComment(edit);
-                        }
-                    }
-                });
-                mService.requestComment(mUser.getSession());
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-
-        } else {
-            CommentFragment editCommentFragment = CommentFragment.newInstance(mUser.getSession(), mUser.getComment(), edit);
-            editCommentFragment.show(mFragmentManager, CommentFragment.class.getName());
-        }
+        Bundle args = new Bundle();
+        args.putInt("session", mUser.getSession());
+        args.putString("comment", mUser.getComment());
+        args.putBoolean("editing", edit);
+        UserCommentFragment fragment = (UserCommentFragment) Fragment.instantiate(mContext, UserCommentFragment.class.getName(), args);
+        fragment.show(mFragmentManager, UserCommentFragment.class.getName());
     }
 
     private void showChannelMoveDialog() throws RemoteException {

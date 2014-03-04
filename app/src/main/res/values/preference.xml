@@ -170,6 +170,8 @@
     <string name="useTorSum">Requires Orbot app</string>
     <string name="framesPerPacket">Frames per Packet</string>
     <string name="framesPerPacketSum">The number of audio frames per packet. A higher value results in less CPU usage and stuttering, but more latency.</string>
+    <string name="inputQuality">Input Quality</string>
+    <string name="inputQualitySum">The target input quality in bps.</string>
 
     <!-- About -->
     <string name="about">About</string>
