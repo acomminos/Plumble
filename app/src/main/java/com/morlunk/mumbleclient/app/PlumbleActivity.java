@@ -53,6 +53,7 @@ import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.net.JumbleObserver;
+import com.morlunk.jumble.util.MumbleURLParser;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.channel.AccessTokenFragment;
@@ -72,6 +73,7 @@ import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.util.JumbleServiceProvider;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -81,7 +83,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
     /** Broadcasted when the activity gains focus. Used to dismiss chat notifications, bit of a hack. */
     public static final String ACTION_PLUMBLE_SHOWN = "com.morlunk.mumbleclient.ACTION_PLUMBLE_SHOWN";
-    public static final Pattern MUMBLE_URL_REGEX = Pattern.compile("mumble://((.+)(:.+)?@)?(.+?)(:([0-9]+))?/");
     public static final int RECONNECT_DELAY = 10000;
 
     private static final String SAVED_FRAGMENT_TAG = "fragment";
@@ -265,26 +266,19 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         if(getIntent() != null &&
                 Intent.ACTION_VIEW.equals(getIntent().getAction())) {
             String url = getIntent().getDataString();
-            Matcher matcher = MUMBLE_URL_REGEX.matcher(url);
-            if(!matcher.find()) {
+            try {
+                Server server = MumbleURLParser.parseURL(url);
+
+                // Open a dialog prompting the user to add the Mumble server.
+                Bundle args = new Bundle();
+                args.putBoolean("save", false);
+                args.putParcelable("server", server);
+                ServerEditFragment fragment = (ServerEditFragment) ServerEditFragment.instantiate(this, ServerEditFragment.class.getName(), args);
+                fragment.show(getSupportFragmentManager(), "url_edit");
+            } catch (MalformedURLException e) {
                 Toast.makeText(this, getString(R.string.mumble_url_parse_failed), Toast.LENGTH_LONG).show();
-                return;
+                e.printStackTrace();
             }
-
-            // Any optional fields that failed to match will return null.
-            final String username = matcher.group(2);
-            final String password = matcher.group(3);
-            final String host = matcher.group(4);
-            final String port = matcher.group(6);
-
-            Server server = new Server(-1, "", host, Integer.valueOf(port), username, password);
-
-            // Open a dialog prompting the user to add the Mumble server.
-            Bundle args = new Bundle();
-            args.putBoolean("save", false);
-            args.putParcelable("server", server);
-            ServerEditFragment fragment = (ServerEditFragment) ServerEditFragment.instantiate(this, ServerEditFragment.class.getName(), args);
-            fragment.show(getSupportFragmentManager(), "url_edit");
         }
         if(mSettings.isFirstRun()) showSetupWizard();
     }
