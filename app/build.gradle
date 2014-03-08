@@ -22,7 +22,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.8.+'
+        classpath 'com.android.tools.build:gradle:0.9.+'
     }
 }
 apply plugin: 'android'
@@ -36,7 +36,7 @@ dependencies {
     compile project(":libraries:libonionkit:libonionkit")
     compile 'com.android.support:support-v4:19.0.+'
     compile 'com.android.support:appcompat-v7:19.0.+'
-    compile 'com.google.guava:guava:15.+'
+    compile 'com.google.guava:guava:16.+'
 }
 
 
@@ -46,7 +46,7 @@ if(signingFile.exists()) apply from: 'signing.gradle'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.1"
+    buildToolsVersion "19.0.3"
 
     defaultConfig {
         minSdkVersion 9
