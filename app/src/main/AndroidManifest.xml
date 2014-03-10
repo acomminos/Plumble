@@ -38,11 +38,6 @@
         android:theme="@style/Theme.Plumble"
         android:allowBackup="true">
 
-        <!--<provider-->
-            <!--android:name=".channel.ChannelSearchProvider"-->
-            <!--android:authorities="com.morlunk.mumbleclient.channel.ChannelSearchProvider"-->
-            <!--android:exported="false" />-->
-
         <activity android:name=".wizard.WizardActivity"/>
 
         <activity android:name=".preference.Preferences"

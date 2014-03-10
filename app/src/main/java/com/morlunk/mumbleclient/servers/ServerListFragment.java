@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.PopupMenu;
@@ -41,10 +42,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.morlunk.jumble.model.Server;
+import com.morlunk.mumbleclient.BuildConfig;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
 import com.morlunk.mumbleclient.db.PublicServer;
+
+import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.List;
@@ -94,6 +98,17 @@ public class ServerListFragment extends Fragment implements OnItemClickListener 
 		mServerGrid = (GridView) view.findViewById(R.id.server_list_grid);
 		mServerGrid.setOnItemClickListener(this);
         mServerGrid.setEmptyView(view.findViewById(R.id.server_list_grid_empty));
+
+        TextView donateText = (TextView) view.findViewById(R.id.donate_box);
+        donateText.setVisibility(BuildConfig.DONATE_NAG ? View.VISIBLE : View.GONE);
+        donateText.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent playIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.morlunk.mumbleclient"));
+                startActivity(playIntent);
+            }
+        });
+
 		registerForContextMenu(mServerGrid);
 		return view;
 	}

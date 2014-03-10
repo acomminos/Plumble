@@ -28,10 +28,12 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.User;
+import com.morlunk.mumbleclient.Constants;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.service.PlumbleService;
 
@@ -43,7 +45,10 @@ public class ChannelSearchProvider extends ContentProvider {
 	public static final String INTENT_DATA_CHANNEL = "channel";
 	public static final String INTENT_DATA_USER = "user";
 
-	private ServiceConnection conn = new ServiceConnection() {
+    private IJumbleService mService;
+    private final Object mServiceLock = new Object();
+
+	private ServiceConnection mConn = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			mService = (IJumbleService) service;
@@ -57,8 +62,6 @@ public class ChannelSearchProvider extends ContentProvider {
 			mService = null;
 		}
 	};
-	
-	private IJumbleService mService;
 	
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
@@ -82,8 +85,6 @@ public class ChannelSearchProvider extends ContentProvider {
 	public boolean onCreate() {
 		return true;
 	}
-
-    private Object mServiceLock = new Object();
 	
 
 	@Override
@@ -93,13 +94,18 @@ public class ChannelSearchProvider extends ContentProvider {
 		// Try to connect to the service. Wait for conn to establish.
 		if(mService == null) {
 			Intent serviceIntent = new Intent(getContext(), PlumbleService.class);
-			getContext().bindService(serviceIntent, conn, 0);
+			getContext().bindService(serviceIntent, mConn, 0);
 
             synchronized (mServiceLock) {
                 try {
-                    mServiceLock.wait();
+                    mServiceLock.wait(5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                }
+
+                if(mService == null) {
+                    Log.v(Constants.TAG, "Failed to connect to service from search provider!");
+                    return null;
                 }
             }
 		}

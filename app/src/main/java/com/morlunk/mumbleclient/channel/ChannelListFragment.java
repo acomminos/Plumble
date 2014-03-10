@@ -25,6 +25,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.CursorWrapper;
+import android.database.sqlite.SQLiteCursor;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -217,8 +219,40 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
         MenuItem searchItem = menu.findItem(R.id.menu_search);
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView)MenuItemCompat.getActionView(searchItem);
+
+        final SearchView searchView = (SearchView)MenuItemCompat.getActionView(searchItem);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+            @Override
+            public boolean onSuggestionSelect(int i) {
+                return false;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int i) {
+                CursorWrapper cursor = (CursorWrapper) searchView.getSuggestionsAdapter().getItem(i);
+                int typeColumn = cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA);
+                int dataIdColumn = cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_INTENT_DATA);
+                String itemType = cursor.getString(typeColumn);
+                int itemId = cursor.getInt(dataIdColumn);
+                if(ChannelSearchProvider.INTENT_DATA_CHANNEL.equals(itemType)) {
+                    try {
+                        if(getService().getSessionChannel().getId() != itemId) {
+                            getService().joinChannel(itemId);
+                        } else {
+                            scrollToChannel(itemId);
+                        }
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    return true;
+                } else if(ChannelSearchProvider.INTENT_DATA_USER.equals(itemType)) {
+                    scrollToUser(itemId);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     @Override

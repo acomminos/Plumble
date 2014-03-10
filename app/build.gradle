@@ -51,13 +51,21 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 19
+        packageName "com.morlunk.mumbleclient"
+        versionCode 57
+        versionName "3.0.0"
+        buildConfigField "boolean", "DONATE_NAG", "false"
     }
 
     productFlavors {
+
         official {
-            versionCode 56
-            versionName "3.0.0-beta4"
             packageName "com.morlunk.mumbleclient"
+        }
+
+        free {
+            packageName "com.morlunk.mumbleclient.free"
+            buildConfigField "boolean", "DONATE_NAG", "true"
         }
 
         jenkins {
