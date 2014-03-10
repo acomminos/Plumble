@@ -387,7 +387,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
      */
     public void showUserMenu(final View view, final User user) {
         try {
-            ChannelUserWindow userWindow = new ChannelUserWindow(getActivity(), getService(), getChildFragmentManager(), user, mTargetProvider);
+            ChannelUserWindow userWindow = ChannelUserWindow.instantiate(getActivity(), getService(), getChildFragmentManager(), user, mTargetProvider);
             userWindow.showAsDropDown(view);
         } catch (RemoteException e) {
             e.printStackTrace();

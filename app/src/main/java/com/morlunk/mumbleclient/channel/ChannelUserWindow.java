@@ -95,7 +95,19 @@ public class ChannelUserWindow extends PopupWindow implements GridView.OnItemCli
         }
     };
 
-    public ChannelUserWindow(Context context, IJumbleService service, FragmentManager fragmentManager, User user, ChatTargetProvider targetProvider) throws RemoteException {
+    /**
+     * We use this static instantiator to fix a bug on android 2.3 devices where the default constructor
+     * of PopupWindow does not work due to the existence of a null contentView.
+     */
+    public static ChannelUserWindow instantiate(Context context, IJumbleService service, FragmentManager fragmentManager, User user, ChatTargetProvider targetProvider) throws RemoteException {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View menuView = inflater.inflate(R.layout.popup_menu, null, false);
+        return new ChannelUserWindow(menuView, context, service, fragmentManager, user, targetProvider);
+    }
+
+    private ChannelUserWindow(View view, Context context, IJumbleService service, FragmentManager fragmentManager, User user, ChatTargetProvider targetProvider) throws RemoteException {
+        super(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
         mContext = context;
         mService = service;
         mFragmentManager = fragmentManager;
@@ -105,15 +117,8 @@ public class ChannelUserWindow extends PopupWindow implements GridView.OnItemCli
         mSlideInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.slide_down);
         mSlideOutAnimation = AnimationUtils.loadAnimation(mContext, R.anim.slide_up);
 
-        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View menuView = inflater.inflate(R.layout.popup_menu, null, false);
-        mGridView = (GridView) menuView.findViewById(R.id.user_menu_grid);
+        mGridView = (GridView) getContentView().findViewById(R.id.user_menu_grid);
         mGridView.setOnItemClickListener(this);
-
-        setContentView(menuView);
-        setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        setFocusable(true);
 
         setBackgroundDrawable(new ColorDrawable()); // Hack to fix touch events.
         setAnimationStyle(0); // We perform our own animations on the content view.
