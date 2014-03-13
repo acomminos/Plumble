@@ -198,7 +198,7 @@ public abstract class PlumbleNestedAdapter<G, C> extends BaseAdapter implements 
 	public int getVisibleFlatGroupPosition(int groupId) {
 		for(int x=0;x< mVisibleMeta.size();x++) {
 			NestPositionMetadata metadata = mVisibleMeta.get(x);
-			if(metadata.type == NestMetadataType.META_TYPE_ITEM &&
+			if(metadata.type == NestMetadataType.META_TYPE_GROUP &&
 					metadata.id == groupId)
 				return x;
 		}

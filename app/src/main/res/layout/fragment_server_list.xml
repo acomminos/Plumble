@@ -53,6 +53,7 @@
         android:padding="8dp"
         android:text="Plumble development is possible thanks to donations! Click here to get the donator edition."
         android:textAppearance="?android:textAppearanceSmallInverse"
+        android:minHeight="48dp"
         android:background="?secondaryBackground"
         android:gravity="center"
         android:layout_alignParentBottom="true"

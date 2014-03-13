@@ -34,6 +34,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,6 +49,7 @@ import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.net.JumbleObserver;
 import com.morlunk.jumble.net.Permissions;
+import com.morlunk.mumbleclient.Constants;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.channel.comment.ChannelDescriptionFragment;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
@@ -347,14 +349,14 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 	 * Scrolls to the passed channel.
 	 */
 	public void scrollToChannel(int channelId) {
-		int channelPosition = mChannelListAdapter.getFlatGroupPosition(channelId);
-		mChannelView.smoothScrollToPosition(channelPosition);
-	}
+		int channelPosition = mChannelListAdapter.getVisibleFlatGroupPosition(channelId);
+        mChannelView.smoothScrollToPosition(channelPosition);
+    }
 	/**
 	 * Scrolls to the passed user.
 	 */
 	public void scrollToUser(int userId) {
-		int userPosition = mChannelListAdapter.getFlatChildPosition(userId);
+		int userPosition = mChannelListAdapter.getVisibleFlatChildPosition(userId);
 		mChannelView.smoothScrollToPosition(userPosition);
 	}
 
