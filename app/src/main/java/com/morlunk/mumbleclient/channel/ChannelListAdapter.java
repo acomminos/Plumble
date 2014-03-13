@@ -75,6 +75,8 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
      * Fetches a new list of channels from the service.
      */
     public void updateChannelList() throws RemoteException {
+        if(!mService.isConnected()) return;
+
         mChannels.clear();
         mUsers.clear();
 
