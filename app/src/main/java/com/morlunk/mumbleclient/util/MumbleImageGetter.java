@@ -76,10 +76,15 @@ public class MumbleImageGetter implements Html.ImageGetter {
         }
 
         Bitmap bitmap = null;
-        if(decodedSource.startsWith("data:image")) {
-            bitmap = getBase64Image(decodedSource.split(",")[1]);
-        } else if(mSettings.shouldLoadExternalImages()) {
-            bitmap = getURLImage(decodedSource);
+        try {
+            if(decodedSource.startsWith("data:image")) {
+                bitmap = getBase64Image(decodedSource.split(",")[1]);
+            } else if(mSettings.shouldLoadExternalImages()) {
+                bitmap = getURLImage(decodedSource);
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return null;
         }
         if(bitmap == null) return null;
 
@@ -90,7 +95,7 @@ public class MumbleImageGetter implements Html.ImageGetter {
         return drawable;
     }
 
-    private Bitmap getBase64Image(String base64) {
+    private Bitmap getBase64Image(String base64) throws IllegalArgumentException {
         byte[] src = Base64.decode(base64, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(src, 0, src.length);
     }
