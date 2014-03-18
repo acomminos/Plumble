@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2014 Spanti Nicola
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+	<string-array
+	    name="audioInputNames">
+		<!--<item>Voice Activity</item>-->
+	    <item>Appuyer pour parler</item>
+        <item>Continu</item>
+        <item>Appareil</item>
+	</string-array>
+	
+	<!--<string-array
+	    name="audioInputValues">
+	    <item>voiceActivity</item>
+	    <item>ptt</item>
+        <item>continuous</item>
+        <item>handset</item>
+	</string-array>-->
+
+    <!--<string-array
+        name="audioSampleRateNames">-->
+        <!-- Experimental -->
+        <!--<item>128000Hz (experimental)</item>
+        <item>96000Hz (experimental)</item>
+        <item>72000Hz (experimental)</item>
+
+        <item>48000Hz</item>
+        <item>44100Hz</item>
+        <item>22050Hz</item>
+        <item>16000Hz</item>
+        <item>11025Hz</item>
+        <item>8000Hz</item>
+	</string-array>-->
+
+    <!--<string-array
+	name="audioSampleRateValues">-->
+        <!-- Experimental -->
+        <!--<item>128000</item>
+        <item>96000</item>
+        <item>72000</item>
+
+        <item>48000</item>
+        <item>44100</item>
+        <item>22050</item>
+        <item>16000</item>
+        <item>11025</item>
+        <item>8000</item>
+	</string-array>-->
+	
+	<string-array
+	    name="themeNames">
+	    <item>Clair</item>
+	    <item>Sombre</item>
+        <!--<item>Solarized Light</item>
+        <item>Solarized Dark</item>-->
+	</string-array>
+	
+	<!--<string-array
+	    name="themeValues">
+	    <item>lightDark</item>
+	    <item>dark</item>
+        <item>solarizedLight</item>
+        <item>solarizedDark</item>
+	</string-array>-->
+	
+	<string-array name="callModeNames">
+	    <item>Haut-parleur</item>
+	    <item>Appel vocal</item>
+	</string-array>
+	
+	<!--<string-array name="callModeValues">
+	    <item>speakerphone</item>
+	    <item>voice</item>
+	</string-array>-->
+	
+	<string-array name="hotCornerNames">
+	    <item>Aucun</item>
+	    <item>Haut gauche</item>
+	    <item>Bas gauche</item>
+	    <item>Haut droit</item>
+	    <item>Bas droit</item>
+	</string-array>
+	
+	<!--<string-array name="hotCornerValues">
+	    <item>none</item>
+	    <item>topLeft</item>
+	    <item>bottomLeft</item>
+	    <item>topRight</item>
+	    <item>bottomRight</item>
+	</string-array>-->
+	
+	<string name="authentication">Authentification</string>
+	<string name="authenticationSum">Gérer et créer des certificats</string>
+	<string name="certificateFile">Fichier de certificat</string>
+	<!--<string name="certificateFileSum">The path of the P12 certificate you wish to use, placed in the \&quot;Plumble\&quot; folder on external storage.</string>-->
+	<string name="certificatePassword">Mot de passe du certificat</string>
+	<string name="certificatePasswordSum">Le mot de passe pour votre certificat PKCS12. (optionnel)</string>
+	<string name="audioInput">Entrée audio</string>
+	<string name="audioInputMethodSum">La méthode d\'entrée audio.</string>
+	<string name="audioInputMethod">Mode de transmition</string>
+    <string name="audioInputVolume">Volume du microphone</string>
+    <!--<string name="audioInputVolumeSum">Microphone volume multiplier used to artificially normalize audio.</string>-->
+	<string name="callMode">Mode d\'appel</string>
+	<string name="callModeSum">The call mode of Plumble, whether to act as a voice call or speakerphone.</string>
+	<string name="detectionThreshold">Detection Threshold</string>
+	<string name="detectionThresholdSum">The minimum amplitude required for voice to be detected (only applicable for voice activity).</string>
+	<string name="pttKey">Push to Talk Key</string>
+	<string name="pttKeySum">A hardware key to bind to Push to Talk.</string>
+	<string name="hotCorner">Push to Talk Hot Corner</string>
+	<string name="hotCornerSum">A specified corner of the screen that, when pressed down, will push to talk throughout Android.</string>
+	<string name="general">Général</string>
+	<string name="generalSum">Adjust general settings</string>
+	<string name="appearance">Apparence</string>
+	<string name="appearanceSum">Tweak the app\'s visuals</string>
+	<string name="themeSum">The app-wide theme.</string>
+	<string name="theme">Thème</string>
+	<string name="advancedAudio">Adancé</string>
+    <string name="forceTcp">Forcer TCP</string>
+    <string name="forceTcpSum">Whether to force TCP (disable UDP) communications.</string>
+	<string name="audio">Audio</string>
+	<string name="audioSum">Adjust audio input and output</string>
+	<string name="audioSampleRate">Input Sample Rate</string>
+	<string name="noCert">Pas de certificat</string>
+	<string name="rowheight">Channel Row Height</string>
+	<string name="rowheightSum">The height of a row in channel selection.</string>
+	<string name="colorizechannels">Coloriser les canaux</string>
+	<string name="colorizechannelsSum">Whether to use color to highlight root channels and active channels.</string>
+	<string name="colorthreshold">Secondary Color Threshold</string>
+	<string name="colorthresholdSum">If this number of users is reached in a channel, the channel name appears red.</string>
+	<string name="chatNotifications">Chat Notifications</string>
+	<string name="chatNotificationsSum">Show notifications when a user posts in chat.</string>
+    <string name="defaultUsername">Nom d\'utilisateur par défaut</string>
+    <string name="defaultUsernameSum">Le nom d\'utilisateur par défaut pour la connexion à des serveurs.</string>
+    <string name="defaultUsernameDefault">Utilisateur_Plumble</string>
+	<string name="certificateGenerate">Générer un certificate</string>
+	<string name="certificateGenerateSum">Generates a new self-signed Plumble certificate. Recommended for beginners.</string>
+	<string name="pttSettings">Push to Talk Settings</string>
+	<string name="pttSettingsSum">Configure Push to Talk if it is enabled.</string>
+	<string name="voiceActivitySettings">Voice Activity Settings</string>
+	<string name="voiceActivitySettingsSum">Configure Voice Activity if it is enabled.</string>
+	<string name="audioOutput">Sortie audio</string>
+	<string name="disableOpus">Désactiver le codec Opus</string>
+	<string name="disableOpusSum">Disable Opus support for Mumble 1.2.4 servers.</string>
+	<string name="hidePtt">Masquer le bouton \'Appuyer pour parler\'</string>
+	<string name="hidePttSum">Hides the push to talk button when in push to talk mode. Useful if you use hot corners or a hardware key exclusively.</string>
+    <string name="useTts">Text-to-Speech</string>
+    <string name="useTtsSum">Enable Text-to-Speech for incoming messages.</string>
+    <string name="togglePtt">Toggle Push to Talk</string>
+    <string name="togglePttSum">Toggles push to talk on and off when pressed.</string>
+    <string name="autoReconnect">Auto Reconnect</string>
+    <string name="autoReconnectSum">Automatically try to re-establish a connection when the server connection is lost.</string>
+    <string name="useTor">Se connecter via Tor</string>
+    <string name="useTorSum">Nécessite l\'app Orbot</string>
+    <string name="framesPerPacket">Frames par paquet</string>
+    <string name="framesPerPacketSum">The number of audio frames per packet. A higher value results in less CPU usage and stuttering, but more latency.</string>
+    <string name="inputQuality">Qualité d\'entrée</string>
+    <string name="inputQualitySum">The target input quality in bps.</string>
+
+    <!-- About -->
+    <string name="about">À propos</string>
+    <string name="aboutSum">Mentions et remerciements</string>
+    <!--<string name="copyright">Copyright &#169; Andrew Comminos 2014</string>-->
+    <string name="acknowledgements">Remerciements</string>
+    <string name="acknowledgementsSum">Découvrez qui a contribué à Plumble</string>
+    <!--<string name="acknowledgements_link">https://raw.github.com/Morlunk/Plumble/master/THANKS</string>-->
+    <string name="licenses">Licences</string>
+    <string name="license_gplv3">Licence publique générale GNU (GPL) v3.0</string>
+    <string name="license_gplv3_link">https://www.gnu.org/copyleft/gpl.fr.html</string>
+    <string name="license_apache2">Licence Apache version 2.0</string>
+    <!--<string name="license_apache2_link">https://www.apache.org/licenses/LICENSE-2.0.html</string>-->
+    <!--<string name="loadImagesSum">Whether to load external images in chat.</string>-->
+    <string name="loadImages">Charger des images externes</string>
+</resources>
