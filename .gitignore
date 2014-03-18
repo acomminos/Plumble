@@ -5,6 +5,13 @@ build/
 *.iml
 signing.gradle
 
+# Eclipse
+bin/
+gen/
+.settings/
+.classpath
+.project
+
 # Android
 local.properties
 
