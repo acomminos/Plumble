@@ -72,7 +72,7 @@ public class ServerInfoTask extends AsyncTask<Server, Void, ServerInfoResponse> 
 			return response;
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 
 		return new ServerInfoResponse(); // Return dummy in case of failure

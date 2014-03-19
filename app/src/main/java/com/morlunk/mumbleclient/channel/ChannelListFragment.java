@@ -182,7 +182,6 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
                 setupChannelList();
             else
                 updateChannelList();
-            scrollToUser(service.getSession());
         } catch (RemoteException e) {
             e.printStackTrace();
         }

@@ -29,7 +29,7 @@
     <!-- Certificate setup -->
     <string name="wizard_certificate_title">Create a Certificate</string>
 
-    <!-- Audio setup -->
+    <!-- AudioHandler setup -->
     <string name="wizard_audio_title">Setup Audio</string>
 
     <!-- General settings -->
