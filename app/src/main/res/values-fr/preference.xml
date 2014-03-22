@@ -68,8 +68,8 @@
 	    name="themeNames">
 	    <item>Clair</item>
 	    <item>Sombre</item>
-        <!--<item>Solarized Light</item>
-        <item>Solarized Dark</item>-->
+        <item>Solarized Light</item>
+        <item>Solarized Dark</item>
 	</string-array>
 	
 	<!--<string-array

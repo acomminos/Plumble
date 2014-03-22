@@ -329,7 +329,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
         // Color the action bar icons to the primary text color of the theme, TODO optimize
         int foregroundColor = getTheme().obtainStyledAttributes(new int[] { android.R.attr.textColorPrimaryInverse }).getColor(0, -1);
-        for(int x=0;x<menu.size();x++) {
+        for(int x=0; x < menu.size(); ++x) {
             MenuItem item = menu.getItem(x);
             if(item.getIcon() != null) {
                 Drawable icon = item.getIcon().mutate(); // Mutate the icon so that the color filter is exclusive to the action bar
