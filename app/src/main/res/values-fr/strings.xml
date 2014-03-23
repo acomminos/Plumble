@@ -103,7 +103,7 @@
     <!--<string name="chat_notify_unmuted_undeafened">Unmuted and undeafened.</string>
     <string name="chat_notify_now_muted_deafened">%s is now muted and deafened.</string>-->
     <string name="chat_notify_now_muted">%s est maintenant muet.</string>
-    <string name="chat_notify_now_unmuted">%s n'est maintenant plus muet.</string>
+    <string name="chat_notify_now_unmuted">%s n\'est maintenant plus muet.</string>
     <!--<string name="chat_notify_now_unmuted_undeafened">%s is now unmuted and undeafened.</string>-->
     <string name="chat_notify_connected">%s connecté.</string>
     <string name="chat_notify_disconnected">%s déconnecté.</string>
@@ -135,7 +135,7 @@
     <string name="information">Information</string>
 	<!--<string name="register">Register Self</string>-->
     <string name="userControl">Contrôle de l\'utilisateur</string>
-	<string name="registerSelfSuccess">Demande d'inscription envoyé</string>
+	<string name="registerSelfSuccess">Demande d\'inscription envoyé</string>
     <string name="error_fetching_servers">Impossible de contacter les serveurs !\nVérifiez est votre connexion Internet.</string>
     <string name="coming_soon">Cette fonctionnalité arrivera bientôt.</string>
     <string name="search_channel_users">%d utilisateurs</string>
