@@ -20,3 +20,9 @@ Building on GNU/Linux
     ./gradlew assembleDebug
 
 It's that simple!
+
+
+Translate
+---------
+
+Contribute translations to Plumble using [Transifex](https://www.transifex.com/projects/p/plumble/)!
