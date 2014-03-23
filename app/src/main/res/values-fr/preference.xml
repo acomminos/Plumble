@@ -68,8 +68,8 @@
 	    name="themeNames">
 	    <item>Clair</item>
 	    <item>Sombre</item>
-        <!--<item>Solarized Light</item>
-        <item>Solarized Dark</item>-->
+        <item>Solaire</item>
+        <item>Lunaire</item>
 	</string-array>
 	
 	<!--<string-array
@@ -109,7 +109,7 @@
 	<string name="authentication">Authentification</string>
 	<string name="authenticationSum">Gérer et créer des certificats</string>
 	<string name="certificateFile">Fichier de certificat</string>
-	<!--<string name="certificateFileSum">The path of the P12 certificate you wish to use, placed in the \&quot;Plumble\&quot; folder on external storage.</string>-->
+	<string name="certificateFileSum">Le chemin du certificat P12 que vous voulez utilisez, placé dans le dossier \&quot;Plumble\&quot; sur une mémoire externe.</string>
 	<string name="certificatePassword">Mot de passe du certificat</string>
 	<string name="certificatePasswordSum">Le mot de passe pour votre certificat PKCS12. (optionnel)</string>
 	<string name="audioInput">Entrée audio</string>
@@ -118,54 +118,54 @@
     <string name="audioInputVolume">Volume du microphone</string>
     <!--<string name="audioInputVolumeSum">Microphone volume multiplier used to artificially normalize audio.</string>-->
 	<string name="callMode">Mode d\'appel</string>
-	<string name="callModeSum">The call mode of Plumble, whether to act as a voice call or speakerphone.</string>
-	<string name="detectionThreshold">Detection Threshold</string>
-	<string name="detectionThresholdSum">The minimum amplitude required for voice to be detected (only applicable for voice activity).</string>
-	<string name="pttKey">Push to Talk Key</string>
-	<string name="pttKeySum">A hardware key to bind to Push to Talk.</string>
-	<string name="hotCorner">Push to Talk Hot Corner</string>
-	<string name="hotCornerSum">A specified corner of the screen that, when pressed down, will push to talk throughout Android.</string>
+	<string name="callModeSum">Le mode d\'appel de Plumble, s\'il faut agir comme un appel vocal ou un haut-parleur.</string>
+	<string name="detectionThreshold">Seuil de détection</string>
+	<string name="detectionThresholdSum">L\'amplitude minimum nécessaire pour que la voix soit détectée (uniquement applicable pour les activités vocales).</string>
+	<string name="pttKey">Touche pour \'appuyer pour parler\'</string>
+	<string name="pttKeySum">Une touche à lier à \'appuyer pour parler\'.</string>
+	<!--<string name="hotCorner">Push to Talk Hot Corner</string>
+	<string name="hotCornerSum">A specified corner of the screen that, when pressed down, will push to talk throughout Android.</string>-->
 	<string name="general">Général</string>
-	<string name="generalSum">Adjust general settings</string>
+	<string name="generalSum">Régler les paramètres généraux</string>
 	<string name="appearance">Apparence</string>
-	<string name="appearanceSum">Tweak the app\'s visuals</string>
-	<string name="themeSum">The app-wide theme.</string>
+	<string name="appearanceSum">Modifier l\'apparence de l\'application</string>
+	<string name="themeSum">Le theme de toute l\'application.</string>
 	<string name="theme">Thème</string>
-	<string name="advancedAudio">Adancé</string>
+	<string name="advancedAudio">Avancé</string>
     <string name="forceTcp">Forcer TCP</string>
-    <string name="forceTcpSum">Whether to force TCP (disable UDP) communications.</string>
+    <string name="forceTcpSum">S\'il faut forcer les communications TCP (désactiver UDP).</string>
 	<string name="audio">Audio</string>
-	<string name="audioSum">Adjust audio input and output</string>
+	<string name="audioSum">Ajuster les entrées et sorties audio</string>
 	<string name="audioSampleRate">Input Sample Rate</string>
 	<string name="noCert">Pas de certificat</string>
-	<string name="rowheight">Channel Row Height</string>
-	<string name="rowheightSum">The height of a row in channel selection.</string>
+	<string name="rowheight">Hauteur de ligne de canal</string>
+	<string name="rowheightSum">La hauteur d\'une ligne dans la sélection des canaux.</string>
 	<string name="colorizechannels">Coloriser les canaux</string>
 	<string name="colorizechannelsSum">Whether to use color to highlight root channels and active channels.</string>
-	<string name="colorthreshold">Secondary Color Threshold</string>
-	<string name="colorthresholdSum">If this number of users is reached in a channel, the channel name appears red.</string>
-	<string name="chatNotifications">Chat Notifications</string>
-	<string name="chatNotificationsSum">Show notifications when a user posts in chat.</string>
+	<string name="colorthreshold">Seuil de couleur secondaire</string>
+	<string name="colorthresholdSum">Si ce nombre d\'utilisateurs est atteint dans un canal, le nom du canal apparait en rouge.</string>
+	<string name="chatNotifications">Notifications du chat</string>
+	<string name="chatNotificationsSum">Afficher une notification lorsqu\'un utilisateur poste dans le chat.</string>
     <string name="defaultUsername">Nom d\'utilisateur par défaut</string>
     <string name="defaultUsernameSum">Le nom d\'utilisateur par défaut pour la connexion à des serveurs.</string>
     <string name="defaultUsernameDefault">Utilisateur_Plumble</string>
 	<string name="certificateGenerate">Générer un certificate</string>
-	<string name="certificateGenerateSum">Generates a new self-signed Plumble certificate. Recommended for beginners.</string>
-	<string name="pttSettings">Push to Talk Settings</string>
-	<string name="pttSettingsSum">Configure Push to Talk if it is enabled.</string>
-	<string name="voiceActivitySettings">Voice Activity Settings</string>
-	<string name="voiceActivitySettingsSum">Configure Voice Activity if it is enabled.</string>
+	<string name="certificateGenerateSum">Générer un nouveau certificat Plumble auto-signé. Recommendé pour les débutants.</string>
+	<string name="pttSettings">Paramètres de \'appuyer pour parler\'</string>
+	<string name="pttSettingsSum">Configurer \'appuyer pour parler\' s\'il est activé.</string>
+	<!--<string name="voiceActivitySettings">Voice Activity Settings</string>
+	<string name="voiceActivitySettingsSum">Configure Voice Activity s'il est activé.</string>-->
 	<string name="audioOutput">Sortie audio</string>
 	<string name="disableOpus">Désactiver le codec Opus</string>
-	<string name="disableOpusSum">Disable Opus support for Mumble 1.2.4 servers.</string>
+	<string name="disableOpusSum">Désactiver le support de Opus pour les serveurs Mumble 1.2.4.</string>
 	<string name="hidePtt">Masquer le bouton \'Appuyer pour parler\'</string>
-	<string name="hidePttSum">Hides the push to talk button when in push to talk mode. Useful if you use hot corners or a hardware key exclusively.</string>
-    <string name="useTts">Text-to-Speech</string>
-    <string name="useTtsSum">Enable Text-to-Speech for incoming messages.</string>
-    <string name="togglePtt">Toggle Push to Talk</string>
+	<string name="hidePttSum">Hides the push to talk button when in push to talk mode. Utile si vous utilisez les hot corners ou exclusivement une touche physique.</string>
+    <string name="useTts">Synthèse vocale</string>
+    <string name="useTtsSum">Activer la synthèse vocal pour les messages entrants.</string>
+    <!--<string name="togglePtt">Toggle Push to Talk</string>-->
     <string name="togglePttSum">Toggles push to talk on and off when pressed.</string>
-    <string name="autoReconnect">Auto Reconnect</string>
-    <string name="autoReconnectSum">Automatically try to re-establish a connection when the server connection is lost.</string>
+    <string name="autoReconnect">Reconnexion automatique</string>
+    <string name="autoReconnectSum">Essayer automatiquement de rétablir une connexion quand la connexion au serveur est perdu.</string>
     <string name="useTor">Se connecter via Tor</string>
     <string name="useTorSum">Nécessite l\'app Orbot</string>
     <string name="framesPerPacket">Frames par paquet</string>
@@ -185,6 +185,6 @@
     <string name="license_gplv3_link">https://www.gnu.org/copyleft/gpl.fr.html</string>
     <string name="license_apache2">Licence Apache version 2.0</string>
     <!--<string name="license_apache2_link">https://www.apache.org/licenses/LICENSE-2.0.html</string>-->
-    <!--<string name="loadImagesSum">Whether to load external images in chat.</string>-->
+    <string name="loadImagesSum">S\'il faut charger les images externes dans le chat.</string>
     <string name="loadImages">Charger des images externes</string>
 </resources>
