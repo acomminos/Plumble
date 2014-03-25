@@ -18,7 +18,6 @@
   -->
 <resources>
     <!-- Common -->
-    <string name="app_name">Plumble</string>
     <string name="channels">Channels</string>
     <string name="no_servers">No servers added.\nPress the \'add\' button on the action bar to begin.</string>
     <string name="server_add">Add Server</string>

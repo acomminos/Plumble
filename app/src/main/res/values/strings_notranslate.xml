@@ -18,5 +18,6 @@
 
 <!-- Here be constants. These resources do NOT need translation. -->
 <resources>
+    <string name="app_name">Plumble</string>
     <string name="default_server_port">64738</string>
 </resources>
