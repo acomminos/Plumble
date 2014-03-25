@@ -18,6 +18,7 @@
 package com.morlunk.mumbleclient.channel;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.RemoteException;
 import android.util.DisplayMetrics;
@@ -230,19 +231,22 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
 
         final Channel channel = mChannels.get(groupId);
 
+        boolean expandUsable = channel.getSubchannels().size() > 0 ||
+                               channel.getSubchannelUserCount() > 0;
         ImageView expandView = (ImageView) v.findViewById(R.id.channel_row_expand);
-        expandView.setImageResource(isGroupExpanded(groupId) ? R.drawable.ic_action_minus_light : R.drawable.ic_action_add_light);
+        expandView.setImageResource((isGroupExpanded(groupId) || !expandUsable) ? R.drawable.ic_action_minus_light : R.drawable.ic_action_add_light);
         expandView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                if(isGroupExpanded(groupId))
-                    collapseGroup(groupId);
-                else
-                    expandGroup(groupId);
+                if(isGroupExpanded(groupId)) collapseGroup(groupId);
+                else expandGroup(groupId);
                 notifyVisibleSetChanged();
             }
         });
+        // Dim channel expand toggle when no subchannels exist
+        expandView.setEnabled(expandUsable);
+        expandView.setColorFilter(expandUsable ? 0xFFFFFFFF: 0x55FFFFFF, PorterDuff.Mode.MULTIPLY);
 
         TextView nameView = (TextView) v
                 .findViewById(R.id.channel_row_name);
