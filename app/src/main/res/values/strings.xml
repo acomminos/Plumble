@@ -29,12 +29,9 @@
     <string name="server_label">Label</string>
     <string name="connecting">Connecting</string>
     <string name="connecting_to_server">Connecting to %1$s:%2$s</string>
-    <string name="default_server_port">64738</string>
     <string name="fragment_chat">Chat</string>
     <string name="fragment_channel">Channel</string>
     <string name="menu_settings">Settings</string>
-    <string name="pressKey">Press a hardware key to bind to push-to-talk.</string>
-    <string name="pressKeyInfo">Note: due to limitations in Android, the app must be open to use hardware key push to talk.</string>
     <string name="ptt">PUSH TO TALK</string>
     <string name="mute">Mute</string>
     <string name="deafen">Deafen</string>
@@ -54,7 +51,6 @@
     <string name="loading">Loading…</string>
     <string name="reset_key">Reset Key</string>
     <string name="externalStorageUnavailable">External storage unavailable, cannot load certificate</string>
-    <string name="audioSampleRateSum">The preferred audio sample rate. Not all rates are supported by all devices.</string>
     <string name="addFavorite">Add Favorite</string>
     <string name="removeFavorite">Remove Favorite</string>
     <string name="viewFavorites">View Favorites</string>
@@ -161,7 +157,7 @@
     <string name="channel_add">Add Channel</string>
     <string name="tts_failed">TTS failed to initialize</string>
     <string name="mumble_url_parse_failed">Failed to parse Mumble URL!</string>
-    <string name="first_run_generate_certificate_title">Welcome to Plumble! </string>
+    <string name="first_run_generate_certificate_title">Welcome to Plumble!</string>
     <string name="first_run_generate_certificate">Generating a certificate is highly recommended, and necessary for connection to some servers.</string>
     <string name="generate">Generate</string>
     <string name="certificate_not_valid">Could not load certificate \'%s\'!</string>

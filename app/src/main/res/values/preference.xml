@@ -17,22 +17,13 @@
   -->
 
 <resources>
-
-	<string-array
-	    name="audioInputNames">
-	    <item>Voice Activity</item>
-	    <item>Push to Talk</item>
+    <string-array
+        name="audioInputNames">
+        <item>Voice Activity</item>
+        <item>Push to Talk</item>
         <item>Continuous</item>
         <item>Handset</item>
-	</string-array>
-	
-	<string-array
-	    name="audioInputValues">
-	    <item>voiceActivity</item>
-	    <item>ptt</item>
-        <item>continuous</item>
-        <item>handset</item>
-	</string-array>
+    </string-array>
 
     <string-array
         name="audioSampleRateNames">
@@ -48,21 +39,6 @@
         <item>11025Hz</item>
         <item>8000Hz</item>
     </string-array>
-
-    <string-array
-        name="audioSampleRateValues">
-        <!-- Experimental -->
-        <item>128000</item>
-        <item>96000</item>
-        <item>72000</item>
-
-        <item>48000</item>
-        <item>44100</item>
-        <item>22050</item>
-        <item>16000</item>
-        <item>11025</item>
-        <item>8000</item>
-    </string-array>
 	
 	<string-array
 	    name="themeNames">
@@ -72,22 +48,9 @@
         <item>Solarized Dark</item>
 	</string-array>
 	
-	<string-array
-	    name="themeValues">
-	    <item>lightDark</item>
-	    <item>dark</item>
-        <item>solarizedLight</item>
-        <item>solarizedDark</item>
-	</string-array>
-	
 	<string-array name="callModeNames">
 	    <item>Speakerphone</item>
 	    <item>Voice Call</item>
-	</string-array>
-	
-	<string-array name="callModeValues">
-	    <item>speakerphone</item>
-	    <item>voice</item>
 	</string-array>
 	
 	<string-array name="hotCornerNames">
@@ -97,15 +60,14 @@
 	    <item>Top Right</item>
 	    <item>Bottom Right</item>
 	</string-array>
-	
-	<string-array name="hotCornerValues">
-	    <item>none</item>
-	    <item>topLeft</item>
-	    <item>bottomLeft</item>
-	    <item>topRight</item>
-	    <item>bottomRight</item>
-	</string-array>
-	
+
+    <!-- About -->
+    <string name="about">About</string>
+    <string name="aboutSum">Legal and acknowledgments</string>
+    <string name="acknowledgements">Acknowledgments</string>
+    <string name="acknowledgementsSum">See who contributed to Plumble</string>
+    <string name="licenses">Licenses</string>
+
 	<string name="authentication">Authentication</string>
 	<string name="authenticationSum">Manage and create certificates</string>
 	<string name="certificateFile">Certificate File</string>
@@ -137,13 +99,8 @@
 	<string name="audio">Audio</string>
 	<string name="audioSum">Adjust audio input and output</string>
 	<string name="audioSampleRate">Input Sample Rate</string>
+    <string name="audioSampleRateSum">The preferred audio sample rate. Not all rates are supported by all devices.</string>
 	<string name="noCert">No Certificate</string>
-	<string name="rowheight">Channel Row Height</string>
-	<string name="rowheightSum">The height of a row in channel selection.</string>
-	<string name="colorizechannels">Colorize channels</string>
-	<string name="colorizechannelsSum">Whether to use color to highlight root channels and active channels.</string>
-	<string name="colorthreshold">Secondary Color Threshold</string>
-	<string name="colorthresholdSum">If this number of users is reached in a channel, the channel name appears red.</string>
 	<string name="chatNotifications">Chat Notifications</string>
 	<string name="chatNotificationsSum">Show notifications when a user posts in chat.</string>
     <string name="defaultUsername">Default Username</string>
@@ -172,19 +129,8 @@
     <string name="framesPerPacketSum">The number of audio frames per packet. A higher value results in less CPU usage and stuttering, but more latency.</string>
     <string name="inputQuality">Input Quality</string>
     <string name="inputQualitySum">The target input quality in bps.</string>
-
-    <!-- About -->
-    <string name="about">About</string>
-    <string name="aboutSum">Legal and acknowledgments</string>
-    <string name="copyright">Copyright &#169; Andrew Comminos 2014</string>
-    <string name="acknowledgements">Acknowledgments</string>
-    <string name="acknowledgementsSum">See who contributed to Plumble</string>
-    <string name="acknowledgements_link">https://raw.github.com/Morlunk/Plumble/master/THANKS</string>
-    <string name="licenses">Licenses</string>
-    <string name="license_gplv3">GNU General Public License v3.0</string>
-    <string name="license_gplv3_link">https://www.gnu.org/copyleft/gpl.html</string>
-    <string name="license_apache2">Apache License Version 2.0</string>
-    <string name="license_apache2_link">https://www.apache.org/licenses/LICENSE-2.0.html</string>
+    <string name="pressKey">Press a hardware key to bind to push-to-talk.</string>
+    <string name="pressKeyInfo">Note: due to limitations in Android, the app must be open to use hardware key push to talk.</string>
     <string name="loadImagesSum">Whether to load external images in chat.</string>
     <string name="loadImages">Load External Images</string>
 </resources>
