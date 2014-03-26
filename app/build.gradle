@@ -48,6 +48,10 @@ android {
     compileSdkVersion 19
     buildToolsVersion "19.0.3"
 
+    // Fixes crash with support lib and gradle 0.9.1, see:
+    // https://stackoverflow.com/questions/22509850/actionbaractivity-closes-after-pressing-hardware-menu-button-without-stack-trac
+    aaptOptions.useAaptPngCruncher = true
+
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 19
