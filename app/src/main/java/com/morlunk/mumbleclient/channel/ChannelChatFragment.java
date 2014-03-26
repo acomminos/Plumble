@@ -47,7 +47,7 @@ import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.Message;
 import com.morlunk.jumble.model.User;
-import com.morlunk.jumble.net.JumbleObserver;
+import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.util.MumbleImageGetter;

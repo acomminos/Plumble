@@ -18,12 +18,10 @@
 package com.morlunk.mumbleclient.channel.comment;
 
 import android.os.RemoteException;
-import android.widget.Toast;
 
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
-import com.morlunk.jumble.model.User;
-import com.morlunk.jumble.net.JumbleObserver;
+import com.morlunk.jumble.util.JumbleObserver;
 
 /**
  * Created by andrew on 03/03/14.

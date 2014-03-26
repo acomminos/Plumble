@@ -52,7 +52,7 @@ import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Server;
-import com.morlunk.jumble.net.JumbleObserver;
+import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.jumble.util.MumbleURLParser;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
@@ -76,8 +76,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener, ServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider, SharedPreferences.OnSharedPreferenceChangeListener, DrawerAdapter.DrawerDataProvider, ServerEditFragment.ServerEditListener {
 

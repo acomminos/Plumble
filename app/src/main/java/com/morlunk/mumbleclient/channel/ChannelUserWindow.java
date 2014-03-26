@@ -18,7 +18,6 @@
 package com.morlunk.mumbleclient.channel;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
@@ -48,10 +47,9 @@ import com.google.common.collect.Lists;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.User;
-import com.morlunk.jumble.net.JumbleObserver;
+import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.jumble.net.Permissions;
 import com.morlunk.mumbleclient.R;
-import com.morlunk.mumbleclient.channel.comment.AbstractCommentFragment;
 import com.morlunk.mumbleclient.channel.comment.UserCommentFragment;
 
 import java.util.ArrayList;

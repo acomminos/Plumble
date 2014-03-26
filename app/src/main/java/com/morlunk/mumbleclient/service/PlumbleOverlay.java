@@ -30,7 +30,7 @@ import android.widget.ListView;
 
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.User;
-import com.morlunk.jumble.net.JumbleObserver;
+import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.channel.ChannelAdapter;

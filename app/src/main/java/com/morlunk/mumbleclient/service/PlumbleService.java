@@ -38,7 +38,7 @@ import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Message;
 import com.morlunk.jumble.model.User;
-import com.morlunk.jumble.net.JumbleObserver;
+import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.app.PlumbleActivity;
@@ -221,8 +221,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     }
 
     @Override
-    public void onConnectionEstablished() {
-        super.onConnectionEstablished();
+    public void onConnectionSynchronized() {
+        super.onConnectionSynchronized();
         createNotification();
         try {
             // Restore mute/deafen state
