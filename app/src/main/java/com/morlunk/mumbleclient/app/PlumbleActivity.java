@@ -406,7 +406,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        return false;
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -422,7 +422,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        return false;
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override
