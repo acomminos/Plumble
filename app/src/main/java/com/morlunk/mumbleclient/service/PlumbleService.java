@@ -127,7 +127,6 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             if(mNotificationReceiver == null) createNotification();
             updateNotificationTicker(tickerMessage);
             updateNotificationState();
-            if(!reconnecting) hideNotification();
         }
 
         @Override
@@ -265,12 +264,13 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         setProximitySensorOn(false);
 
         try {
-            if(!getBinder().isReconnecting()) hideNotification();
+            if(!getBinder().isReconnecting()) {
+                hideNotification();
+//                stopSelf(); // Stop manual control of the service's lifecycle.
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-
-        stopSelf(); // Stop manual control of the service's lifecycle.
     }
 
     /**

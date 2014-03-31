@@ -40,7 +40,7 @@ import java.util.Locale;
 public class PlumbleCertificateManager {
 
 	private static final String PLUMBLE_CERTIFICATE_FOLDER = "Plumble";
-	private static final String PLUMBLE_CERTIFICATE_FORMAT = "plumble-%d.p12";
+	private static final String PLUMBLE_CERTIFICATE_FORMAT = "plumble-%s.p12";
 	
 	/**
 	 * Generates a new X.509 passwordless certificate in PKCS12 format for connection to a Mumble server.
@@ -61,7 +61,7 @@ public class PlumbleCertificateManager {
 	 * Returns a list of certificates in the {@value #PLUMBLE_CERTIFICATE_FOLDER} folder on external storage, ending with pfx or p12.
 	 * @return A list of {@link File} objects containing certificates.
 	 */
-	public static List<File> getAvailableCertificates() {
+	public static List<File> getAvailableCertificates() throws IOException {
 		File certificateDirectory = getCertificateDirectory();
 		
 		File[] p12Files = certificateDirectory.listFiles(new FileFilter() {
@@ -118,11 +118,14 @@ public class PlumbleCertificateManager {
 	 * Will create if does not exist, and throw an assert if the external storage is not mounted.
 	 * @return The {@link File} object of the directory.
 	 */
-	public static File getCertificateDirectory() {
-		assert Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
-		File certificateDirectory = new File(Environment.getExternalStorageDirectory(), PLUMBLE_CERTIFICATE_FOLDER);
-		if(!certificateDirectory.exists())
-			certificateDirectory.mkdir();
-		return certificateDirectory;
+	public static File getCertificateDirectory() throws IOException {
+		if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File certificateDirectory = new File(Environment.getExternalStorageDirectory(), PLUMBLE_CERTIFICATE_FOLDER);
+            if(!certificateDirectory.exists())
+                certificateDirectory.mkdir();
+            return certificateDirectory;
+        } else {
+            throw new IOException();
+        }
 	}
 }

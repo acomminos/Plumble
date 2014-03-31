@@ -115,6 +115,16 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
             for(JumbleServiceFragment fragment : mServiceFragments)
                 fragment.setServiceBound(true);
+
+            // Re-show server list if we're showing a fragment that depends on the service.
+            try {
+                if(getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof JumbleServiceFragment &&
+                        !mService.isConnected()) {
+                    loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override

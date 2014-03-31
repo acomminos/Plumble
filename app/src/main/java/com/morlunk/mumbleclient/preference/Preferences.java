@@ -145,7 +145,7 @@ public class Preferences extends PreferenceActivity {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             try {
                 updateCertificatePath(certificatePathPreference);
-            } catch (NullPointerException exception) {
+            } catch (IOException exception) {
                 certificatePathPreference.setEnabled(false);
                 certificatePathPreference.setSummary(R.string.externalStorageUnavailable);
             }
@@ -238,7 +238,7 @@ public class Preferences extends PreferenceActivity {
      *
      * @param preference The ListPreference to update.
      */
-    private static void updateCertificatePath(ListPreference preference) throws NullPointerException {
+    private static void updateCertificatePath(ListPreference preference) throws NullPointerException, IOException {
         List<File> certificateFiles = PlumbleCertificateManager.getAvailableCertificates();
 
         // Get arrays of certificate paths and names.
@@ -268,8 +268,12 @@ public class Preferences extends PreferenceActivity {
                 super.onPostExecute(result);
 
                 if (result != null) {
-                    updateCertificatePath(certificateList); // Update cert path after
-                    certificateList.setValue(result.getAbsolutePath());
+                    try {
+                        updateCertificatePath(certificateList); // Update cert path after
+                        certificateList.setValue(result.getAbsolutePath());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         };
