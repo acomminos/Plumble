@@ -388,7 +388,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             if(Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod()) &&
                     keyCode == mSettings.getPushToTalkKey() &&
                     mService != null &&
-                    mService.isConnected()) {
+                    mService.isConnected() &&
+                    !mService.isTalking()) {
                 mService.setTalkingState(true);
                 return true;
             }
@@ -404,7 +405,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             if(Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod()) &&
                     keyCode == mSettings.getPushToTalkKey() &&
                     mService != null &&
-                    mService.isConnected()) {
+                    mService.isConnected() &&
+                    mService.isTalking()) {
                 mService.setTalkingState(false);
                 return true;
             }
