@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -47,6 +48,7 @@ import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
 import com.morlunk.mumbleclient.db.PublicServer;
+import com.morlunk.mumbleclient.util.CardDrawable;
 
 import org.w3c.dom.Text;
 
@@ -199,16 +201,13 @@ public class ServerListFragment extends Fragment implements OnItemClickListener 
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		mConnectHandler.connectToServer(mServerAdapter.getItem(arg2));
 	}
-	
+
 	private class ServerAdapter extends ArrayAdapter<Server> {
 
-        private boolean mLightTheme;
-		
 		public ServerAdapter(Context context, List<Server> servers) {
 			super(context, android.R.id.text1, servers);
-            mLightTheme = R.style.Theme_Plumble == Settings.getInstance(context).getTheme();
 		}
-		
+
 		@Override
 		public long getItemId(int position) {
 			return getItem(position).getId();
@@ -220,15 +219,15 @@ public class ServerListFragment extends Fragment implements OnItemClickListener 
 			final View v,
 			final ViewGroup parent) {
 			View view = v;
-			
+
 			if(v == null) {
 				LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				view = inflater.inflate(R.layout.server_list_row, parent, false);
-
+                view.setBackgroundDrawable(CardDrawable.getDrawable(getContext()));
 			}
 
 			final Server server = getItem(position);
-			
+
 			ServerInfoResponse infoResponse = mInfoResponses.get(server);
 			// If there is a null value for the server info (rather than none at all), the request must have failed.
 			boolean requestExists = infoResponse != null;
@@ -237,16 +236,16 @@ public class ServerListFragment extends Fragment implements OnItemClickListener 
 			TextView nameText = (TextView) view.findViewById(R.id.server_row_name);
 			TextView userText = (TextView) view.findViewById(R.id.server_row_user);
 			TextView addressText = (TextView) view.findViewById(R.id.server_row_address);
-			
+
 			if(server.getName().equals("")) {
 				nameText.setText(server.getHost());
 			} else {
 				nameText.setText(server.getName());
 			}
-			
+
 			userText.setText(server.getUsername());
 			addressText.setText(server.getHost()+":"+server.getPort());
-			
+
 			ImageView moreButton = (ImageView) view.findViewById(R.id.server_row_more);
             moreButton.setOnClickListener(new OnClickListener() {
                 @Override
@@ -259,12 +258,12 @@ public class ServerListFragment extends Fragment implements OnItemClickListener 
                     popupMenu.show();
                 }
             });
-			
+
 			TextView serverVersionText = (TextView) view.findViewById(R.id.server_row_version_status);
             TextView serverLatencyText = (TextView) view.findViewById(R.id.server_row_latency);
 			TextView serverUsersText = (TextView) view.findViewById(R.id.server_row_usercount);
 			ProgressBar serverInfoProgressBar = (ProgressBar) view.findViewById(R.id.server_row_ping_progress);
-			
+
 			serverVersionText.setVisibility(!requestExists ? View.INVISIBLE : View.VISIBLE);
 			serverUsersText.setVisibility(!requestExists ? View.INVISIBLE : View.VISIBLE);
             serverLatencyText.setVisibility(!requestExists ? View.INVISIBLE : View.VISIBLE);
@@ -279,7 +278,7 @@ public class ServerListFragment extends Fragment implements OnItemClickListener 
 				serverUsersText.setText("");
                 serverLatencyText.setText("");
 			}
-			
+
 			return view;
 		}
 	}

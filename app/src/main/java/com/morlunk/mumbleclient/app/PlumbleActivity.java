@@ -37,6 +37,7 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
@@ -514,6 +515,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         Fragment fragment = Fragment.instantiate(this, fragmentClass.getName(), args);
         getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_frame, fragment, fragmentClass.getName())
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
         setTitle(mDrawerAdapter.getItemWithId(fragmentId).title);
         mActiveFragment = fragmentId;

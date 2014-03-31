@@ -24,6 +24,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Build.VERSION;
@@ -59,6 +60,7 @@ import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
 import com.morlunk.mumbleclient.db.PublicServer;
+import com.morlunk.mumbleclient.util.CardDrawable;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -266,13 +268,10 @@ public class PublicServerListFragment extends Fragment implements OnItemClickLis
     private class PublicServerAdapter extends ArrayAdapter<PublicServer> {
         private Map<PublicServer, ServerInfoResponse> infoResponses = new HashMap<PublicServer, ServerInfoResponse>();
         private List<PublicServer> originalServers;
-
-        private boolean mLightTheme;
         
         public PublicServerAdapter(Context context, List<PublicServer> servers) {
             super(context, android.R.id.text1, servers);
             originalServers = new ArrayList<PublicServer>(servers);
-            mLightTheme = R.style.Theme_Plumble == Settings.getInstance(context).getTheme();
         }
         
         public void filter(String queryName, String queryCountry) {
@@ -298,6 +297,7 @@ public class PublicServerListFragment extends Fragment implements OnItemClickLis
             if(v == null) {
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = inflater.inflate(R.layout.public_server_list_row, parent, false);
+                view.setBackgroundDrawable(CardDrawable.getDrawable(getContext()));
             }
             
             final PublicServer server = getItem(position);
