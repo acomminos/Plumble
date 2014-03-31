@@ -389,11 +389,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     keyCode == mSettings.getPushToTalkKey() &&
                     mService != null &&
                     mService.isConnected()) {
-                if(event.getAction() == KeyEvent.ACTION_DOWN) {
-                    mService.setTalkingState(true);
-                } else if(event.getAction() == KeyEvent.ACTION_UP) {
-                    mService.setTalkingState(false);
-                }
+                mService.setTalkingState(true);
                 return true;
             }
         } catch (RemoteException e) {
