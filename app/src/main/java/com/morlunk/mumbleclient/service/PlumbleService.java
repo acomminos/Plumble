@@ -220,23 +220,26 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     }
 
     @Override
+    public void onConnectionEstablished() {
+        super.onConnectionEstablished();
+        // Restore mute/deafen state
+        if(mSettings.isMuted() || mSettings.isDeafened()) {
+            try {
+                getBinder().setSelfMuteDeafState(mSettings.isMuted(), mSettings.isDeafened());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    @Override
     public void onConnectionSynchronized() {
         super.onConnectionSynchronized();
         createNotification();
-        try {
-            // Restore mute/deafen state
-            Settings settings = Settings.getInstance(this);
-            User sessionUser = getBinder().getSessionUser();
-            if(sessionUser.isSelfMuted() != settings.isMuted() ||
-                    sessionUser.isSelfDeafened() != settings.isDeafened())
-                getBinder().setSelfMuteDeafState(settings.isMuted(), settings.isDeafened());
 
-            // Update setting-dependent connection properties
-            configureHotCorner();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
+        // Update setting-dependent connection properties
+        configureHotCorner();
         // Configure proximity sensor
         if(Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod())) {
             setProximitySensorOn(true);
