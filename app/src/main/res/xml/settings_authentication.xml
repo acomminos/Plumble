@@ -33,4 +33,9 @@
         android:summary="@string/defaultUsernameSum"
         android:title="@string/defaultUsername"
         android:defaultValue="@string/defaultUsernameDefault"/>
+
+    <Preference
+        android:key="clearTrust"
+        android:title="@string/clearServerCertificates"
+        android:summary="@string/clearServerCertificatesSum"/>
 </PreferenceScreen>

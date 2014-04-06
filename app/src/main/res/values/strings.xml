@@ -167,6 +167,7 @@
     <string name="allow">Allow</string>
     <string name="trust_added">Added certificate to trust store</string>
     <string name="trust_add_failed">Failed to add certificate to trust store!</string>
+    <string name="trust_cleared">Trust database cleared</string>
 
     <!-- Drawer pane -->
     <string name="drawer_open">Open Drawer</string>

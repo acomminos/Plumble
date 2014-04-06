@@ -90,7 +90,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     /** Broadcasted when the activity gains focus. Used to dismiss chat notifications, bit of a hack. */
     public static final String ACTION_PLUMBLE_SHOWN = "com.morlunk.mumbleclient.ACTION_PLUMBLE_SHOWN";
     public static final int RECONNECT_DELAY = 10000;
-    public static final int REQUEST_KEYCHAIN = 1001;
 
     private static final String SAVED_FRAGMENT_TAG = "fragment";
 

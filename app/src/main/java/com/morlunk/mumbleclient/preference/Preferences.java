@@ -40,11 +40,14 @@ import android.widget.Toast;
 
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
+import com.morlunk.mumbleclient.util.PlumbleTrustStore;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.List;
 
 import info.guardianproject.onionkit.ui.OrbotHelper;
@@ -63,6 +66,7 @@ public class Preferences extends PreferenceActivity {
 
     private static final String CERTIFICATE_GENERATE_KEY = "certificateGenerate";
     private static final String CERTIFICATE_PATH_KEY = "certificatePath";
+    private static final String TRUST_CLEAR_KEY = "clearTrust";
     private static final String USE_TOR_KEY = "useTor";
 
     @Override
@@ -106,6 +110,7 @@ public class Preferences extends PreferenceActivity {
     private static void configureCertificatePreferences(PreferenceScreen screen) {
         final Preference certificateGeneratePreference = screen.findPreference(CERTIFICATE_GENERATE_KEY);
         final ListPreference certificatePathPreference = (ListPreference) screen.findPreference(CERTIFICATE_PATH_KEY);
+        final Preference trustClearPreference = screen.findPreference(TRUST_CLEAR_KEY);
 
         certificateGeneratePreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
@@ -138,6 +143,14 @@ public class Preferences extends PreferenceActivity {
                     e.printStackTrace();
                 }
                 return false;
+            }
+        });
+        trustClearPreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                PlumbleTrustStore.clearTrustStore(preference.getContext());
+                Toast.makeText(preference.getContext(), R.string.trust_cleared, Toast.LENGTH_LONG).show();
+                return true;
             }
         });
 
