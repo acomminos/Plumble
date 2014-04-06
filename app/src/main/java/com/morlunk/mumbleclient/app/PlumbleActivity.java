@@ -197,6 +197,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         @Override
         public void onTLSHandshakeFailed(ParcelableByteArray cert) throws RemoteException {
             byte[] certBytes = cert.getBytes();
+            final Server lastServer = getService().getConnectedServer();
 
             try {
                 CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
@@ -211,11 +212,12 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     public void onClick(DialogInterface dialog, int which) {
                         // Try to add to trust store
                         try {
-                            String alias = getService().getConnectedServer().getHost(); // FIXME unreliable
+                            String alias = lastServer.getHost(); // FIXME unreliable
                             KeyStore trustStore = PlumbleTrustStore.getTrustStore(PlumbleActivity.this);
                             trustStore.setCertificateEntry(alias, x509);
                             PlumbleTrustStore.saveTrustStore(PlumbleActivity.this, trustStore);
                             Toast.makeText(PlumbleActivity.this, R.string.trust_added, Toast.LENGTH_LONG).show();
+                            connectToServer(lastServer); // FIXME unreliable
                         } catch (Exception e) {
                             e.printStackTrace();
                             Toast.makeText(PlumbleActivity.this, R.string.trust_add_failed, Toast.LENGTH_LONG).show();
