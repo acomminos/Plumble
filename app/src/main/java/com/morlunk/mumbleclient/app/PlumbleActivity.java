@@ -55,6 +55,7 @@ import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.jumble.util.MumbleURLParser;
+import com.morlunk.jumble.util.ParcelableByteArray;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.channel.AccessTokenFragment;
@@ -72,9 +73,15 @@ import com.morlunk.mumbleclient.servers.ServerListFragment;
 import com.morlunk.mumbleclient.service.PlumbleService;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.util.JumbleServiceProvider;
+import com.morlunk.mumbleclient.util.PlumbleTrustStore;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,6 +90,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     /** Broadcasted when the activity gains focus. Used to dismiss chat notifications, bit of a hack. */
     public static final String ACTION_PLUMBLE_SHOWN = "com.morlunk.mumbleclient.ACTION_PLUMBLE_SHOWN";
     public static final int RECONNECT_DELAY = 10000;
+    public static final int REQUEST_KEYCHAIN = 1001;
 
     private static final String SAVED_FRAGMENT_TAG = "fragment";
 
@@ -185,6 +193,41 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 });
             }
             mErrorDialog = ab.show();
+        }
+
+        @Override
+        public void onTLSHandshakeFailed(ParcelableByteArray cert) throws RemoteException {
+            byte[] certBytes = cert.getBytes();
+
+            try {
+                CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+                final Certificate x509 = certFactory.generateCertificate(new ByteArrayInputStream(certBytes));
+
+                AlertDialog.Builder adb = new AlertDialog.Builder(PlumbleActivity.this);
+                adb.setTitle(R.string.untrusted_certificate);
+                adb.setMessage(x509.toString());
+                adb.setPositiveButton(R.string.allow, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Try to add to trust store
+                        try {
+                            String alias = getService().getConnectedServer().getHost(); // FIXME unreliable
+                            KeyStore trustStore = PlumbleTrustStore.getTrustStore(PlumbleActivity.this);
+                            trustStore.setCertificateEntry(alias, x509);
+                            PlumbleTrustStore.saveTrustStore(PlumbleActivity.this, trustStore);
+                            Toast.makeText(PlumbleActivity.this, R.string.trust_added, Toast.LENGTH_LONG).show();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(PlumbleActivity.this, R.string.trust_add_failed, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                adb.setNegativeButton(R.string.wizard_cancel, null);
+                adb.show();
+            } catch (CertificateException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -598,6 +641,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         connectIntent.putExtra(JumbleService.EXTRAS_AUDIO_SOURCE, audioSource);
         connectIntent.putExtra(JumbleService.EXTRAS_AUDIO_STREAM, audioStream);
         connectIntent.putExtra(JumbleService.EXTRAS_FRAMES_PER_PACKET, mSettings.getFramesPerPacket());
+        connectIntent.putExtra(JumbleService.EXTRAS_TRUST_STORE, PlumbleTrustStore.getTrustStorePath(this));
+        connectIntent.putExtra(JumbleService.EXTRAS_TRUST_STORE_PASSWORD, PlumbleTrustStore.getTrustStorePassword());
+        connectIntent.putExtra(JumbleService.EXTRAS_TRUST_STORE_FORMAT, PlumbleTrustStore.getTrustStoreFormat());
         connectIntent.setAction(JumbleService.ACTION_CONNECT);
         startService(connectIntent);
     }
