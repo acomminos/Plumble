@@ -27,6 +27,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
@@ -40,6 +41,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.text.method.ScrollingMovementMethod;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,6 +50,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.morlunk.jumble.Constants;
@@ -205,7 +209,14 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
                 AlertDialog.Builder adb = new AlertDialog.Builder(PlumbleActivity.this);
                 adb.setTitle(R.string.untrusted_certificate);
-                adb.setMessage(x509.toString());
+                TextView certView = new TextView(PlumbleActivity.this);
+                certView.setText(x509.toString());
+                certView.setTypeface(Typeface.MONOSPACE);
+                certView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+                certView.setHorizontallyScrolling(true);
+                certView.setMovementMethod(new ScrollingMovementMethod());
+                certView.setHorizontalScrollBarEnabled(true);
+                adb.setView(certView);
                 adb.setPositiveButton(R.string.allow, new DialogInterface.OnClickListener() {
 
                     @Override
