@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ Copyright (C) 2014 Andrew Comminos
   ~
@@ -17,12 +16,13 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-
-    <dimen name="padding_small">8dp</dimen>
-    <dimen name="padding_medium">8dp</dimen>
-    <dimen name="padding_large">16dp</dimen>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-
-</resources>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:updatePeriodMillis="86400000"
+    android:previewImage="@drawable/example_appwidget_preview"
+    android:initialLayout="@layout/new_app_widget"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen|keyguard"
+    android:initialKeyguardLayout="@layout/new_app_widget">
+</appwidget-provider>

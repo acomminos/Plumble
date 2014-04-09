@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ Copyright (C) 2014 Andrew Comminos
   ~
@@ -19,10 +18,10 @@
 
 <resources>
 
-    <dimen name="padding_small">8dp</dimen>
-    <dimen name="padding_medium">8dp</dimen>
-    <dimen name="padding_large">16dp</dimen>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    <!--
+Refer to App Widget Documentation for margin information
+http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
+    -->
+    <dimen name="widget_margin">0dp</dimen>
 
 </resources>
