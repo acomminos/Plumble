@@ -121,12 +121,12 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
 
         @Override
         public void onConnectionError(String message, boolean reconnecting) throws RemoteException {
-            String tickerMessage = null;
-            if(reconnecting) tickerMessage += "\n"+getString(R.string.reconnecting, PlumbleActivity.RECONNECT_DELAY/1000);
-            else tickerMessage = getString(R.string.plumbleDisconnected);
-            if(mNotificationReceiver == null) createNotification();
-            updateNotificationTicker(tickerMessage);
-            updateNotificationState();
+            if(reconnecting) {
+                String tickerMessage = getString(R.string.reconnecting, PlumbleActivity.RECONNECT_DELAY/1000);
+                if(mNotificationReceiver == null) createNotification();
+                updateNotificationTicker(tickerMessage);
+                updateNotificationState();
+            }
         }
 
         @Override
