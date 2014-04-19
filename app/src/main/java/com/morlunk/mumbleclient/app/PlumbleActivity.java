@@ -298,6 +298,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             public void onCancel(DialogInterface dialog) {
                 try {
                     mService.disconnect();
+                    Toast.makeText(PlumbleActivity.this, R.string.cancelled, Toast.LENGTH_SHORT).show();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
