@@ -456,7 +456,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     keyCode == mSettings.getPushToTalkKey() &&
                     mService != null &&
                     mService.isConnected()) {
-                if(!mService.isTalking()) mService.setTalkingState(true);
+                if(!mService.isTalking() && !mSettings.isPushToTalkToggle()) {
+                    mService.setTalkingState(true);
+                }
                 return true;
             }
         } catch (RemoteException e) {
@@ -472,7 +474,11 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     keyCode == mSettings.getPushToTalkKey() &&
                     mService != null &&
                     mService.isConnected()) {
-                if(mService.isTalking()) mService.setTalkingState(false);
+                if(!mSettings.isPushToTalkToggle() && mService.isTalking()) {
+                    mService.setTalkingState(false);
+                } else {
+                    mService.setTalkingState(!mService.isTalking());
+                }
                 return true;
             }
         } catch (RemoteException e) {
