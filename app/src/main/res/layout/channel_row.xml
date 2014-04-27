@@ -21,7 +21,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/channel_row_title"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
     <ImageView
@@ -36,10 +36,11 @@
     <TextView
             android:id="@+id/channel_row_name"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
             android:layout_weight="1"
             android:gravity="center_vertical|left"
-            android:text="Channel name"
+            android:text="Channel name\nLine 2\nLine 3\nLine 4"
             android:padding="4dp"/>
 
     <TextView
