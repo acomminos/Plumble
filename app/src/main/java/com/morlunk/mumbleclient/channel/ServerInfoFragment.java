@@ -116,7 +116,7 @@ public class ServerInfoFragment extends JumbleServiceFragment {
                     @Override
                     public void run() {
                         try {
-                            updateData();
+                            if(!isDetached()) updateData();
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
