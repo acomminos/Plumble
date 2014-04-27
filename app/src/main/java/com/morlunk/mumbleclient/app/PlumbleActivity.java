@@ -523,7 +523,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     @Override
                     protected void onPostExecute(File result) {
                         super.onPostExecute(result);
-                        mSettings.setCertificatePath(result.getAbsolutePath());
+                        if(result != null) mSettings.setCertificatePath(result.getAbsolutePath());
                     }
                 };
                 generateTask.execute();

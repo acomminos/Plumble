@@ -129,7 +129,7 @@ public class PlumbleCertificateManager {
                 certificateDirectory.mkdir();
             return certificateDirectory;
         } else {
-            throw new IOException();
+            throw new IOException("External storage not available.");
         }
 	}
 }

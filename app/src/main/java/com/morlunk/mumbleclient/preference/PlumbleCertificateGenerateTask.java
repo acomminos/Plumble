@@ -57,8 +57,7 @@ public class PlumbleCertificateGenerateTask extends AsyncTask<Void, Void, File> 
 	@Override
 	protected File doInBackground(Void... params) {
 		try {
-			File certificate = PlumbleCertificateManager.generateCertificate();
-			return certificate;
+			return PlumbleCertificateManager.generateCertificate();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
