@@ -234,7 +234,7 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
         boolean expandUsable = channel.getSubchannels().size() > 0 ||
                                channel.getSubchannelUserCount() > 0;
         ImageView expandView = (ImageView) v.findViewById(R.id.channel_row_expand);
-        expandView.setImageResource((isGroupExpanded(groupId) || !expandUsable) ? R.drawable.ic_action_minus_light : R.drawable.ic_action_add_light);
+        expandView.setImageResource((isGroupExpanded(groupId) || !expandUsable) ? R.drawable.ic_action_expanded : R.drawable.ic_action_collapsed);
         expandView.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -246,7 +246,7 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
         });
         // Dim channel expand toggle when no subchannels exist
         expandView.setEnabled(expandUsable);
-        expandView.setColorFilter(expandUsable ? 0xFFFFFFFF: 0x55FFFFFF, PorterDuff.Mode.MULTIPLY);
+        expandView.setVisibility(expandUsable ? View.VISIBLE : View.INVISIBLE);
 
         TextView nameView = (TextView) v
                 .findViewById(R.id.channel_row_name);

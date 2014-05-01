@@ -30,7 +30,7 @@
             android:layout_height="match_parent"
             android:padding="12dp"
             style="@style/Plumble.BorderlessButton"
-            android:src="@drawable/ic_action_add_light"
+            android:src="@drawable/ic_action_collapsed"
             android:tint="?android:attr/textColorPrimary"/>
 
     <TextView
