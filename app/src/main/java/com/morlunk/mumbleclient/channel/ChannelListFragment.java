@@ -26,6 +26,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.CursorWrapper;
+import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -193,9 +194,14 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
         try {
             if(getService() != null && getService().isConnected() && getService().getSessionUser() != null) {
+                // Color the action bar icons to the primary text color of the theme, TODO move this elsewhere
+                int foregroundColor = getActivity().getTheme().obtainStyledAttributes(new int[]{android.R.attr.textColorPrimaryInverse}).getColor(0, -1);
+
                 User self = getService().getSessionUser();
                 muteItem.setIcon(self.isSelfMuted() ? R.drawable.ic_action_microphone_muted : R.drawable.ic_action_microphone);
                 deafenItem.setIcon(self.isSelfDeafened() ? R.drawable.ic_action_audio_muted : R.drawable.ic_action_audio);
+                muteItem.getIcon().mutate().setColorFilter(foregroundColor, PorterDuff.Mode.MULTIPLY);
+                deafenItem.getIcon().mutate().setColorFilter(foregroundColor, PorterDuff.Mode.MULTIPLY);
             }
         } catch (RemoteException e) {
             e.printStackTrace();
