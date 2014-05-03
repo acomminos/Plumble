@@ -26,33 +26,13 @@
         android:summary="@string/audioInputMethodSum"
         android:title="@string/audioInputMethod" />
 
-    <!-- TODO add an actual min of 8000hz -->
-    <ListPreference
-        android:key="input_quality"
-        android:defaultValue="48000"
-        android:title="@string/audioSampleRate"
-        android:summary="@string/audioSampleRateSum"
-        android:entries="@array/audioSampleRateNames"
-        android:entryValues="@array/audioSampleRateValues"/>
-
     <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
-        android:key="input_bitrate"
-        android:title="@string/inputQuality"
-        android:summary="@string/inputQualitySum"
-        multiplier="1000"
-        max="96"
-        min="8"
-        android:defaultValue="40"
-        android:text=" bps"/>
-
-    <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
-        android:key="frames_per_packet"
-        android:title="@string/framesPerPacket"
-        android:summary="@string/framesPerPacketSum"
-        max="6"
-        min="1"
-        android:defaultValue="6"
-        android:text=" frames"/>
+        android:title="@string/audioInputVolume"
+        android:summary="@string/audioInputVolumeSum"
+        android:key="inputVolume"
+        max="200"
+        android:defaultValue="100"
+        android:text="%"/>
 
     <PreferenceCategory android:title="@string/voiceActivitySettings"
         android:key="vad_settings">
@@ -92,13 +72,33 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/advancedAudio" >
 
+        <!-- TODO add an actual min of 8000hz -->
+        <ListPreference
+            android:key="input_quality"
+            android:defaultValue="48000"
+            android:title="@string/audioSampleRate"
+            android:summary="@string/audioSampleRateSum"
+            android:entries="@array/audioSampleRateNames"
+            android:entryValues="@array/audioSampleRateValues"/>
+
         <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
-            android:title="@string/audioInputVolume"
-            android:summary="@string/audioInputVolumeSum"
-            android:key="inputVolume"
-            max="200"
-            android:defaultValue="100"
-            android:text="%"/>
+            android:key="input_bitrate"
+            android:title="@string/inputQuality"
+            android:summary="@string/inputQualitySum"
+            multiplier="1000"
+            max="96"
+            min="8"
+            android:defaultValue="40"
+            android:text=" bps"/>
+
+        <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
+            android:key="frames_per_packet"
+            android:title="@string/framesPerPacket"
+            android:summary="@string/framesPerPacketSum"
+            max="6"
+            min="1"
+            android:defaultValue="6"
+            android:text=" frames"/>
 
         <!-- TODO: REIMPLEMENT -->
         <!--
