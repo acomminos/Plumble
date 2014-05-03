@@ -428,7 +428,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             builder.addAction(R.drawable.ic_action_microphone,
                     getString(R.string.mute), PendingIntent.getBroadcast(this, 1,
                     muteIntent, PendingIntent.FLAG_CANCEL_CURRENT));
-            builder.addAction(R.drawable.ic_action_audio_on,
+            builder.addAction(R.drawable.ic_action_audio,
                     getString(R.string.deafen), PendingIntent.getBroadcast(this, 1,
                     deafenIntent, PendingIntent.FLAG_CANCEL_CURRENT));
             builder.addAction(R.drawable.ic_action_channels,
