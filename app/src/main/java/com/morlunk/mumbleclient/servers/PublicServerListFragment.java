@@ -347,7 +347,7 @@ public class PublicServerListFragment extends Fragment implements OnItemClickLis
                 public void onClick(View v) {
                     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
 
-                    Settings settings = Settings.getInstance(getActivity());
+                    final Settings settings = Settings.getInstance(getActivity());
 
                     // Allow username entry
                     final EditText usernameField = new EditText(getContext());
@@ -360,9 +360,8 @@ public class PublicServerListFragment extends Fragment implements OnItemClickLis
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             String username = usernameField.getText().toString();
-                            if(username.equals(""))
-                                server.setUsername(usernameField.getHint().toString());
-
+                            if(username.equals("")) username = settings.getDefaultUsername();
+                            server.setUsername(username);
                             mDatabaseProvider.getDatabase().addServer(server);
                         }
                     });
