@@ -425,10 +425,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     e.printStackTrace();
                 }
                 return true;
-            case R.id.action_settings:
-                Intent prefIntent = new Intent(this, Preferences.class);
-                startActivity(prefIntent);
-                return true;
         }
 
         return false;
@@ -566,11 +562,13 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             case DrawerAdapter.ITEM_FAVOURITES:
                 fragmentClass = FavouriteServerListFragment.class;
                 break;
-            case DrawerAdapter.ITEM_LAN:
-                break;
             case DrawerAdapter.ITEM_PUBLIC:
                 fragmentClass = PublicServerListFragment.class;
                 break;
+            case DrawerAdapter.ITEM_SETTINGS:
+                Intent prefIntent = new Intent(this, Preferences.class);
+                startActivity(prefIntent);
+                return;
             default:
                 return;
         }
