@@ -21,7 +21,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    style="@style/Plumble.Card">
+    android:background="?attr/cardBackground">
 
     <LinearLayout
         android:id="@+id/list_chat_item_box"

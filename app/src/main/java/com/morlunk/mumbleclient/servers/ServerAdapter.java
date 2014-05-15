@@ -65,9 +65,6 @@ public abstract class ServerAdapter<E extends Server> extends ArrayAdapter<E> {
         if(v == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(mViewResource, parent, false);
-            TypedArray bgArray = getContext().getTheme().obtainStyledAttributes(new int[] { R.attr.cardBackground });
-            view.setBackgroundResource(bgArray.getResourceId(0, R.drawable.server_card));
-            bgArray.recycle();
         }
 
         final E server = getItem(position);
