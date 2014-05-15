@@ -71,9 +71,9 @@ import com.morlunk.mumbleclient.db.PlumbleSQLiteDatabase;
 import com.morlunk.mumbleclient.db.PublicServer;
 import com.morlunk.mumbleclient.preference.PlumbleCertificateGenerateTask;
 import com.morlunk.mumbleclient.preference.Preferences;
+import com.morlunk.mumbleclient.servers.FavouriteServerListFragment;
 import com.morlunk.mumbleclient.servers.PublicServerListFragment;
 import com.morlunk.mumbleclient.servers.ServerEditFragment;
-import com.morlunk.mumbleclient.servers.ServerListFragment;
 import com.morlunk.mumbleclient.service.PlumbleService;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.util.JumbleServiceProvider;
@@ -89,7 +89,7 @@ import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener, ServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider, SharedPreferences.OnSharedPreferenceChangeListener, DrawerAdapter.DrawerDataProvider, ServerEditFragment.ServerEditListener {
+public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener, FavouriteServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider, SharedPreferences.OnSharedPreferenceChangeListener, DrawerAdapter.DrawerDataProvider, ServerEditFragment.ServerEditListener {
 
     /** Broadcasted when the activity gains focus. Used to dismiss chat notifications, bit of a hack. */
     public static final String ACTION_PLUMBLE_SHOWN = "com.morlunk.mumbleclient.ACTION_PLUMBLE_SHOWN";
@@ -564,7 +564,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 args.putBoolean("pinned", true);
                 break;
             case DrawerAdapter.ITEM_FAVOURITES:
-                fragmentClass = ServerListFragment.class;
+                fragmentClass = FavouriteServerListFragment.class;
                 break;
             case DrawerAdapter.ITEM_LAN:
                 break;

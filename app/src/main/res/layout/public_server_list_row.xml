@@ -20,11 +20,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     tools:ignore="NewApi"
     style="@style/Plumble.Card">
 
     <LinearLayout
+        android:id="@+id/server_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
@@ -47,7 +47,7 @@
                 android:gravity="left|center_vertical"
                 android:lines="1"
                 android:text="@string/server_host"
-                android:textColor="#808080"
+                android:textColor="?android:textColorSecondary"
                 android:textSize="24sp" />
 
             <RelativeLayout
@@ -60,23 +60,38 @@
                     android:id="@+id/server_row_version_status"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:focusable="false"
                     android:fontFamily="sans-serif-light"
                     android:gravity="center_vertical"
-                    android:lines="1"
-                    android:text="@string/noServerInfo"
-                    android:textColor="#808080" />
+                    android:textColor="?android:textColorSecondary"
+                    android:text="Version status"
+                    android:layout_alignParentLeft="true"/>
 
                 <TextView
                     android:id="@+id/server_row_usercount"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
+                    android:ellipsize="marquee"
+                    android:focusable="false"
                     android:fontFamily="sans-serif-light"
                     android:gravity="center_vertical"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
                     android:singleLine="true"
-                    android:text="15/100"
-                    android:textColor="#808080" />
+                    android:textColor="?android:textColorSecondary"
+                    android:layout_toRightOf="@id/server_row_version_status"
+                    android:layout_marginLeft="8dp"
+                    android:text="15/100" />
+
+                <TextView
+                    android:id="@+id/server_row_latency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="sans-serif-light"
+                    android:textColor="?android:textColorSecondary"
+                    android:text="100ms"
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"/>
 
                 <ProgressBar
                     android:id="@+id/server_row_ping_progress"
@@ -84,6 +99,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
+                    android:visibility="invisible"
                     android:indeterminate="true" />
             </RelativeLayout>
 
@@ -91,20 +107,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="left|center_vertical"
-                android:paddingBottom="4dp" >
+                android:paddingBottom="4dp">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginRight="5dp"
-                    android:src="@drawable/ic_server_light" />
+                    android:src="@drawable/ic_server_light"
+                    android:tint="?android:attr/textColorPrimary" />
 
                 <TextView
                     android:id="@+id/server_row_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/server_host"
-                    android:textColor="#808080" />
+                    android:textColor="?android:textColorSecondary"
+                    android:text="@string/server_host"/>
             </LinearLayout>
 
             <LinearLayout
@@ -116,26 +133,29 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginRight="5dp"
-                    android:src="@drawable/ic_server_location" />
+                    android:src="@drawable/ic_server_location"
+                    android:tint="?android:attr/textColorPrimary"/>
 
                 <TextView
                     android:id="@+id/server_row_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Somewhere"
-                    android:textColor="#808080" />
+                    android:textColor="?android:textColorSecondary"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
+    <!-- We can't have a focusable element in a GridView item -->
+
     <ImageView
-        android:id="@+id/server_row_favorite"
-        style="@style/Plumble.BorderlessButton"
+        android:id="@+id/server_row_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:padding="5dp"
-        android:src="@drawable/ic_action_favorite_dark" />
+        android:paddingRight="8dp"
+        android:paddingTop="4dp"
+        android:layout_alignTop="@id/server_card"
+        android:layout_alignRight="@id/server_card"
+        android:src="@drawable/ic_card_overflow" />
 
 </RelativeLayout>

@@ -17,9 +17,9 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/menu_edit_item" android:title="@string/edit"></item>
-    <item android:id="@+id/menu_share_item" android:title="@string/share"></item>
-    <item android:id="@+id/menu_delete_item" android:title="@string/delete"></item>
+    <item android:id="@+id/menu_server_edit" android:title="@string/edit"></item>
+    <item android:id="@+id/menu_server_share" android:title="@string/share"></item>
+    <item android:id="@+id/menu_server_delete" android:title="@string/delete"></item>
     
 
 </menu>
