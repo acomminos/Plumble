@@ -18,12 +18,10 @@
 package com.morlunk.mumbleclient.servers;
 
 import android.content.Context;
-import android.os.AsyncTask;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,13 +31,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.morlunk.jumble.model.Server;
-import com.morlunk.mumbleclient.Constants;
 import com.morlunk.mumbleclient.R;
-import com.morlunk.mumbleclient.util.CardDrawable;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -71,7 +65,9 @@ public abstract class ServerAdapter<E extends Server> extends ArrayAdapter<E> {
         if(v == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(mViewResource, parent, false);
-            view.setBackgroundDrawable(CardDrawable.getDrawable(getContext()));
+            TypedArray bgArray = getContext().getTheme().obtainStyledAttributes(new int[] { R.attr.cardBackground });
+            view.setBackgroundResource(bgArray.getResourceId(0, R.drawable.server_card));
+            bgArray.recycle();
         }
 
         final E server = getItem(position);

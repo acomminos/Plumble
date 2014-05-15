@@ -289,7 +289,7 @@ public class ChannelUserWindow extends PopupWindow implements GridView.OnItemCli
         priorityItem.toggled = mUser.isPrioritySpeaker();
         localMuteItem.toggled = mUser.isLocalMuted();
         ignoreMessagesItem.toggled = mUser.isLocalIgnored();
-        sendMessageItem.toggled = mTargetProvider.getChatTarget() != null && mTargetProvider.getChatTarget().getUser() != null ? mTargetProvider.getChatTarget().getUser().getSession() == mUser.getSession() : false;
+        sendMessageItem.toggled = mTargetProvider.getChatTarget() != null && mTargetProvider.getChatTarget().getUser() != null && mTargetProvider.getChatTarget().getUser().getSession() == mUser.getSession();
 
         mGridView.setAdapter(new PopupGridMenuAdapter(mContext, menuItems));
     }

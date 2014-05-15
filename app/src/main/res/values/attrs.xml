@@ -26,6 +26,6 @@
     <attr name="highlightColor" format="color"/>
     <!-- Used in places like the drawer and pager bar for showing contrast with the content. -->
     <attr name="secondaryBackground" format="color"/>
-    <!-- Server list card color -->
-    <attr name="cardBackground" format="color"/>
+    <!-- Server list card drawable -->
+    <attr name="cardBackground" format="reference"/>
 </resources>
