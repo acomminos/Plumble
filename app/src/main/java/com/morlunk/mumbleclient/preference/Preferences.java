@@ -22,6 +22,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.os.Build;
@@ -44,10 +46,8 @@ import com.morlunk.mumbleclient.util.PlumbleTrustStore;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.List;
 
 import info.guardianproject.onionkit.ui.OrbotHelper;
@@ -68,6 +68,7 @@ public class Preferences extends PreferenceActivity {
     private static final String CERTIFICATE_PATH_KEY = "certificatePath";
     private static final String TRUST_CLEAR_KEY = "clearTrust";
     private static final String USE_TOR_KEY = "useTor";
+    private static final String VERSION_KEY = "version";
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -90,6 +91,7 @@ public class Preferences extends PreferenceActivity {
                 addPreferencesFromResource(R.xml.settings_appearance);
             } else if (ACTION_PREFS_ABOUT.equals(action)) {
                 addPreferencesFromResource(R.xml.settings_about);
+                configureAboutPreferences(this, getPreferenceScreen());
             }
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             addPreferencesFromResource(R.xml.preference_headers_legacy);
@@ -293,6 +295,18 @@ public class Preferences extends PreferenceActivity {
         generateTask.execute();
     }
 
+    private static void configureAboutPreferences(Context context, PreferenceScreen screen) {
+        String version = "Unknown";
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            version = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        Preference versionPreference = screen.findPreference(VERSION_KEY);
+        versionPreference.setSummary(version);
+    }
+
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class PlumblePreferenceFragment extends PreferenceFragment {
 
@@ -314,6 +328,7 @@ public class Preferences extends PreferenceActivity {
                 addPreferencesFromResource(R.xml.settings_appearance);
             } else if ("about".equals(section)) {
                 addPreferencesFromResource(R.xml.settings_about);
+                configureAboutPreferences(getPreferenceScreen().getContext(), getPreferenceScreen());
             }
         }
     }

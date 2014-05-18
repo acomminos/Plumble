@@ -135,4 +135,5 @@
     <string name="loadImages">Load External Images</string>
     <string name="clearServerCertificates">Clear Server Certificates</string>
     <string name="clearServerCertificatesSum">Clear all allowed server certificates from Plumble\'s trust database.</string>
+    <string name="version">Version</string>
 </resources>
