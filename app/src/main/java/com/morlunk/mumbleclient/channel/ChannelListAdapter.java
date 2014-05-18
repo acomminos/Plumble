@@ -204,7 +204,6 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
 
     @Override
     public int getGroupCount(int parentId) {
-        if(mShowPinnedOnly) return 0; // No subchannels when using pinned
         Channel parent = mChannels.get(parentId);
         return parent.getSubchannels().size();
     }
