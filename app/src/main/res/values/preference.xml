@@ -136,4 +136,6 @@
     <string name="clearServerCertificates">Clear Server Certificates</string>
     <string name="clearServerCertificatesSum">Clear all allowed server certificates from Plumble\'s trust database.</string>
     <string name="version">Version</string>
+    <string name="halfDuplex">Half Duplex Mode</string>
+    <string name="halfDuplexSum">Mutes device sound when using push to talk, removing audio feedback for channel users.</string>
 </resources>

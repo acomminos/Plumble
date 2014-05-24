@@ -27,7 +27,7 @@
         android:id="@+id/channel_view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" >
+        android:layout_weight="1">
         <android.support.v4.view.PagerTabStrip
             android:id="@+id/channel_tab_strip"
             android:layout_width="match_parent"
@@ -40,13 +40,8 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:gravity="center_horizontal"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:background="?attr/secondaryBackground">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/textColorPrimaryInverse"/>
 
         <Button
             android:id="@+id/pushtotalk"

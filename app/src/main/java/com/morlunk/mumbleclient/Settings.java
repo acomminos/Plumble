@@ -115,14 +115,13 @@ public class Settings {
     public static final String PREF_FRAMES_PER_PACKET = "frames_per_packet";
     public static final int DEFAULT_FRAMES_PER_PACKET = 6;
 
+    public static final String PREF_HALF_DUPLEX = "half_duplex";
+    public static final boolean DEFAULT_HALF_DUPLEX = false;
+
     private final SharedPreferences preferences;
 
-    private static Settings settings;
-
     public static Settings getInstance(Context context) {
-        if(settings == null)
-            settings = new Settings(context);
-        return settings;
+        return new Settings(context);
     }
 
     private Settings(Context ctx) {
@@ -270,5 +269,9 @@ public class Settings {
 
     public int getFramesPerPacket() {
         return preferences.getInt(PREF_FRAMES_PER_PACKET, DEFAULT_FRAMES_PER_PACKET);
+    }
+
+    public boolean isHalfDuplex() {
+        return preferences.getBoolean(PREF_HALF_DUPLEX, DEFAULT_HALF_DUPLEX);
     }
 }

@@ -69,6 +69,11 @@
             android:key="togglePtt"
             android:summary="@string/togglePttSum"
             android:title="@string/togglePtt" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="half_duplex"
+            android:title="@string/halfDuplex"
+            android:summary="@string/halfDuplexSum"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/advancedAudio" >
 

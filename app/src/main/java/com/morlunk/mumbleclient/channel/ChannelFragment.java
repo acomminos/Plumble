@@ -17,8 +17,10 @@
 
 package com.morlunk.mumbleclient.channel;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
@@ -55,6 +57,7 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     private ChatTarget mChatTarget;
     /** Chat target listeners, notified when the chat target is changed. */
     private List<OnChatTargetSelectedListener> mChatTargetListeners = new ArrayList<OnChatTargetSelectedListener>();
+    private boolean mTogglePTT;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,7 +77,6 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
             mTabStrip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         }
 
-        final Settings settings = Settings.getInstance(getActivity());
         mTalkView = view.findViewById(R.id.pushtotalk_view);
         mTalkButton = (Button) view.findViewById(R.id.pushtotalk);
         mTalkButton.setOnTouchListener(new View.OnTouchListener() {
@@ -82,15 +84,17 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 try {
+                    boolean oldState = getService().isTalking();
+                    boolean newState;
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        if (!settings.isPushToTalkToggle())
-                            getService().setTalkingState(true);
-                        else
-                            getService().setTalkingState(!getService().isTalking());
+                        newState = !mTogglePTT || !oldState;
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        if (!settings.isPushToTalkToggle())
-                            getService().setTalkingState(false);
+                        newState = mTogglePTT && oldState;
+                    } else {
+                        return false;
                     }
+
+                    getService().setTalkingState(newState);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -147,11 +151,14 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
         Settings settings = Settings.getInstance(getActivity());
         boolean showPttButton = settings.isPushToTalkButtonShown() && settings.getInputMethod().equals(Settings.ARRAY_INPUT_METHOD_PTT);
         mTalkView.setVisibility(showPttButton ? View.VISIBLE : View.GONE);
+        mTogglePTT = settings.isPushToTalkToggle();
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if(Settings.PREF_INPUT_METHOD.equals(key) || Settings.PREF_PUSH_BUTTON_HIDE_KEY.equals(key))
+        if(Settings.PREF_INPUT_METHOD.equals(key) ||
+                Settings.PREF_PUSH_BUTTON_HIDE_KEY.equals(key) ||
+                Settings.PREF_PTT_TOGGLE.equals(key))
             configureInput();
     }
 

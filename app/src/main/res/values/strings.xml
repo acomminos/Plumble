@@ -170,6 +170,7 @@
     <string name="trust_add_failed">Failed to add certificate to trust store!</string>
     <string name="trust_cleared">Trust database cleared</string>
     <string name="cancelled">Cancelled</string>
+    <string name="transmit_mode">Transmit Mode</string>
 
     <!-- Drawer pane -->
     <string name="drawer_open">Open Drawer</string>

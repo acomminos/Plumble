@@ -661,6 +661,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         connectIntent.putExtra(JumbleService.EXTRAS_TRUST_STORE, PlumbleTrustStore.getTrustStorePath(this));
         connectIntent.putExtra(JumbleService.EXTRAS_TRUST_STORE_PASSWORD, PlumbleTrustStore.getTrustStorePassword());
         connectIntent.putExtra(JumbleService.EXTRAS_TRUST_STORE_FORMAT, PlumbleTrustStore.getTrustStoreFormat());
+        connectIntent.putExtra(JumbleService.EXTRAS_HALF_DUPLEX, mSettings.isHalfDuplex());
         connectIntent.setAction(JumbleService.ACTION_CONNECT);
         startService(connectIntent);
     }
