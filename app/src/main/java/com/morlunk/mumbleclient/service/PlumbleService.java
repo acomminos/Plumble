@@ -24,6 +24,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.os.Binder;
+import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
@@ -35,6 +37,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.morlunk.jumble.Constants;
+import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Message;
 import com.morlunk.jumble.model.User;
@@ -62,6 +65,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
 
     public static final int STATUS_NOTIFICATION_ID = 1;
 
+    private PlumbleBinder mBinder = new PlumbleBinder();
     private NotificationCompat.Builder mStatusNotificationBuilder;
     /** A list of messages to be displayed in the chat notification. Should be cleared when notification pressed. */
     private List<String> mUnreadMessages = new ArrayList<String>();
@@ -105,11 +109,6 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
                         mChannelOverlay.show();
                     else
                         mChannelOverlay.hide();
-                } else if(PlumbleActivity.ACTION_PLUMBLE_SHOWN.equals(intent.getAction())) {
-                    if(getBinder().isConnected()) {
-                        mUnreadMessages.clear();
-                        updateNotificationState();
-                    }
                 }
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -182,7 +181,6 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         notificationIntentFilter.addAction(BROADCAST_MUTE);
         notificationIntentFilter.addAction(BROADCAST_DEAFEN);
         notificationIntentFilter.addAction(BROADCAST_TOGGLE_OVERLAY);
-        notificationIntentFilter.addAction(PlumbleActivity.ACTION_PLUMBLE_SHOWN);
         registerReceiver(mNotificationReceiver, notificationIntentFilter);
 
         try {
@@ -501,6 +499,33 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         } else {
             if(mProximityLock != null) mProximityLock.release();
             mProximityLock = null;
+        }
+    }
+
+    @Override
+    public PlumbleBinder getBinder() {
+        return mBinder;
+    }
+
+    /**
+     * An extension of JumbleBinder to add Plumble-specific functionality.
+     */
+    public class PlumbleBinder extends JumbleBinder {
+        public void setOverlayShown(boolean showOverlay) {
+            if(!mChannelOverlay.isShown()) {
+                mChannelOverlay.show();
+            } else {
+                mChannelOverlay.hide();
+            }
+        }
+
+        public boolean isOverlayShown() {
+            return mChannelOverlay.isShown();
+        }
+
+        public void clearChatNotifications() throws RemoteException {
+            mUnreadMessages.clear();
+            updateNotificationState();
         }
     }
 }

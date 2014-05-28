@@ -90,14 +90,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener, FavouriteServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider, SharedPreferences.OnSharedPreferenceChangeListener, DrawerAdapter.DrawerDataProvider, ServerEditFragment.ServerEditListener {
-
-    /** Broadcasted when the activity gains focus. Used to dismiss chat notifications, bit of a hack. */
-    public static final String ACTION_PLUMBLE_SHOWN = "com.morlunk.mumbleclient.ACTION_PLUMBLE_SHOWN";
     public static final int RECONNECT_DELAY = 10000;
 
     private static final String SAVED_FRAGMENT_TAG = "fragment";
 
-    private IJumbleService mService;
+    private PlumbleService.PlumbleBinder mService;
     private PlumbleDatabase mDatabase;
     private Settings mSettings;
 
@@ -117,9 +114,10 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mService = (IJumbleService) service;
+            mService = (PlumbleService.PlumbleBinder) service;
             try {
                 mService.registerObserver(mObserver);
+                mService.clearChatNotifications(); // Clear chat notifications on resume.
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -359,9 +357,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         super.onResume();
         Intent connectIntent = new Intent(this, PlumbleService.class);
         bindService(connectIntent, mConnection, BIND_AUTO_CREATE);
-
-        Intent resumeIntent = new Intent(ACTION_PLUMBLE_SHOWN);
-        sendBroadcast(resumeIntent);
     }
 
     @Override
