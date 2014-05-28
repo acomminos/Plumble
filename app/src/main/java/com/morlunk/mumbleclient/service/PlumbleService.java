@@ -507,6 +507,11 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         return mBinder;
     }
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
+
     /**
      * An extension of JumbleBinder to add Plumble-specific functionality.
      */
