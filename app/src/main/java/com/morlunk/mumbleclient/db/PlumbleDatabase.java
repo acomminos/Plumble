@@ -26,6 +26,9 @@ import java.util.List;
  * Created by andrew on 13/08/13.
  */
 public interface PlumbleDatabase {
+    public void open();
+    public void close();
+
     public List<Server> getServers();
     public void addServer(Server server);
     public void updateServer(Server server);

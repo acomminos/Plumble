@@ -73,8 +73,7 @@
         <activity
             android:name=".app.PlumbleActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:configChanges="keyboardHidden|orientation|screenSize"> <!-- TODO get fragment state preservation into a state where this is unnecessary -->
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

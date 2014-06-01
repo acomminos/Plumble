@@ -529,8 +529,10 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         }
 
         public void clearChatNotifications() throws RemoteException {
-            mUnreadMessages.clear();
-            if(isConnected()) updateNotificationState();
+            if(mUnreadMessages.size() > 0) {
+                mUnreadMessages.clear();
+                if(isConnected()) updateNotificationState();
+            }
         }
     }
 }

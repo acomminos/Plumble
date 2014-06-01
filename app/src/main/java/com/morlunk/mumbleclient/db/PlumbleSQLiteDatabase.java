@@ -117,6 +117,11 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
     }
 
     @Override
+    public void open() {
+        // Do nothing. Database will be opened automatically when accessing it.
+    }
+
+    @Override
     public List<Server> getServers() {
         Cursor c = getReadableDatabase().query(
                 TABLE_SERVER,

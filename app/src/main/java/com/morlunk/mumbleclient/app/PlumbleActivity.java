@@ -92,8 +92,6 @@ import java.util.List;
 public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener, FavouriteServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider, SharedPreferences.OnSharedPreferenceChangeListener, DrawerAdapter.DrawerDataProvider, ServerEditFragment.ServerEditListener {
     public static final int RECONNECT_DELAY = 10000;
 
-    private static final String SAVED_FRAGMENT_TAG = "fragment";
-
     private PlumbleService.PlumbleBinder mService;
     private PlumbleDatabase mDatabase;
     private Settings mSettings;
@@ -102,7 +100,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private DrawerAdapter mDrawerAdapter;
-    private int mActiveFragment;
 
     private ProgressDialog mConnectingDialog;
     private AlertDialog mErrorDialog;
@@ -261,6 +258,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         preferences.registerOnSharedPreferenceChangeListener(this);
 
         mDatabase = new PlumbleSQLiteDatabase(this); // TODO add support for cloud storage
+        mDatabase.open();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -319,11 +317,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         dadb.setNegativeButton(android.R.string.cancel, null);
         mDisconnectPromptBuilder = dadb;
 
-        // Restore old fragment or load server list (default)
-        int fragmentId = DrawerAdapter.ITEM_FAVOURITES;
-        if(savedInstanceState != null)
-            fragmentId = savedInstanceState.getInt(SAVED_FRAGMENT_TAG, DrawerAdapter.ITEM_FAVOURITES);
-        loadDrawerFragment(fragmentId);
+        if(savedInstanceState == null) {
+            loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+        }
 
         // If we're given a Mumble URL to show, open up a server edit fragment.
         if(getIntent() != null &&
@@ -375,6 +371,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     protected void onDestroy() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.unregisterOnSharedPreferenceChangeListener(this);
+        mDatabase.close();
         super.onDestroy();
     }
 
@@ -429,15 +426,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        // Persist active fragment across rotations
-        outState.putInt(SAVED_FRAGMENT_TAG, mActiveFragment);
-
     }
 
     @Override
@@ -573,7 +561,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
         setTitle(mDrawerAdapter.getItemWithId(fragmentId).title);
-        mActiveFragment = fragmentId;
     }
 
     public void connectToServer(final Server server) {
