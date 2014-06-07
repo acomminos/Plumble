@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.media.AudioManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -80,6 +81,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     private PlumbleOverlay mChannelOverlay;
     /** Proximity lock for handset mode. */
     private PowerManager.WakeLock mProximityLock;
+    
+    private AudioManager mAudioManager;
 
     private TextToSpeech mTTS;
     private TextToSpeech.OnInitListener mTTSInitListener = new TextToSpeech.OnInitListener() {
@@ -193,6 +196,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         mSettings = Settings.getInstance(this);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
+        
+        mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);  
 
         // Instantiate overlay view
         mChannelOverlay = new PlumbleOverlay(this);
@@ -516,6 +521,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
      * An extension of JumbleBinder to add Plumble-specific functionality.
      */
     public class PlumbleBinder extends JumbleBinder {
+    	private int originalStreamVolume = 0;
+    	
         public void setOverlayShown(boolean showOverlay) {
             if(!mChannelOverlay.isShown()) {
                 mChannelOverlay.show();
@@ -528,6 +535,30 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             return mChannelOverlay.isShown();
         }
 
+        @Override
+        public void setTalkingState(boolean talking) throws RemoteException {
+        	float attenuation = mSettings.getAttenuateOthers();
+        	
+        	if (attenuation != 0.0f) {
+        		int stream = getAudioStream();
+        		
+            	int currentVolume = mAudioManager.getStreamVolume(stream);
+            	
+            	if (talking) {
+            		// lower stream volume to prevent feedback
+            		originalStreamVolume = currentVolume;
+            		int newVolume = (int)(currentVolume * (1.0f - attenuation));
+            		mAudioManager.setStreamVolume(stream, newVolume, 0);
+            	}
+            	else {
+            		// restore stream volume
+            		mAudioManager.setStreamVolume(stream, originalStreamVolume, 0);
+            	}
+        	}
+        	
+        	super.setTalkingState(talking);
+        }
+        
         public void clearChatNotifications() throws RemoteException {
             if(mUnreadMessages.size() > 0) {
                 mUnreadMessages.clear();

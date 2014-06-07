@@ -69,6 +69,9 @@ public class Settings {
 
     public static final String PREF_AMPLITUDE_BOOST = "inputVolume";
     public static final Integer DEFAULT_AMPLITUDE_BOOST = 100;
+    
+    public static final String PREF_ATTENUATE_OTHERS = "attenuateOthers";
+    public static final Integer DEFAULT_ATTENUATE_OTHERS = 0;
 
     public static final String PREF_CHAT_NOTIFY = "chatNotify";
     public static final Boolean DEFAULT_CHAT_NOTIFY = true;
@@ -142,6 +145,10 @@ public class Settings {
 
     public float getAmplitudeBoostMultiplier() {
         return (float)preferences.getInt(Settings.PREF_AMPLITUDE_BOOST, DEFAULT_AMPLITUDE_BOOST)/100;
+    }
+    
+    public float getAttenuateOthers() {
+        return (float)preferences.getInt(Settings.PREF_ATTENUATE_OTHERS, DEFAULT_ATTENUATE_OTHERS)/100;
     }
 
     public float getDetectionThreshold() {
