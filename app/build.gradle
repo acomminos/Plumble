@@ -24,7 +24,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
+        classpath 'com.android.tools.build:gradle:0.11.+'
     }
 }
 apply plugin: 'android'
@@ -36,9 +36,9 @@ repositories {
 dependencies {
     compile project(":libraries:Jumble")
     compile project(":libraries:libonionkit:libonionkit")
-    compile 'com.android.support:support-v4:19.0.+'
-    compile 'com.android.support:appcompat-v7:19.0.+'
-    compile 'com.google.guava:guava:16.+'
+    compile 'com.android.support:support-v4:19.1.+'
+    compile 'com.android.support:appcompat-v7:19.1.+'
+    compile 'com.google.guava:guava:17.+'
 }
 
 
@@ -57,7 +57,7 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 19
-        packageName "com.morlunk.mumbleclient"
+        applicationId "com.morlunk.mumbleclient"
         versionCode 64
         versionName "3.0.6"
         buildConfigField "boolean", "DONATE_NAG", "false"
@@ -66,11 +66,11 @@ android {
     productFlavors {
 
         official {
-            packageName "com.morlunk.mumbleclient"
+            applicationId "com.morlunk.mumbleclient"
         }
 
         free {
-            packageName "com.morlunk.mumbleclient.free"
+            applicationId "com.morlunk.mumbleclient.free"
             buildConfigField "boolean", "DONATE_NAG", "true"
         }
 
@@ -84,7 +84,7 @@ android {
                 versionCode 0
                 versionName "Unknown Nightly"
             }
-            packageName "com.morlunk.mumbleclient.jenkins"
+            applicationId "com.morlunk.mumbleclient.jenkins"
         }
     }
 
