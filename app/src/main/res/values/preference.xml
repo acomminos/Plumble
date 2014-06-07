@@ -79,6 +79,8 @@
 	<string name="audioInputMethod">Transmit Mode</string>
     <string name="audioInputVolume">Microphone Volume</string>
     <string name="audioInputVolumeSum">Microphone volume multiplier used to artificially normalize audio.</string>
+    <string name="audioAttenuateOthers">Attenuate Others</string>
+    <string name="audioAttenuateOthersSum">Lower output volume by this percentage when you speak.</string>
 	<string name="callMode">Call Mode</string>
 	<string name="callModeSum">The call mode of Plumble, whether to act as a voice call or speakerphone.</string>
 	<string name="detectionThreshold">Detection Threshold</string>

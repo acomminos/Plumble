@@ -33,6 +33,14 @@
         max="200"
         android:defaultValue="100"
         android:text="%"/>
+    
+    <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
+        android:title="@string/audioAttenuateOthers"
+        android:summary="@string/audioAttenuateOthersSum"
+        android:key="attenuateOthers"
+        max="100"
+        android:defaultValue="0"
+        android:text="%"/>
 
     <PreferenceCategory android:title="@string/voiceActivitySettings"
         android:key="vad_settings">
