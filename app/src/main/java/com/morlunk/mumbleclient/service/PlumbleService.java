@@ -71,11 +71,6 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     private List<String> mUnreadMessages = new ArrayList<String>();
 
     private Settings mSettings;
-    private boolean mHotCornerEnabled;
-    /** The view representing the hot corner. */
-    private View mHotCornerView;
-    /** The overlay that's shown when talking using a hot corner. */
-    private View mHotCornerOverlay;
     /** Channel view overlay. */
     private PlumbleOverlay mChannelOverlay;
     /** Proximity lock for handset mode. */
@@ -87,6 +82,30 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         public void onInit(int status) {
             if(status == TextToSpeech.ERROR)
                 logWarning(getString(R.string.tts_failed));
+        }
+    };
+
+    /** The view representing the hot corner. */
+    private PlumbleHotCorner mHotCorner;
+    private PlumbleHotCorner.PlumbleHotCornerListener mHotCornerListener = new PlumbleHotCorner.PlumbleHotCornerListener() {
+        @Override
+        public void onHotCornerDown() {
+            try {
+                mBinder.setTalkingState(!mSettings.isPushToTalkToggle() || !mBinder.isTalking());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onHotCornerUp() {
+            if(!mSettings.isPushToTalkToggle()) {
+                try {
+                    mBinder.setTalkingState(false);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     };
 
@@ -197,6 +216,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         // Instantiate overlay view
         mChannelOverlay = new PlumbleOverlay(this);
 
+        mHotCorner = new PlumbleHotCorner(this, mSettings.getHotCornerGravity(), mHotCornerListener);
+
         // Set up TTS
         if(mSettings.isTextToSpeechEnabled())
             mTTS = new TextToSpeech(this, mTTSInitListener);
@@ -236,8 +257,9 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         super.onConnectionSynchronized();
         createNotification();
 
-        // Update setting-dependent connection properties
-        configureHotCorner();
+        if(mSettings.isHotCornerEnabled()) {
+            mHotCorner.setShown(true);
+        }
         // Configure proximity sensor
         if(Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod())) {
             setProximitySensorOn(true);
@@ -250,17 +272,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         // Remove overlay if present.
         mChannelOverlay.hide();
 
-        // Remove hot corner if present.
-        if(mHotCornerView != null) {
-            WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-            try {
-                windowManager.removeView(mHotCornerView);
-                windowManager.removeView(mHotCornerOverlay);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-            mHotCornerEnabled = false;
-        }
+        mHotCorner.setShown(false);
 
         setProximitySensorOn(false);
 
@@ -275,100 +287,21 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     }
 
     /**
-     * Sets up or updates the hot corner with the latest values from settings.
-     */
-    public void configureHotCorner() {
-        // Hot corner configuration
-        String hotCorner = mSettings.getHotCorner();
-        final WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        if(!Settings.ARRAY_HOT_CORNER_NONE.equals(hotCorner) && isConnected()) {
-            final WindowManager.LayoutParams cornerParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
-                    PixelFormat.TRANSLUCENT);
-
-            if(Settings.ARRAY_HOT_CORNER_TOP_LEFT.equals(hotCorner))
-                cornerParams.gravity = Gravity.TOP | Gravity.LEFT;
-            else if(Settings.ARRAY_HOT_CORNER_TOP_RIGHT.equals(hotCorner))
-                cornerParams.gravity = Gravity.TOP | Gravity.RIGHT;
-            else if(Settings.ARRAY_HOT_CORNER_BOTTOM_LEFT.equals(hotCorner))
-                cornerParams.gravity = Gravity.BOTTOM | Gravity.LEFT;
-            else if(Settings.ARRAY_HOT_CORNER_BOTTOM_RIGHT.equals(hotCorner))
-                cornerParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-
-            final WindowManager.LayoutParams overlayParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                    PixelFormat.TRANSLUCENT);
-            overlayParams.gravity = Gravity.CENTER | Gravity.BOTTOM;
-
-            if(mHotCornerEnabled) {
-                windowManager.updateViewLayout(mHotCornerView, cornerParams);
-                windowManager.updateViewLayout(mHotCornerOverlay, overlayParams);
-            } else {
-                mHotCornerView = View.inflate(this, R.layout.ptt_corner, null);
-                mHotCornerOverlay = View.inflate(this, R.layout.ptt_overlay, null);
-                mHotCornerOverlay.setVisibility(View.GONE);
-
-                mHotCornerView.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        try {
-                            if(MotionEvent.ACTION_DOWN == event.getAction()) {
-                                mHotCornerOverlay.setVisibility(View.VISIBLE);
-                                if(mSettings.isPushToTalkToggle()) {
-                                    boolean newState = !getBinder().isTalking();
-                                    getBinder().setTalkingState(newState);
-                                    mHotCornerOverlay.setVisibility(newState ? View.VISIBLE : View.GONE);
-                                } else {
-                                    getBinder().setTalkingState(true);
-                                    mHotCornerOverlay.setVisibility(View.VISIBLE);
-                                }
-                                return true;
-                            } else if(MotionEvent.ACTION_UP == event.getAction()) {
-                                if(!mSettings.isPushToTalkToggle()) {
-                                    mHotCornerOverlay.setVisibility(View.GONE);
-                                    getBinder().setTalkingState(false);
-                                }
-                                return true;
-                            }
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                        return false;
-                    }
-                });
-
-                windowManager.addView(mHotCornerView, cornerParams);
-                windowManager.addView(mHotCornerOverlay, overlayParams);
-
-                mHotCornerEnabled = true;
-            }
-        } else if(mHotCornerEnabled) {
-            windowManager.removeView(mHotCornerView);
-            windowManager.removeView(mHotCornerOverlay);
-            mHotCornerEnabled = false;
-        }
-    }
-
-    /**
      * Called when the user makes a change to their preferences. Should update all preferences relevant to the service.
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if(!isConnected()) return; // These properties should all be set on connect regardless.
+        if (!isConnected()) return; // These properties should all be set on connect regardless.
 
-        if(Settings.PREF_INPUT_METHOD.equals(key)) {
+        if (Settings.PREF_INPUT_METHOD.equals(key)) {
             /* Convert input method defined in settings to an integer format used by Jumble. */
             int inputMethod = 0;
             String prefInputMethod = mSettings.getInputMethod();
-            if(Settings.ARRAY_INPUT_METHOD_VOICE.equals(prefInputMethod))
+            if (Settings.ARRAY_INPUT_METHOD_VOICE.equals(prefInputMethod))
                 inputMethod = Constants.TRANSMIT_VOICE_ACTIVITY;
-            else if(Settings.ARRAY_INPUT_METHOD_PTT.equals(prefInputMethod))
+            else if (Settings.ARRAY_INPUT_METHOD_PTT.equals(prefInputMethod))
                 inputMethod = Constants.TRANSMIT_PUSH_TO_TALK;
-            else if(Settings.ARRAY_INPUT_METHOD_CONTINUOUS.equals(prefInputMethod) ||
+            else if (Settings.ARRAY_INPUT_METHOD_CONTINUOUS.equals(prefInputMethod) ||
                     Settings.ARRAY_INPUT_METHOD_HANDSET.equals(prefInputMethod))
                 inputMethod = Constants.TRANSMIT_CONTINUOUS;
 
@@ -380,29 +313,29 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
                 e.printStackTrace();
             }
             mChannelOverlay.setPushToTalkShown(inputMethod == Constants.TRANSMIT_PUSH_TO_TALK);
-        }
-        else if(Settings.PREF_THRESHOLD.equals(key))
+        } else if (Settings.PREF_THRESHOLD.equals(key)) {
             try {
                 getBinder().setVADThreshold(mSettings.getDetectionThreshold());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-        else if(Settings.PREF_HOT_CORNER_KEY.equals(key))
-            configureHotCorner();
-        else if(Settings.PREF_USE_TTS.equals(key)) {
+        } else if(Settings.PREF_HOT_CORNER_KEY.equals(key)) {
+            mHotCorner.setGravity(mSettings.getHotCornerGravity());
+            mHotCorner.setShown(mSettings.isHotCornerEnabled());
+        } else if(Settings.PREF_USE_TTS.equals(key)) {
             if(mTTS == null && mSettings.isTextToSpeechEnabled())
                 mTTS = new TextToSpeech(this, mTTSInitListener);
             else if(mTTS != null && !mSettings.isTextToSpeechEnabled()) {
                 mTTS.shutdown();
                 mTTS = null;
             }
-        }
-        else if(Settings.PREF_AMPLITUDE_BOOST.equals(key))
+        } else if(Settings.PREF_AMPLITUDE_BOOST.equals(key)) {
             try {
                 getBinder().setAmplitudeBoost(mSettings.getAmplitudeBoostMultiplier());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        }
     }
 
     /**

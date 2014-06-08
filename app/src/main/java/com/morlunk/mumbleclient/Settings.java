@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
+import android.view.Gravity;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -154,6 +155,32 @@ public class Settings {
 
     public String getHotCorner() {
         return preferences.getString(PREF_HOT_CORNER_KEY, DEFAULT_HOT_CORNER);
+    }
+
+    /**
+     * Returns whether or not the hot corner is enabled.
+     * @return true if a hot corner should be shown.
+     */
+    public boolean isHotCornerEnabled() {
+        return !ARRAY_HOT_CORNER_NONE.equals(preferences.getString(PREF_HOT_CORNER_KEY, DEFAULT_HOT_CORNER));
+    }
+
+    /**
+     * Returns the view gravity of the hot corner, or 0 if hot corner is disabled.
+     * @return A {@link android.view.Gravity} value, or 0 if disabled.
+     */
+    public int getHotCornerGravity() {
+        String hc = getHotCorner();
+        if(ARRAY_HOT_CORNER_BOTTOM_LEFT.equals(hc)) {
+            return Gravity.LEFT | Gravity.BOTTOM;
+        } else if(ARRAY_HOT_CORNER_BOTTOM_RIGHT.equals(hc)) {
+            return Gravity.RIGHT | Gravity.BOTTOM;
+        } else if(ARRAY_HOT_CORNER_TOP_LEFT.equals(hc)) {
+            return Gravity.LEFT | Gravity.TOP;
+        } else if(ARRAY_HOT_CORNER_TOP_RIGHT.equals(hc)) {
+            return Gravity.RIGHT | Gravity.TOP;
+        }
+        return 0;
     }
 
     /**
