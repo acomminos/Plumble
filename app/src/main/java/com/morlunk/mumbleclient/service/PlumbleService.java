@@ -295,18 +295,9 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
 
         if (Settings.PREF_INPUT_METHOD.equals(key)) {
             /* Convert input method defined in settings to an integer format used by Jumble. */
-            int inputMethod = 0;
-            String prefInputMethod = mSettings.getInputMethod();
-            if (Settings.ARRAY_INPUT_METHOD_VOICE.equals(prefInputMethod))
-                inputMethod = Constants.TRANSMIT_VOICE_ACTIVITY;
-            else if (Settings.ARRAY_INPUT_METHOD_PTT.equals(prefInputMethod))
-                inputMethod = Constants.TRANSMIT_PUSH_TO_TALK;
-            else if (Settings.ARRAY_INPUT_METHOD_CONTINUOUS.equals(prefInputMethod) ||
-                    Settings.ARRAY_INPUT_METHOD_HANDSET.equals(prefInputMethod))
-                inputMethod = Constants.TRANSMIT_CONTINUOUS;
-
-            setProximitySensorOn(Settings.ARRAY_INPUT_METHOD_HANDSET.equals(prefInputMethod));
-
+            int inputMethod = mSettings.getJumbleInputMethod();
+            boolean isHandset = Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod());
+            setProximitySensorOn(isHandset);
             try {
                 getBinder().setTransmitMode(inputMethod);
             } catch (RemoteException e) {

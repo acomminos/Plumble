@@ -599,15 +599,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         mConnectingDialog.show();
 
         /* Convert input method defined in settings to an integer format used by Jumble. */
-        int inputMethod = 0;
-        String prefInputMethod = mSettings.getInputMethod();
-        if(Settings.ARRAY_INPUT_METHOD_VOICE.equals(prefInputMethod))
-            inputMethod = Constants.TRANSMIT_VOICE_ACTIVITY;
-        else if(Settings.ARRAY_INPUT_METHOD_PTT.equals(prefInputMethod))
-            inputMethod = Constants.TRANSMIT_PUSH_TO_TALK;
-        else if(Settings.ARRAY_INPUT_METHOD_CONTINUOUS.equals(prefInputMethod) ||
-                Settings.ARRAY_INPUT_METHOD_HANDSET.equals(prefInputMethod))
-            inputMethod = Constants.TRANSMIT_CONTINUOUS;
+        int inputMethod = mSettings.getJumbleInputMethod();
 
         int audioSource = Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod()) ?
                 MediaRecorder.AudioSource.DEFAULT : MediaRecorder.AudioSource.MIC;
