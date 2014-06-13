@@ -31,6 +31,9 @@ import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +61,12 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     /** Chat target listeners, notified when the chat target is changed. */
     private List<OnChatTargetSelectedListener> mChatTargetListeners = new ArrayList<OnChatTargetSelectedListener>();
     private boolean mTogglePTT;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -127,6 +136,32 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
                     .replace(R.id.chat_fragment, chatFragment)
                     .commit();
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.channel_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Settings settings = Settings.getInstance(getActivity());
+        switch (item.getItemId()) {
+            case R.id.menu_input_voice:
+                settings.setInputMethod(Settings.ARRAY_INPUT_METHOD_VOICE);
+                return true;
+            case R.id.menu_input_ptt:
+                settings.setInputMethod(Settings.ARRAY_INPUT_METHOD_PTT);
+                return true;
+            case R.id.menu_input_continuous:
+                settings.setInputMethod(Settings.ARRAY_INPUT_METHOD_CONTINUOUS);
+                return true;
+            case R.id.menu_input_handset:
+                settings.setInputMethod(Settings.ARRAY_INPUT_METHOD_HANDSET);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

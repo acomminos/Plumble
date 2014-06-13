@@ -153,6 +153,17 @@ public class Settings {
         throw new RuntimeException("Could not convert input method '" + inputMethod + "' to a Jumble input method id!");
     }
 
+    public void setInputMethod(String inputMethod) {
+        if(ARRAY_INPUT_METHOD_VOICE.equals(inputMethod) ||
+                ARRAY_INPUT_METHOD_PTT.equals(inputMethod) ||
+                ARRAY_INPUT_METHOD_CONTINUOUS.equals(inputMethod) ||
+                ARRAY_INPUT_METHOD_HANDSET.equals(inputMethod)) {
+            preferences.edit().putString(PREF_INPUT_METHOD, inputMethod).commit();
+        } else {
+            throw new RuntimeException("Invalid input method " + inputMethod);
+        }
+    }
+
     public int getInputSampleRate() {
         return Integer.parseInt(preferences.getString(Settings.PREF_INPUT_RATE, DEFAULT_RATE));
     }

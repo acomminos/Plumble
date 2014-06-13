@@ -19,11 +19,16 @@
 <resources>
     <string-array
         name="audioInputNames">
-        <item>Voice Activity</item>
-        <item>Push to Talk</item>
-        <item>Continuous</item>
-        <item>Handset</item>
+        <item>@string/inputMethodVoice</item>
+        <item>@string/inputMethodPtt</item>
+        <item>@string/inputMethodContinuous</item>
+        <item>@string/inputMethodHandset</item>
     </string-array>
+
+    <string name="inputMethodVoice">Voice Activity</string>
+    <string name="inputMethodPtt">Push to Talk</string>
+    <string name="inputMethodContinuous">Continuous</string>
+    <string name="inputMethodHandset">Handset</string>
 
     <string-array
         name="audioSampleRateNames">
