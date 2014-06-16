@@ -49,7 +49,7 @@ public abstract class ServerAdapter<E extends Server> extends ArrayAdapter<E> {
     private int mViewResource;
 
     public ServerAdapter(Context context, int viewResource, List<E> servers) {
-        super(context, android.R.id.text1, servers);
+        super(context, 0, servers);
         mViewResource = viewResource;
     }
 

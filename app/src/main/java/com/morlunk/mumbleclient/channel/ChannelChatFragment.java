@@ -115,11 +115,10 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
             @Override
             public void onClick(View v) {
                 try {
-                    sendMessage(mChatTextEdit.getText().toString());
+                    sendMessage();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-                mChatTextEdit.setText("");
             }
         });
 		
@@ -127,11 +126,10 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 try {
-                    sendMessage(v.getText().toString());
+                    sendMessage();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-                v.setText("");
                 return true;
             }
         });
@@ -197,7 +195,14 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
         }
 	}
 
-	private void sendMessage(String message) throws RemoteException {
+    /**
+     * Sends the message currently in {@link com.morlunk.mumbleclient.channel.ChannelChatFragment#mChatTextEdit}
+     * to the remote server. Clears the message box if the message was sent successfully.
+     * @throws RemoteException If the service failed to send the message.
+     */
+	private void sendMessage() throws RemoteException {
+        if(mChatTextEdit.length() == 0) return;
+        String message = mChatTextEdit.getText().toString();
         String formattedMessage = linkifyOutgoingMessage(message);
         ChatTargetProvider.ChatTarget target = mTargetProvider.getChatTarget();
         Message responseMessage = null;
@@ -208,6 +213,7 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
         else if(target.getChannel() != null)
             responseMessage = getService().sendChannelTextMessage(target.getChannel().getId(), formattedMessage, false);
         addChatMessage(responseMessage, true);
+        mChatTextEdit.setText("");
 	}
 
     private String linkifyOutgoingMessage(String message) {
