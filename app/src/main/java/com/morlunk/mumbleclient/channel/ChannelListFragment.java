@@ -32,6 +32,9 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
@@ -152,6 +155,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         mChannelView = (PlumbleNestedListView) view.findViewById(R.id.channelUsers);
         mChannelView.setOnChildClickListener(this);
         mChannelView.setOnGroupClickListener(this);
+        mChannelView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         return view;
     }
@@ -367,8 +371,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 		User oldTarget = chatTarget;
 		if (mChannelListAdapter != null) {
             try {
-                if (oldTarget != null)
-                    mChannelListAdapter.refreshUser(oldTarget);
+                if (oldTarget != null) mChannelListAdapter.refreshUser(oldTarget);
                 mChannelListAdapter.refreshUser(chatTarget);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -378,7 +381,11 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 	@Override
 	public void onNestedChildClick(AdapterView<?> parent, View view, int groupId, int childPosition) {
         User user = mChannelListAdapter.getChild(groupId, childPosition);
-        showUserMenu(view, user);
+        if (user != null) {
+//            mTargetProvider.setChatTarget(new ChatTargetProvider.ChatTarget(user)); TODO: maybe
+            ActionMode.Callback cb = new UserActionModeCallback(getActivity(), getService(), user);
+            ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
+        }
 	}
 
 	@Override
@@ -392,119 +399,124 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
     @Override
     public void showChannelMenu(Channel channel, View anchor) {
-        PopupMenu menu = new PopupMenu(getActivity(), anchor);
-        menu.inflate(R.menu.channel_modify_menu);
-        // TODO detect permissions
-        ChannelPopupMenuListener menuListener = new ChannelPopupMenuListener(channel);
-        menu.setOnMenuItemClickListener(menuListener);
-        boolean targeted = mTargetProvider.getChatTarget() != null &&
-                mTargetProvider.getChatTarget().getChannel() != null &&
-                mTargetProvider.getChatTarget().getChannel().getId() == channel.getId();
-        menu.getMenu().findItem(R.id.menu_channel_send_message).setChecked(targeted);
 
-        try {
-            long serverId = getService().getConnectedServer().getId();
-            boolean pinned = mDatabaseProvider.getDatabase().isChannelPinned(serverId, channel.getId());
-            menu.getMenu().findItem(R.id.menu_channel_pin).setChecked(pinned);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        int permissions = channel.getPermissions();
-
-        // This breaks uMurmur ACL. Put in a fix based on server version perhaps?
-        //menu.getMenu().findItem(R.id.menu_channel_add).setVisible((permissions & (Permissions.MakeChannel | Permissions.MakeTempChannel)) > 0);
-        menu.getMenu().findItem(R.id.menu_channel_edit).setVisible((permissions & Permissions.Write) > 0);
-        menu.getMenu().findItem(R.id.menu_channel_remove).setVisible((permissions & Permissions.Write) > 0);
-        menu.getMenu().findItem(R.id.menu_channel_view_description).setVisible(channel.getDescription() != null || channel.getDescriptionHash() != null);
-
-        menu.show();
     }
+
+//    @Override
+//    public void showChannelMenu(Channel channel, View anchor) {
+//        PopupMenu menu = new PopupMenu(getActivity(), anchor);
+//        menu.inflate(R.menu.context_channel);
+//        // TODO detect permissions
+//        ChannelPopupMenuListener menuListener = new ChannelPopupMenuListener(channel);
+//        menu.setOnMenuItemClickListener(menuListener);
+//        boolean targeted = mTargetProvider.getChatTarget() != null &&
+//                mTargetProvider.getChatTarget().getChannel() != null &&
+//                mTargetProvider.getChatTarget().getChannel().getId() == channel.getId();
+//        menu.getMenu().findItem(R.id.menu_channel_send_message).setChecked(targeted);
+//
+//        try {
+//            long serverId = getService().getConnectedServer().getId();
+//            boolean pinned = mDatabaseProvider.getDatabase().isChannelPinned(serverId, channel.getId());
+//            menu.getMenu().findItem(R.id.menu_channel_pin).setChecked(pinned);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
+//
+//        int permissions = channel.getPermissions();
+//
+//        // This breaks uMurmur ACL. Put in a fix based on server version perhaps?
+//        //menu.getMenu().findItem(R.id.menu_channel_add).setVisible((permissions & (Permissions.MakeChannel | Permissions.MakeTempChannel)) > 0);
+//        menu.getMenu().findItem(R.id.menu_channel_edit).setVisible((permissions & Permissions.Write) > 0);
+//        menu.getMenu().findItem(R.id.menu_channel_remove).setVisible((permissions & Permissions.Write) > 0);
+//        menu.getMenu().findItem(R.id.menu_channel_view_description).setVisible(channel.getDescription() != null || channel.getDescriptionHash() != null);
+//
+//        menu.show();
+//    }
 
     /**
      * Slides a PopupWindow containing a user menu underneath the passed view.
      */
-    public void showUserMenu(final View view, final User user) {
-        try {
-            ChannelUserWindow userWindow = ChannelUserWindow.instantiate(getActivity(), getService(), getChildFragmentManager(), user, mTargetProvider);
-            userWindow.showAsDropDown(view);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void showUserMenu(final View view, final User user) {
+//        try {
+//            ChannelUserWindow userWindow = ChannelUserWindow.instantiate(getActivity(), getService(), getChildFragmentManager(), user, mTargetProvider);
+//            userWindow.showAsDropDown(view);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private boolean isShowingPinnedChannels() {
         return getArguments().getBoolean("pinned");
     }
 
-    private class ChannelPopupMenuListener implements PopupMenu.OnMenuItemClickListener {
-
-        private Channel mChannel;
-
-        public ChannelPopupMenuListener(Channel channel) {
-            mChannel = channel;
-        }
-
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            boolean adding = false;
-            switch(menuItem.getItemId()) {
-                case R.id.menu_channel_add:
-                    adding = true;
-                case R.id.menu_channel_edit:
-                    ChannelEditFragment addFragment = new ChannelEditFragment();
-                    Bundle args = new Bundle();
-                    if(adding) args.putInt("parent", mChannel.getId());
-                    else args.putInt("channel", mChannel.getId());
-                    args.putBoolean("adding", adding);
-                    addFragment.setArguments(args);
-                    addFragment.show(getChildFragmentManager(), "ChannelAdd");
-                    return true;
-                case R.id.menu_channel_remove:
-                    AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
-                    adb.setTitle(R.string.confirm);
-                    adb.setMessage(R.string.confirm_delete_channel);
-                    adb.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            try {
-                                getService().removeChannel(mChannel.getId());
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    adb.setNegativeButton(android.R.string.cancel, null);
-                    adb.show();
-                    return true;
-                case R.id.menu_channel_view_description:
-                    Bundle commentArgs = new Bundle();
-                    commentArgs.putInt("channel", mChannel.getId());
-                    commentArgs.putString("comment", mChannel.getDescription());
-                    commentArgs.putBoolean("editing", false);
-                    ChannelDescriptionFragment commentFragment = (ChannelDescriptionFragment) Fragment.instantiate(getActivity(), ChannelDescriptionFragment.class.getName(), commentArgs);
-                    commentFragment.show(getChildFragmentManager(), ChannelDescriptionFragment.class.getName());
-                    return true;
-                case R.id.menu_channel_send_message:
-                    if(mTargetProvider.getChatTarget() != null &&
-                            mTargetProvider.getChatTarget().getChannel() != null &&
-                            mTargetProvider.getChatTarget().getChannel().getId() == mChannel.getId())
-                        mTargetProvider.setChatTarget(null);
-                    else
-                        mTargetProvider.setChatTarget(new ChatTargetProvider.ChatTarget(mChannel));
-                    return true;
-                case R.id.menu_channel_pin:
-                    try {
-                        long serverId = getService().getConnectedServer().getId();
-                        boolean pinned = mDatabaseProvider.getDatabase().isChannelPinned(serverId, mChannel.getId());
-                        if(!pinned) mDatabaseProvider.getDatabase().addPinnedChannel(serverId, mChannel.getId());
-                        else mDatabaseProvider.getDatabase().removePinnedChannel(serverId, mChannel.getId());
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                    return true;
-            }
-            return false;
-        }
-    }
+//    private class ChannelPopupMenuListener implements PopupMenu.OnMenuItemClickListener {
+//
+//        private Channel mChannel;
+//
+//        public ChannelPopupMenuListener(Channel channel) {
+//            mChannel = channel;
+//        }
+//
+//        @Override
+//        public boolean onMenuItemClick(MenuItem menuItem) {
+//            boolean adding = false;
+//            switch(menuItem.getItemId()) {
+//                case R.id.menu_channel_add:
+//                    adding = true;
+//                case R.id.menu_channel_edit:
+//                    ChannelEditFragment addFragment = new ChannelEditFragment();
+//                    Bundle args = new Bundle();
+//                    if(adding) args.putInt("parent", mChannel.getId());
+//                    else args.putInt("channel", mChannel.getId());
+//                    args.putBoolean("adding", adding);
+//                    addFragment.setArguments(args);
+//                    addFragment.show(getChildFragmentManager(), "ChannelAdd");
+//                    return true;
+//                case R.id.menu_channel_remove:
+//                    AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
+//                    adb.setTitle(R.string.confirm);
+//                    adb.setMessage(R.string.confirm_delete_channel);
+//                    adb.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            try {
+//                                getService().removeChannel(mChannel.getId());
+//                            } catch (RemoteException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    });
+//                    adb.setNegativeButton(android.R.string.cancel, null);
+//                    adb.show();
+//                    return true;
+//                case R.id.menu_channel_view_description:
+//                    Bundle commentArgs = new Bundle();
+//                    commentArgs.putInt("channel", mChannel.getId());
+//                    commentArgs.putString("comment", mChannel.getDescription());
+//                    commentArgs.putBoolean("editing", false);
+//                    ChannelDescriptionFragment commentFragment = (ChannelDescriptionFragment) Fragment.instantiate(getActivity(), ChannelDescriptionFragment.class.getName(), commentArgs);
+//                    commentFragment.show(getChildFragmentManager(), ChannelDescriptionFragment.class.getName());
+//                    return true;
+//                case R.id.menu_channel_send_message:
+//                    if(mTargetProvider.getChatTarget() != null &&
+//                            mTargetProvider.getChatTarget().getChannel() != null &&
+//                            mTargetProvider.getChatTarget().getChannel().getId() == mChannel.getId())
+//                        mTargetProvider.setChatTarget(null);
+//                    else
+//                        mTargetProvider.setChatTarget(new ChatTargetProvider.ChatTarget(mChannel));
+//                    return true;
+//                case R.id.menu_channel_pin:
+//                    try {
+//                        long serverId = getService().getConnectedServer().getId();
+//                        boolean pinned = mDatabaseProvider.getDatabase().isChannelPinned(serverId, mChannel.getId());
+//                        if(!pinned) mDatabaseProvider.getDatabase().addPinnedChannel(serverId, mChannel.getId());
+//                        else mDatabaseProvider.getDatabase().removePinnedChannel(serverId, mChannel.getId());
+//                    } catch (RemoteException e) {
+//                        e.printStackTrace();
+//                    }
+//                    return true;
+//            }
+//            return false;
+//        }
+//    }
 }

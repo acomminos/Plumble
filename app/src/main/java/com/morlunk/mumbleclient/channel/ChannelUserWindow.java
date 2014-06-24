@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * @deprecated not good
  * A popup window providing access to various actions that can be performed on a user.
  * Created by andrew on 27/02/14.
  */
