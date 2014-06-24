@@ -1,21 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ Copyright (C) 2014 Andrew Comminos
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <resources>
   <!--Common-->
   <string name="channels">Kanäle</string>
@@ -163,6 +146,13 @@
   <string name="invalid_password">Ungültiges Passwort.</string>
   <string name="send_message">Nachricht senden.</string>
   <string name="channel_menu_view_description">Beschreibung anzeigen</string>
+  <string name="untrusted_certificate">Nicht vertrauenswürdiges Zertifikat</string>
+  <string name="allow">Erlauben</string>
+  <string name="trust_added">Zertifikat zur Vertrauensdatenbank hinzugefügt</string>
+  <string name="trust_add_failed">Fehler beim Hinzufügen des Zertifikats zur Vertrauensdatenbank!</string>
+  <string name="trust_cleared">Vertrauensdatenbank geleert</string>
+  <string name="cancelled">Abgebrochen</string>
+  <string name="transmit_mode">Übertragungsmethode</string>
   <!--Drawer pane-->
   <string name="drawer_open">Drawer öffnen</string>
   <string name="drawer_close">Drawer schließen</string>

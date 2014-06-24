@@ -1,134 +1,61 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (C) 2014 Andrew Comminos
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
-
-	<string-array
-	    name="audioInputNames">
-	    <item>Aktywacja głosowa</item>
-	    <item>Aktywacja przyciskiem</item>
-        <item>Continuous</item>
-	</string-array>
-	
-	<string-array
-	    name="audioInputValues">
-	    <item>voiceActivity</item>
-	    <item>ptt</item>
-        <item>continuous</item>
-	</string-array>
-	
-	<string-array
-	    name="themeNames">
-	    <item>Jasny</item>
-	    <item>Ciemny</item>
-	</string-array>
-	
-	<string-array
-	    name="themeValues">
-	    <item>lightDark</item>
-	    <item>dark</item>
-	</string-array>
-	
-	<string-array name="callModeNames">
-	    <item>Głośnik</item>
-	    <item>Słuchawka</item>
-	</string-array>
-	
-	<string-array name="callModeValues">
-	    <item>speakerphone</item>
-	    <item>voice</item>
-	</string-array>
-	
-	<string-array name="hotCornerNames">
-	    <item>Żaden</item>
-	    <item>Lewy górny</item>
-	    <item>Lewy dolny</item>
-	    <item>Prawy górny</item>
-	    <item>Prawy dolny</item>
-	</string-array>
-	
-	<string-array name="hotCornerValues">
-	    <item>none</item>
-	    <item>topLeft</item>
-	    <item>bottomLeft</item>
-	    <item>topRight</item>
-	    <item>bottomRight</item>
-	</string-array>
-
-	<string-array name="rowheightText">
-		<item>Wąski</item>
-		<item>Średni</item>
-		<item>Większy</item>
-		<item>Bardzo duży</item>
-	</string-array>
-
-	<string-array name="rowheightValues">
-		<item>30</item>
-		<item>35</item>
-		<item>40</item>
-		<item>50</item>
-	</string-array>
-	
-	<string name="authentication">Uwierzytelnianie</string>
-	<string name="certificateFile">Plik certyfikatu</string>
-	<string name="certificateFileSum">Wybór certyfikatu P12, znajdującego się w katalogu \"Plumble\" w pamięci zewnętrznej.</string>
-	<string name="certificatePassword">Hasło certyfikatu</string>
-	<string name="certificatePasswordSum">Hasło do twojego certyfikatu PKCS12. (Opcjonalne)</string>
-	<string name="audioInput">Wejście Dźwięku</string>
-	<string name="audioInputMethodSum">Wybór między trybami aktywacji.</string>
-	<string name="audioInputMethod">Tryb aktywacji</string>
-	<string name="callMode">Tryb wyjścia dźwięku</string>
-	<string name="callModeSum">Wybór między głośnikiem a słuchawką.</string>
-	<string name="detectionThreshold">Próg detekcji</string>
-	<string name="detectionThresholdSum">Minimalna amplituda głosu wymagana by został wykryty (dotyczy wyłącznie aktywacji głosowej).</string>
-	<string name="pttKey">Aktywacja przyciskiem</string>
-	<string name="pttKeySum">Wybór sprzętowego przycisku do aktywacji transmisji. (Opcjonalny)</string>
-	<string name="hotCorner">Gorące narożniki</string>
-	<string name="hotCornerSum">Określa róg ekranu, który będzie służył do aktywacji przyciskiem w całym systemie Android.</string>
-	<string name="appearance">Wygląd</string>
-	<string name="themeSum">Wygląd listy kanałów.</string>
-	<string name="theme">Motyw</string>
-	<string name="advancedAudio">Zaawansowane Ustawienia Dźwięku</string>
-    <string name="forceTcp">Wymuś TCP</string>
-    <string name="forceTcpSum">Definiuje czy wymuszać połączenie TCP (wyłącza UDP).</string>
-	<string name="audioSampleRate">Jakość dźwięku</string>
-	<string name="noCert">Brak certyfikatu</string>
-	<string name="rowheight">Wysokość wiersza kanałów</string>
-	<string name="rowheightSum">Wysokość wiersza listy wyboru kanału.</string>
-	<string name="colorizechannels">Koloruj kanały</string>
-	<string name="colorizechannelsSum">Włącza i wyłącza kolorowanie wyróżniające główne oraz aktywne kanały.</string>
-	<string name="colorthreshold">Próg alternatywnego koloru</string>
-	<string name="colorthresholdSum">Jeżeli liczba użytkowników przekroczy ustaloną wartość, kanał zostanie oznaczony kolorem czerwonym.</string>
-	<string name="chatNotifications">Powiadomienia czatu</string>
-	<string name="chatNotificationsSum">Wyświetlaj powiadomienia, gdy ktoś napisze wiadomość.</string>
-	<string name="certificateGenerate">Generowanie certyfikatu</string>
-	<string name="certificateGenerateSum">Generuje nowy własnoręcznie podpisany certyfikat Plumble. Zalecane dla początkujących.</string>
-	<string name="pttSettings">Konfiguracja aktywacji przyciskiem</string>
-	<string name="pttSettingsSum">Konfiguracja aktywacji przyciskiem, gdy jest włączona.</string>
-	<string name="voiceActivitySettings">Konfiguracja aktywacji głosowej</string>
-	<string name="voiceActivitySettingsSum">Konfiguracja aktywacji głosowej, gdy jest włączona.</string>
-	<string name="audioOutput">Wyjście Dźwięku</string>
-	<string name="disableOpus">Wyłącz kodek Opus</string>
-	<string name="disableOpusSum">Wyłącza wsparcie kodeka Opus dla serwerów w wersji 1.2.4. Zaznacz jeżeli masz problemy z dźwiękiem na serwerach w wersji 1.2.4.</string>
-	<string name="hidePtt">Ukryj przycisk aktywacji przyciskiem</string>
-	<string name="hidePttSum">Ukrywa przycisk aktywacji przyciskiem. Ukryj go jeżeli korzystasz ze sprzętowego przycisku lub gorących narożników.</string>
-    <string name="useTts">Tekst-Na-Mowę</string>
-    <string name="useTtsSum">Aktywuje Tekst-Na-Mowę dla przychdzących wiadomości.</string>
-    <string name="togglePtt">Przycisk aktywacji jako przełącznik</string>
-    <string name="togglePttSum">Naciśnięcie przycisku aktywacji powoduje ciągłe nadawanie do czasu ponownego jego naciśnięcia.</string>
+  <!--Experimental-->
+  <string-array name="themeNames">
+    <item>Jasny</item>
+    <item>Ciemny</item>
+  </string-array>
+  <string-array name="callModeNames">
+    <item>Głośnik</item>
+    <item>Słuchawka</item>
+  </string-array>
+  <string-array name="hotCornerNames">
+    <item>Żaden</item>
+    <item>Lewy górny</item>
+    <item>Lewy dolny</item>
+    <item>Prawy górny</item>
+    <item>Prawy dolny</item>
+  </string-array>
+  <!--About-->
+  <string name="authentication">Uwierzytelnianie</string>
+  <string name="certificateFile">Plik certyfikatu</string>
+  <string name="certificateFileSum">Wybór certyfikatu P12, znajdującego się w katalogu \"Plumble\" w pamięci zewnętrznej.</string>
+  <string name="certificatePassword">Hasło certyfikatu</string>
+  <string name="certificatePasswordSum">Hasło do twojego certyfikatu PKCS12. (Opcjonalne)</string>
+  <string name="audioInput">Wejście Dźwięku</string>
+  <string name="audioInputMethodSum">Wybór między trybami aktywacji.</string>
+  <string name="audioInputMethod">Tryb aktywacji</string>
+  <string name="callMode">Tryb wyjścia dźwięku</string>
+  <string name="callModeSum">Wybór między głośnikiem a słuchawką.</string>
+  <string name="detectionThreshold">Próg detekcji</string>
+  <string name="detectionThresholdSum">Minimalna amplituda głosu wymagana by został wykryty (dotyczy wyłącznie aktywacji głosowej).</string>
+  <string name="pttKey">Aktywacja przyciskiem</string>
+  <string name="pttKeySum">Wybór sprzętowego przycisku do aktywacji transmisji. (Opcjonalny)</string>
+  <string name="hotCorner">Gorące narożniki</string>
+  <string name="hotCornerSum">Określa róg ekranu, który będzie służył do aktywacji przyciskiem w całym systemie Android.</string>
+  <string name="appearance">Wygląd</string>
+  <string name="themeSum">Wygląd listy kanałów.</string>
+  <string name="theme">Motyw</string>
+  <string name="advancedAudio">Zaawansowane Ustawienia Dźwięku</string>
+  <string name="forceTcp">Wymuś TCP</string>
+  <string name="forceTcpSum">Definiuje czy wymuszać połączenie TCP (wyłącza UDP).</string>
+  <string name="audioSampleRate">Jakość dźwięku</string>
+  <string name="noCert">Brak certyfikatu</string>
+  <string name="chatNotifications">Powiadomienia czatu</string>
+  <string name="chatNotificationsSum">Wyświetlaj powiadomienia, gdy ktoś napisze wiadomość.</string>
+  <string name="certificateGenerate">Generowanie certyfikatu</string>
+  <string name="certificateGenerateSum">Generuje nowy własnoręcznie podpisany certyfikat Plumble. Zalecane dla początkujących.</string>
+  <string name="pttSettings">Konfiguracja aktywacji przyciskiem</string>
+  <string name="pttSettingsSum">Konfiguracja aktywacji przyciskiem, gdy jest włączona.</string>
+  <string name="voiceActivitySettings">Konfiguracja aktywacji głosowej</string>
+  <string name="voiceActivitySettingsSum">Konfiguracja aktywacji głosowej, gdy jest włączona.</string>
+  <string name="audioOutput">Wyjście Dźwięku</string>
+  <string name="disableOpus">Wyłącz kodek Opus</string>
+  <string name="disableOpusSum">Wyłącza wsparcie kodeka Opus dla serwerów w wersji 1.2.4. Zaznacz jeżeli masz problemy z dźwiękiem na serwerach w wersji 1.2.4.</string>
+  <string name="hidePtt">Ukryj przycisk aktywacji przyciskiem</string>
+  <string name="hidePttSum">Ukrywa przycisk aktywacji przyciskiem. Ukryj go jeżeli korzystasz ze sprzętowego przycisku lub gorących narożników.</string>
+  <string name="useTts">Tekst-Na-Mowę</string>
+  <string name="useTtsSum">Aktywuje Tekst-Na-Mowę dla przychdzących wiadomości.</string>
+  <string name="togglePtt">Przycisk aktywacji jako przełącznik</string>
+  <string name="togglePttSum">Naciśnięcie przycisku aktywacji powoduje ciągłe nadawanie do czasu ponownego jego naciśnięcia.</string>
 </resources>

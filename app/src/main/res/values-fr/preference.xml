@@ -1,26 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ Copyright (C) 2014 Andrew Comminos
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <resources>
-  <string-array name="audioInputNames">
-    <item>Appuyer pour parler</item>
-    <item>Continu</item>
-    <item>Appareil</item>
+  <string-array name="audioSampleRateNames">
+    <item>128000Hz (expérimental)</item>
+    <item>96000Hz (expérimental)</item>
+    <item>72000Hz (expérimental)</item>
+    <item>48000Hz</item>
+    <item>44100Hz</item>
+    <item>22050Hz</item>
+    <item>16000Hz</item>
+    <item>11025Hz</item>
+    <item>8000Hz</item>
   </string-array>
   <!--Experimental-->
   <string-array name="themeNames">
@@ -56,12 +45,15 @@
   <string name="audioInputMethodSum">La méthode d\'entrée audio.</string>
   <string name="audioInputMethod">Mode de transmition</string>
   <string name="audioInputVolume">Volume du microphone</string>
+  <string name="audioInputVolumeSum">Volume du microphone pour normalisation audio artificielle</string>
   <string name="callMode">Mode d\'appel</string>
   <string name="callModeSum">Le mode d\'appel de Plumble, s\'il faut agir comme un appel vocal ou un haut-parleur.</string>
   <string name="detectionThreshold">Seuil de détection</string>
   <string name="detectionThresholdSum">L\'amplitude minimum nécessaire pour que la voix soit détectée (uniquement applicable pour les activités vocales).</string>
   <string name="pttKey">Touche pour \'appuyer pour parler\'</string>
   <string name="pttKeySum">Une touche à lier à \'appuyer pour parler\'.</string>
+  <string name="hotCorner">Coin d\'activation pour \"appuyer pour parler\"</string>
+  <string name="hotCornerSum">Un coin spécifique de l\'écran qui, lorsqu\'appuyé, déclenchera \"appuyer pour parle\" dans Android.</string>
   <string name="general">Général</string>
   <string name="generalSum">Régler les paramètres généraux</string>
   <string name="appearance">Apparence</string>
@@ -80,10 +72,12 @@
   <string name="defaultUsername">Nom d\'utilisateur par défaut</string>
   <string name="defaultUsernameSum">Le nom d\'utilisateur par défaut pour la connexion à des serveurs.</string>
   <string name="defaultUsernameDefault">Utilisateur_Plumble</string>
-  <string name="certificateGenerate">Générer un certificate</string>
+  <string name="certificateGenerate">Générer un certificat</string>
   <string name="certificateGenerateSum">Générer un nouveau certificat Plumble auto-signé. Recommendé pour les débutants.</string>
   <string name="pttSettings">Paramètres de \'appuyer pour parler\'</string>
   <string name="pttSettingsSum">Configurer \'appuyer pour parler\' s\'il est activé.</string>
+  <string name="voiceActivitySettings">Paramètres d\'activité vocale</string>
+  <string name="voiceActivitySettingsSum">Configurer l\'activité vocale lorsqu\'activée</string>
   <string name="audioOutput">Sortie audio</string>
   <string name="disableOpus">Désactiver le codec Opus</string>
   <string name="disableOpusSum">Désactiver le support de Opus pour les serveurs Mumble 1.2.4.</string>
@@ -91,6 +85,7 @@
   <string name="hidePttSum">Hides the push to talk button when in push to talk mode. Utile si vous utilisez les hot corners ou exclusivement une touche physique.</string>
   <string name="useTts">Synthèse vocale</string>
   <string name="useTtsSum">Activer la synthèse vocal pour les messages entrants.</string>
+  <string name="togglePtt">Activer le mode \"Appuyer pour Parler\"</string>
   <string name="togglePttSum">Toggles push to talk on and off when pressed.</string>
   <string name="autoReconnect">Reconnexion automatique</string>
   <string name="autoReconnectSum">Essayer automatiquement de rétablir une connexion quand la connexion au serveur est perdu.</string>
@@ -98,6 +93,9 @@
   <string name="useTorSum">Nécessite l\'app Orbot</string>
   <string name="framesPerPacket">Frames par paquet</string>
   <string name="framesPerPacketSum">The number of audio frames per packet. A higher value results in less CPU usage and stuttering, but more latency.</string>
+  <string name="inputQuality">Qualité d\'entrée</string>
   <string name="loadImagesSum">S\'il faut charger les images externes dans le chat.</string>
   <string name="loadImages">Charger des images externes</string>
+  <string name="clearServerCertificates">Supprimer les certificats du serveur</string>
+  <string name="clearServerCertificatesSum">Supprimer tous les certificats de serveur acceptés de la base de données de confiance de Plumble.</string>
 </resources>

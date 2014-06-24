@@ -1,21 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ Copyright (C) 2014 Andrew Comminos
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <resources>
   <string-array name="audioSampleRateNames">
     <item>128000Hz (sperimentale)</item>
@@ -31,13 +14,29 @@
   <!--Experimental-->
   <!--About-->
   <string name="about">Info su</string>
+  <string name="acknowledgementsSum">Guarda chi ha contribuito a Plumble</string>
   <string name="licenses">Licenze</string>
   <string name="authentication">Autenticazione</string>
+  <string name="authenticationSum">Gestisci e crea certificati</string>
+  <string name="certificateFile">File certificato</string>
+  <string name="certificatePassword">Password certificato</string>
+  <string name="audioInput">Input audio</string>
+  <string name="audioInputVolume">Volume microfono</string>
   <string name="general">Generale</string>
   <string name="theme">Tema</string>
   <string name="advancedAudio">Avanzato</string>
+  <string name="forceTcp">Forza TCP</string>
   <string name="audio">Audio</string>
+  <string name="audioSum">Regola input e output audio</string>
   <string name="noCert">Nessun certificato</string>
+  <string name="chatNotifications">Notifiche chat</string>
+  <string name="certificateGenerate">Genera certificato</string>
+  <string name="audioOutput">Output audio</string>
+  <string name="disableOpus">Disabilita codec Opus</string>
   <string name="useTts">Text-to-Speech</string>
+  <string name="autoReconnect">Riconnessione automatica</string>
+  <string name="useTor">Connetti tramite Tor</string>
+  <string name="inputQuality">Qualità Input</string>
   <string name="loadImages">Carica immagini esterne</string>
+  <string name="clearServerCertificates">Pulisci certificati server</string>
 </resources>
