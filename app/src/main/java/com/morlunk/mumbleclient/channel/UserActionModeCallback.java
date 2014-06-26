@@ -68,11 +68,23 @@ public class UserActionModeCallback implements ActionMode.Callback {
 
     @Override
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-        actionMode.setTitle(mUser.getName());
-        actionMode.setSubtitle(R.string.current_chat_target);
         MenuInflater inflater = actionMode.getMenuInflater();
         inflater.inflate(R.menu.context_user, menu);
+
+        actionMode.setTitle(mUser.getName());
+        actionMode.setSubtitle(R.string.current_chat_target);
+
+        try {
+            // Request permissions update from server, if we don't have channel permissions
+            Channel channel = mService.getChannel(mUser.getChannelId());
+            if(channel != null && channel.getPermissions() == 0)
+                mService.requestPermissions(mUser.getChannelId());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
         mChatTargetProvider.setChatTarget(new ChatTargetProvider.ChatTarget(mUser));
+
         return true;
     }
 
