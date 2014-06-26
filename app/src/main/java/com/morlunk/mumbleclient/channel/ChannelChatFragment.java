@@ -213,7 +213,7 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
 	private void sendMessage() throws RemoteException {
         if(mChatTextEdit.length() == 0) return;
         String message = mChatTextEdit.getText().toString();
-        String formattedMessage = linkifyOutgoingMessage(message);
+        String formattedMessage = markupOutgoingMessage(message);
         ChatTargetProvider.ChatTarget target = mTargetProvider.getChatTarget();
         Message responseMessage = null;
         if(target == null)
@@ -226,10 +226,16 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
         mChatTextEdit.setText("");
 	}
 
-    private String linkifyOutgoingMessage(String message) {
+    /**
+     * Adds HTML markup to the message, replacing links and newlines.
+     * @param message The message to markup.
+     * @return HTML data.
+     */
+    private String markupOutgoingMessage(String message) {
         String formattedBody = message;
         Matcher matcher = LINK_PATTERN.matcher(formattedBody);
-        formattedBody = matcher.replaceAll("<a href=\"$1\">$1</a>");
+        formattedBody = matcher.replaceAll("<a href=\"$1\">$1</a>")
+                .replaceAll("\n", "<br>");
         return formattedBody;
     }
 	
