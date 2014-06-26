@@ -18,7 +18,6 @@
 package com.morlunk.mumbleclient.channel;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.RemoteException;
 import android.util.DisplayMetrics;
@@ -131,7 +130,7 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
     }
 
     private void refreshElements(final View view, final User user) {
-        TextView name = (TextView) view.findViewById(R.id.userRowName);
+        TextView name = (TextView) view.findViewById(R.id.user_row_name);
 
         name.setText(user.getName());
         try {
@@ -144,7 +143,7 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
     }
 
     private void refreshTalkingState(final View view, final User user) {
-        final ImageView state = (ImageView) view.findViewById(R.id.userRowState);
+        final ImageView state = (ImageView) view.findViewById(R.id.user_row_state);
 
         if (user.isSelfDeafened())
             state.setImageResource(R.drawable.ic_deafened);
@@ -189,7 +188,7 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
         v.setTag(user);
 
         // Pad the view depending on channel's nested level.
-        final View titleView = v.findViewById(R.id.channel_user_row_title);
+        final View titleView = v.findViewById(R.id.user_row_title);
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
         float margin = (depth + 1) * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25, metrics);
         titleView.setPadding((int) margin, titleView.getPaddingTop(), titleView.getPaddingRight(), titleView.getPaddingBottom());

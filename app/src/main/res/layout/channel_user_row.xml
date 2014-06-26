@@ -17,20 +17,21 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/channel_user_row_title"
+    android:id="@+id/user_row_title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:background="@drawable/list_background_user">
 
     <ImageView
-        android:id="@+id/userRowState"
+        android:id="@+id/user_row_state"
         android:layout_width="24dp"
         android:layout_height="match_parent"
         android:src="@drawable/ic_talking_off" />
 
     <TextView
-        android:id="@+id/userRowName"
+        android:id="@+id/user_row_name"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

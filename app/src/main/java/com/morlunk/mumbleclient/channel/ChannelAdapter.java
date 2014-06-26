@@ -75,10 +75,10 @@ public class ChannelAdapter extends BaseAdapter {
             v = layoutInflater.inflate(R.layout.overlay_user_row, parent, false);
         }
         User user = (User) getItem(position);
-        TextView titleView = (TextView) v.findViewById(R.id.userRowName);
+        TextView titleView = (TextView) v.findViewById(R.id.user_row_name);
         titleView.setText(user.getName());
 
-        ImageView state = (ImageView) v.findViewById(R.id.userRowState);
+        ImageView state = (ImageView) v.findViewById(R.id.user_row_state);
         if (user.isSelfDeafened())
             state.setImageResource(R.drawable.ic_deafened);
         else if (user.isSelfMuted())

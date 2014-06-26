@@ -17,21 +17,7 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:custom="http://schemas.android.com/apk/res-auto"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
-
-	<com.morlunk.mumbleclient.view.PlumbleNestedListView
-	    android:id="@+id/channelUsers"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    custom:maintainPosition="true"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-	    android:fastScrollEnabled="true"
-        android:choiceMode="singleChoice"/>
-
-</LinearLayout>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true" android:drawable="@color/list_highlight_colour"/>
+    <item android:drawable="@android:color/transparent"/>
+</selector>

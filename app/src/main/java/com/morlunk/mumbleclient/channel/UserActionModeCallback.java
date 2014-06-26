@@ -20,18 +20,26 @@ package com.morlunk.mumbleclient.channel;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.net.Permissions;
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.channel.comment.UserCommentFragment;
+
+import java.util.List;
 
 /**
  * Created by andrew on 24/06/14.
@@ -40,11 +48,19 @@ public class UserActionModeCallback implements ActionMode.Callback {
     private Context mContext;
     private IJumbleService mService;
     private User mUser;
+    private ChatTargetProvider mChatTargetProvider;
+    private FragmentManager mFragmentManager;
 
-    public UserActionModeCallback(Context context, IJumbleService service, User user) {
+    public UserActionModeCallback(Context context,
+                                  IJumbleService service,
+                                  User user,
+                                  ChatTargetProvider chatTargetProvider,
+                                  FragmentManager fragmentManager) {
         mContext = context;
         mService = service;
         mUser = user;
+        mChatTargetProvider = chatTargetProvider;
+        mFragmentManager = fragmentManager;
     }
 
     @Override
@@ -113,6 +129,15 @@ public class UserActionModeCallback implements ActionMode.Callback {
         try {
             boolean ban = false;
             switch (menuItem.getItemId()) {
+                case R.id.context_send_message:
+                    if(mChatTargetProvider.getChatTarget() != null &&
+                            mChatTargetProvider.getChatTarget().getUser() != null &&
+                            mChatTargetProvider.getChatTarget().getUser().equals(mUser)) {
+                        mChatTargetProvider.setChatTarget(null);
+                    } else {
+                        mChatTargetProvider.setChatTarget(new ChatTargetProvider.ChatTarget(mUser));
+                    }
+                    break;
                 case R.id.context_ban:
                     ban = true;
                 case R.id.context_kick:
@@ -142,7 +167,7 @@ public class UserActionModeCallback implements ActionMode.Callback {
                     mService.setMuteDeafState(mUser.getSession(), mUser.isMuted(), !mUser.isDeafened());
                     break;
                 case R.id.context_move:
-//                    showChannelMoveDialog();
+                    showChannelMoveDialog();
                     break;
                 case R.id.context_priority:
                     mService.setPrioritySpeaker(mUser.getSession(), !mUser.isPrioritySpeaker());
@@ -154,10 +179,10 @@ public class UserActionModeCallback implements ActionMode.Callback {
                     mUser.setLocalIgnored(!mUser.isLocalIgnored());
                     break;
                 case R.id.context_change_comment:
-//                    showUserComment(true);
+                    showUserComment(true);
                     break;
                 case R.id.context_view_comment:
-//                    showUserComment(false);
+                    showUserComment(false);
                     break;
                 case R.id.context_reset_comment:
                     new AlertDialog.Builder(mContext)
@@ -185,11 +210,45 @@ public class UserActionModeCallback implements ActionMode.Callback {
             e.printStackTrace();
             return false;
         }
+        actionMode.finish(); // FIXME?
         return true;
     }
 
     @Override
     public void onDestroyActionMode(ActionMode actionMode) {
 
+    }
+
+    private void showUserComment(final boolean edit) {
+        Bundle args = new Bundle();
+        args.putInt("session", mUser.getSession());
+        args.putString("comment", mUser.getComment());
+        args.putBoolean("editing", edit);
+        UserCommentFragment fragment = (UserCommentFragment) Fragment.instantiate(mContext, UserCommentFragment.class.getName(), args);
+        fragment.show(mFragmentManager, UserCommentFragment.class.getName());
+    }
+
+    private void showChannelMoveDialog() throws RemoteException {
+        AlertDialog.Builder adb = new AlertDialog.Builder(mContext);
+        adb.setTitle(R.string.user_menu_move);
+        final List<Channel> channels = mService.getChannelList();
+        List<CharSequence> channelNames = Lists.transform(channels, new Function<Channel, CharSequence>() {
+            @Override
+            public CharSequence apply(Channel channel) {
+                return channel.getName();
+            }
+        });
+        adb.setItems(channelNames.toArray(new CharSequence[channelNames.size()]), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Channel channel = channels.get(which);
+                try {
+                    mService.moveUserToChannel(mUser.getSession(), channel.getId());
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        adb.show();
     }
 }

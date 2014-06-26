@@ -20,6 +20,7 @@
     <color name="cardOutline">#d3d3d3</color>
     <color name="push_to_talk_background">#555555</color>
     <color name="card_dark">#111111</color>
+    <color name="list_highlight_colour">#55CCCCCC</color>
 
     <color name="popup_menu_item_background">#555555</color>
     <color name="popup_menu_item_disabled_mask">#66000000</color>

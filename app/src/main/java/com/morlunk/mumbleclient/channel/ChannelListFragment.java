@@ -124,6 +124,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 	private ChannelListAdapter mChannelListAdapter;
     private ChatTargetProvider mTargetProvider;
     private DatabaseProvider mDatabaseProvider;
+    private ActionMode mActionMode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -155,7 +156,6 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         mChannelView = (PlumbleNestedListView) view.findViewById(R.id.channelUsers);
         mChannelView.setOnChildClickListener(this);
         mChannelView.setOnGroupClickListener(this);
-        mChannelView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         return view;
     }
@@ -378,14 +378,19 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
             }
 		}
 	}
+
 	@Override
 	public void onNestedChildClick(AdapterView<?> parent, View view, int groupId, int childPosition) {
         User user = mChannelListAdapter.getChild(groupId, childPosition);
-        if (user != null) {
-//            mTargetProvider.setChatTarget(new ChatTargetProvider.ChatTarget(user)); TODO: maybe
-            ActionMode.Callback cb = new UserActionModeCallback(getActivity(), getService(), user);
-            ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
-        }
+        if(user == null) return;
+        ActionMode.Callback cb = new UserActionModeCallback(getActivity(), getService(), user, mTargetProvider, getChildFragmentManager()) {
+            @Override
+            public void onDestroyActionMode(ActionMode actionMode) {
+                super.onDestroyActionMode(actionMode);
+                mActionMode = null;
+            }
+        };
+        mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
 	}
 
 	@Override
