@@ -42,6 +42,9 @@ import com.morlunk.mumbleclient.channel.comment.UserCommentFragment;
 import java.util.List;
 
 /**
+ * Contextual action mode for users.
+ * When the action mode is activated, the user is set to the current chat target.
+ * Upon dismissal, the chat target is reset (usually to the channel).
  * Created by andrew on 24/06/14.
  */
 public class UserActionModeCallback implements ActionMode.Callback {
@@ -66,8 +69,10 @@ public class UserActionModeCallback implements ActionMode.Callback {
     @Override
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
         actionMode.setTitle(mUser.getName());
+        actionMode.setSubtitle(R.string.current_chat_target);
         MenuInflater inflater = actionMode.getMenuInflater();
         inflater.inflate(R.menu.context_user, menu);
+        mChatTargetProvider.setChatTarget(new ChatTargetProvider.ChatTarget(mUser));
         return true;
     }
 
@@ -129,15 +134,15 @@ public class UserActionModeCallback implements ActionMode.Callback {
         try {
             boolean ban = false;
             switch (menuItem.getItemId()) {
-                case R.id.context_send_message:
-                    if(mChatTargetProvider.getChatTarget() != null &&
-                            mChatTargetProvider.getChatTarget().getUser() != null &&
-                            mChatTargetProvider.getChatTarget().getUser().equals(mUser)) {
-                        mChatTargetProvider.setChatTarget(null);
-                    } else {
-                        mChatTargetProvider.setChatTarget(new ChatTargetProvider.ChatTarget(mUser));
-                    }
-                    break;
+//                case R.id.context_send_message:
+//                    if(mChatTargetProvider.getChatTarget() != null &&
+//                            mChatTargetProvider.getChatTarget().getUser() != null &&
+//                            mChatTargetProvider.getChatTarget().getUser().equals(mUser)) {
+//                        mChatTargetProvider.setChatTarget(null);
+//                    } else {
+//                        mChatTargetProvider.setChatTarget(new ChatTargetProvider.ChatTarget(mUser));
+//                    }
+//                    break;
                 case R.id.context_ban:
                     ban = true;
                 case R.id.context_kick:
@@ -216,7 +221,7 @@ public class UserActionModeCallback implements ActionMode.Callback {
 
     @Override
     public void onDestroyActionMode(ActionMode actionMode) {
-
+        mChatTargetProvider.setChatTarget(null);
     }
 
     private void showUserComment(final boolean edit) {
