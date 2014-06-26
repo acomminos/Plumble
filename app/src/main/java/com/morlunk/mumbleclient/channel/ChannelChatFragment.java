@@ -251,6 +251,7 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
         if(target == null) mChatTextEdit.setHint(getString(R.string.messageToChannel, getService().getSessionChannel().getName()));
         else if(target.getUser() != null) mChatTextEdit.setHint(getString(R.string.messageToUser, target.getUser().getName()));
         else if(target.getChannel() != null) mChatTextEdit.setHint(getString(R.string.messageToChannel, target.getChannel().getName()));
+        mChatTextEdit.requestLayout(); // Needed to update bounds after hint change.
 	}
 
 
