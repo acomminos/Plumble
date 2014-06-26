@@ -383,14 +383,20 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 	public void onNestedChildClick(AdapterView<?> parent, View view, int groupId, int childPosition) {
         User user = mChannelListAdapter.getChild(groupId, childPosition);
         if(user == null) return;
-        ActionMode.Callback cb = new UserActionModeCallback(getActivity(), getService(), user, mTargetProvider, getChildFragmentManager()) {
-            @Override
-            public void onDestroyActionMode(ActionMode actionMode) {
-                super.onDestroyActionMode(actionMode);
-                mActionMode = null;
-            }
-        };
-        mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
+        if(mTargetProvider.getChatTarget() != null &&
+                user.equals(mTargetProvider.getChatTarget().getUser()) &&
+                mActionMode != null) {
+            mActionMode.finish(); // Dismiss action mode if double pressed. FIXME: use list view selection instead?
+        } else {
+            ActionMode.Callback cb = new UserActionModeCallback(getActivity(), getService(), user, mTargetProvider, getChildFragmentManager()) {
+                @Override
+                public void onDestroyActionMode(ActionMode actionMode) {
+                    super.onDestroyActionMode(actionMode);
+                    mActionMode = null;
+                }
+            };
+            mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
+        }
 	}
 
 	@Override
