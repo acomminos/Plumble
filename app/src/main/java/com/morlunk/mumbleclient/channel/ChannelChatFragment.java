@@ -67,6 +67,16 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
         public void onMessageLogged(Message message) throws RemoteException {
             addChatMessage(message, true);
         }
+
+        @Override
+        public void onUserJoinedChannel(User user, Channel newChannel, Channel oldChannel) throws RemoteException {
+            if (user != null && getService().getSessionUser() != null &&
+                    user.equals(getService().getSessionUser()) &&
+                    mTargetProvider.getChatTarget() == null) {
+                // Update chat target when user changes channels without a target.
+                updateChatTargetText(null);
+            }
+        }
     };
 
     private ListView mChatList;
