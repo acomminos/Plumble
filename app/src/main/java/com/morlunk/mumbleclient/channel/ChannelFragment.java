@@ -204,10 +204,6 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
 
     @Override
     public void setChatTarget(ChatTarget target) {
-//        if(target != null && mViewPager != null) {
-//            // Scroll to chat pane when a user is selected.
-//            mViewPager.setCurrentItem(1, true);
-//        }
         mChatTarget = target;
         for(OnChatTargetSelectedListener listener : mChatTargetListeners)
             listener.onChatTargetSelected(target);

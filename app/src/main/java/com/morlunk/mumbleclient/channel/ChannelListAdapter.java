@@ -44,17 +44,8 @@ import java.util.List;
  * Created by andrew on 31/07/13.
  */
 public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
-
-    /**
-     * Gets called when the channel menu needs to be shown.
-     */
-    public interface ChannelMenuListener {
-        public void showChannelMenu(Channel channel, View anchor);
-    }
-
     private IJumbleService mService;
     private PlumbleNestedListView mListView;
-    private ChannelMenuListener mMenuListener;
     private PlumbleDatabase mDatabase;
 
     private SparseArray<Channel> mChannels = new SparseArray<Channel>();
@@ -155,15 +146,13 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
             state.setImageResource(R.drawable.ic_server_muted);
         else if (user.isSuppressed())
             state.setImageResource(R.drawable.ic_suppressed);
+        else if (user.isLocalMuted())
+            state.setImageResource(R.drawable.ic_muted_local);
         else
             if (user.getTalkState() == User.TalkState.TALKING)
                 state.setImageResource(R.drawable.ic_talking_on);
             else
                 state.setImageResource(R.drawable.ic_talking_off);
-    }
-
-    public void setChannelMenuListener(ChannelMenuListener listener) {
-        mMenuListener = listener;
     }
 
     @Override
@@ -255,15 +244,6 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
         int userCount = channel.getSubchannelUserCount();
         countView.setText(String.format("%d", userCount));
         countView.setTextColor(getContext().getResources().getColor(userCount > 0 ? R.color.holo_blue_light : android.R.color.darker_gray));
-
-        ImageView moreView = (ImageView) v.findViewById(R.id.channel_row_more);
-        moreView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mMenuListener != null)
-                    mMenuListener.showChannelMenu(channel, v);
-            }
-        });
 
         View channelTitle = v.findViewById(R.id.channel_row_title);
 

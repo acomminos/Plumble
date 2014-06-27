@@ -172,6 +172,7 @@
     <string name="cancelled">Cancelled</string>
     <string name="transmit_mode">Transmit Mode</string>
     <string name="current_chat_target">Current chat target</string>
+    <string name="channel_join">Join</string>
 
     <!-- Drawer pane -->
     <string name="drawer_open">Open Drawer</string>

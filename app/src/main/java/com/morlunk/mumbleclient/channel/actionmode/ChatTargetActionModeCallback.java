@@ -15,45 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.morlunk.mumbleclient.channel;
+package com.morlunk.mumbleclient.channel.actionmode;
 
 import android.support.v7.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
-import com.morlunk.jumble.IJumbleService;
-import com.morlunk.jumble.model.Channel;
+import com.morlunk.mumbleclient.channel.ChatTargetProvider;
 
 /**
- * Created by andrew on 24/06/14.
+ * A callback that sets the active chat target when activated, and resets when destroyed (usually
+ * to the user's current channel).
+ * Created by andrew on 26/06/14.
  */
-public class ChannelActionModeCallback implements ActionMode.Callback {
-    private IJumbleService mService;
-    private Channel mChannel;
+public abstract class ChatTargetActionModeCallback implements ActionMode.Callback {
+    private ChatTargetProvider mProvider;
 
-    public ChannelActionModeCallback(IJumbleService service, Channel channel) {
-        mService = service;
-        mChannel = channel;
+    public ChatTargetActionModeCallback(ChatTargetProvider provider) {
+        mProvider = provider;
     }
 
     @Override
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-        return false;
-    }
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-        return false;
-    }
-
-    @Override
-    public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-        return false;
+        mProvider.setChatTarget(getChatTarget());
+        return true;
     }
 
     @Override
     public void onDestroyActionMode(ActionMode actionMode) {
-
+        mProvider.setChatTarget(null);
     }
+
+    public abstract ChatTargetProvider.ChatTarget getChatTarget();
 }

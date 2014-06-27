@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.morlunk.mumbleclient.channel;
+package com.morlunk.mumbleclient.channel.actionmode;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -37,6 +37,7 @@ import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.net.Permissions;
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.channel.ChatTargetProvider;
 import com.morlunk.mumbleclient.channel.comment.UserCommentFragment;
 
 import java.util.List;
@@ -47,11 +48,10 @@ import java.util.List;
  * Upon dismissal, the chat target is reset (usually to the channel).
  * Created by andrew on 24/06/14.
  */
-public class UserActionModeCallback implements ActionMode.Callback {
+public class UserActionModeCallback extends ChatTargetActionModeCallback {
     private Context mContext;
     private IJumbleService mService;
     private User mUser;
-    private ChatTargetProvider mChatTargetProvider;
     private FragmentManager mFragmentManager;
 
     public UserActionModeCallback(Context context,
@@ -59,15 +59,16 @@ public class UserActionModeCallback implements ActionMode.Callback {
                                   User user,
                                   ChatTargetProvider chatTargetProvider,
                                   FragmentManager fragmentManager) {
+        super(chatTargetProvider);
         mContext = context;
         mService = service;
         mUser = user;
-        mChatTargetProvider = chatTargetProvider;
         mFragmentManager = fragmentManager;
     }
 
     @Override
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+        super.onCreateActionMode(actionMode, menu);
         MenuInflater inflater = actionMode.getMenuInflater();
         inflater.inflate(R.menu.context_user, menu);
 
@@ -82,8 +83,6 @@ public class UserActionModeCallback implements ActionMode.Callback {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-
-        mChatTargetProvider.setChatTarget(new ChatTargetProvider.ChatTarget(mUser));
 
         return true;
     }
@@ -233,7 +232,12 @@ public class UserActionModeCallback implements ActionMode.Callback {
 
     @Override
     public void onDestroyActionMode(ActionMode actionMode) {
-        mChatTargetProvider.setChatTarget(null);
+        super.onDestroyActionMode(actionMode);
+    }
+
+    @Override
+    public ChatTargetProvider.ChatTarget getChatTarget() {
+        return new ChatTargetProvider.ChatTarget(mUser);
     }
 
     private void showUserComment(final boolean edit) {
