@@ -17,6 +17,8 @@
 
 package com.morlunk.mumbleclient.channel;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.RemoteException;
