@@ -23,7 +23,6 @@
             <item android:id="@+id/menu_input_voice" android:title="@string/inputMethodVoice"/>
             <item android:id="@+id/menu_input_ptt" android:title="@string/inputMethodPtt"/>
             <item android:id="@+id/menu_input_continuous" android:title="@string/inputMethodContinuous"/>
-            <item android:id="@+id/menu_input_handset" android:title="@string/inputMethodHandset"/>
         </menu>
     </item>
 </menu>

@@ -29,6 +29,8 @@ import com.morlunk.jumble.Constants;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Singleton settings class for universal access to the app's preferences.
@@ -36,14 +38,13 @@ import java.io.IOException;
  */
 public class Settings {
     public static final String PREF_INPUT_METHOD = "audioInputMethod";
+    public static final Set<String> ARRAY_INPUT_METHODS;
     /** Voice activity transmits depending on the amplitude of user input. */
     public static final String ARRAY_INPUT_METHOD_VOICE = "voiceActivity";
     /** Push to talk transmits on command. */
     public static final String ARRAY_INPUT_METHOD_PTT = "ptt";
     /** Continuous transmits always. */
     public static final String ARRAY_INPUT_METHOD_CONTINUOUS = "continuous";
-    /** Handset mode transmits always, using the proximity sensor and phone speaker. */
-    public static final String ARRAY_INPUT_METHOD_HANDSET = "handset";
 
     public static final String PREF_THRESHOLD = "vadThreshold";
     public static final int DEFAULT_THRESHOLD = 50;
@@ -122,6 +123,16 @@ public class Settings {
     public static final String PREF_HALF_DUPLEX = "half_duplex";
     public static final boolean DEFAULT_HALF_DUPLEX = false;
 
+    public static final String PREF_HANDSET_MODE = "handset_mode";
+    public static final boolean DEFAULT_HANDSET_MODE = false;
+
+    static {
+        ARRAY_INPUT_METHODS = new HashSet<String>();
+        ARRAY_INPUT_METHODS.add(ARRAY_INPUT_METHOD_VOICE);
+        ARRAY_INPUT_METHODS.add(ARRAY_INPUT_METHOD_PTT);
+        ARRAY_INPUT_METHODS.add(ARRAY_INPUT_METHOD_CONTINUOUS);
+    }
+
     private final SharedPreferences preferences;
 
     public static Settings getInstance(Context context) {
@@ -133,7 +144,12 @@ public class Settings {
     }
 
     public String getInputMethod() {
-        return preferences.getString(PREF_INPUT_METHOD, ARRAY_INPUT_METHOD_VOICE);
+        String method = preferences.getString(PREF_INPUT_METHOD, ARRAY_INPUT_METHOD_VOICE);
+        if(ARRAY_INPUT_METHODS.contains(method)) {
+            // Set default method for users who used to use handset mode before removal.
+            method = ARRAY_INPUT_METHOD_VOICE;
+        }
+        return method;
     }
 
     /**
@@ -142,12 +158,11 @@ public class Settings {
      */
     public int getJumbleInputMethod() {
         String inputMethod = getInputMethod();
-        if(ARRAY_INPUT_METHOD_VOICE.equals(inputMethod)) {
+        if (ARRAY_INPUT_METHOD_VOICE.equals(inputMethod)) {
             return Constants.TRANSMIT_VOICE_ACTIVITY;
-        } else if(ARRAY_INPUT_METHOD_PTT.equals(inputMethod)) {
+        } else if (ARRAY_INPUT_METHOD_PTT.equals(inputMethod)) {
             return Constants.TRANSMIT_PUSH_TO_TALK;
-        } else if(ARRAY_INPUT_METHOD_CONTINUOUS.equals(inputMethod) ||
-                ARRAY_INPUT_METHOD_HANDSET.equals(inputMethod)) {
+        } else if (ARRAY_INPUT_METHOD_CONTINUOUS.equals(inputMethod)) {
             return Constants.TRANSMIT_CONTINUOUS;
         }
         throw new RuntimeException("Could not convert input method '" + inputMethod + "' to a Jumble input method id!");
@@ -156,9 +171,8 @@ public class Settings {
     public void setInputMethod(String inputMethod) {
         if(ARRAY_INPUT_METHOD_VOICE.equals(inputMethod) ||
                 ARRAY_INPUT_METHOD_PTT.equals(inputMethod) ||
-                ARRAY_INPUT_METHOD_CONTINUOUS.equals(inputMethod) ||
-                ARRAY_INPUT_METHOD_HANDSET.equals(inputMethod)) {
-            preferences.edit().putString(PREF_INPUT_METHOD, inputMethod).commit();
+                ARRAY_INPUT_METHOD_CONTINUOUS.equals(inputMethod)) {
+            preferences.edit().putString(PREF_INPUT_METHOD, inputMethod).apply();
         } else {
             throw new RuntimeException("Invalid input method " + inputMethod);
         }
@@ -312,17 +326,17 @@ public class Settings {
         Editor editor = preferences.edit();
         editor.putBoolean(PREF_MUTED, muted || deafened);
         editor.putBoolean(PREF_DEAFENED, deafened);
-        editor.commit();
+        editor.apply();
     }
 
     public void setCertificatePath(String path) {
         Editor editor = preferences.edit();
         editor.putString(PREF_CERT, path);
-        editor.commit();
+        editor.apply();
     }
 
     public void setFirstRun(boolean run) {
-        preferences.edit().putBoolean(PREF_FIRST_RUN, run).commit();
+        preferences.edit().putBoolean(PREF_FIRST_RUN, run).apply();
     }
 
     public int getFramesPerPacket() {
@@ -331,5 +345,9 @@ public class Settings {
 
     public boolean isHalfDuplex() {
         return preferences.getBoolean(PREF_HALF_DUPLEX, DEFAULT_HALF_DUPLEX);
+    }
+
+    public boolean isHandsetMode() {
+        return preferences.getBoolean(PREF_HANDSET_MODE, DEFAULT_HANDSET_MODE);
     }
 }

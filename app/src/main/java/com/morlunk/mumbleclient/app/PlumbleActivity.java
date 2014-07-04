@@ -601,9 +601,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         /* Convert input method defined in settings to an integer format used by Jumble. */
         int inputMethod = mSettings.getJumbleInputMethod();
 
-        int audioSource = Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod()) ?
+        int audioSource = mSettings.isHandsetMode() ?
                 MediaRecorder.AudioSource.DEFAULT : MediaRecorder.AudioSource.MIC;
-        int audioStream = Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod()) ?
+        int audioStream = mSettings.isHandsetMode() ?
                 AudioManager.STREAM_VOICE_CALL : AudioManager.STREAM_MUSIC;
 
         String applicationVersion = "";

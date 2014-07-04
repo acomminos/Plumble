@@ -22,13 +22,11 @@
         <item>@string/inputMethodVoice</item>
         <item>@string/inputMethodPtt</item>
         <item>@string/inputMethodContinuous</item>
-        <item>@string/inputMethodHandset</item>
     </string-array>
 
     <string name="inputMethodVoice">Voice Activity</string>
     <string name="inputMethodPtt">Push to Talk</string>
     <string name="inputMethodContinuous">Continuous</string>
-    <string name="inputMethodHandset">Handset</string>
 
     <string-array
         name="audioSampleRateNames">
@@ -143,4 +141,6 @@
     <string name="version">Version</string>
     <string name="halfDuplex">Half Duplex Mode</string>
     <string name="halfDuplexSum">Mutes device sound when using push to talk, removing audio feedback for channel users.</string>
+    <string name="handsetMode">Handset Mode</string>
+    <string name="handsetModeSum">Uses the front speaker and proximity sensor to simulate a traditional phone call.</string>
 </resources>

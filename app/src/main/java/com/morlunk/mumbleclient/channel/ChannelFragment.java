@@ -157,9 +157,6 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
             case R.id.menu_input_continuous:
                 settings.setInputMethod(Settings.ARRAY_INPUT_METHOD_CONTINUOUS);
                 return true;
-            case R.id.menu_input_handset:
-                settings.setInputMethod(Settings.ARRAY_INPUT_METHOD_HANDSET);
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -23,7 +23,6 @@
         <item>voiceActivity</item>
         <item>ptt</item>
         <item>continuous</item>
-        <item>handset</item>
     </string-array>
 
     <string-array

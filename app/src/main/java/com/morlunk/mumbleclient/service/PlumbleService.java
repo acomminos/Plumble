@@ -257,11 +257,11 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         super.onConnectionSynchronized();
         createNotification();
 
-        if(mSettings.isHotCornerEnabled()) {
+        if (mSettings.isHotCornerEnabled()) {
             mHotCorner.setShown(true);
         }
         // Configure proximity sensor
-        if(Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod())) {
+        if (mSettings.isHandsetMode()) {
             setProximitySensorOn(true);
         }
     }
@@ -296,33 +296,39 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         if (Settings.PREF_INPUT_METHOD.equals(key)) {
             /* Convert input method defined in settings to an integer format used by Jumble. */
             int inputMethod = mSettings.getJumbleInputMethod();
-            boolean isHandset = Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod());
-            setProximitySensorOn(isHandset);
             try {
                 getBinder().setTransmitMode(inputMethod);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
             mChannelOverlay.setPushToTalkShown(inputMethod == Constants.TRANSMIT_PUSH_TO_TALK);
+        } else if (Settings.PREF_HANDSET_MODE.equals(key)) {
+            setProximitySensorOn(mSettings.isHandsetMode());
         } else if (Settings.PREF_THRESHOLD.equals(key)) {
             try {
                 getBinder().setVADThreshold(mSettings.getDetectionThreshold());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-        } else if(Settings.PREF_HOT_CORNER_KEY.equals(key)) {
+        } else if (Settings.PREF_HOT_CORNER_KEY.equals(key)) {
             mHotCorner.setGravity(mSettings.getHotCornerGravity());
             mHotCorner.setShown(mSettings.isHotCornerEnabled());
-        } else if(Settings.PREF_USE_TTS.equals(key)) {
-            if(mTTS == null && mSettings.isTextToSpeechEnabled())
+        } else if (Settings.PREF_USE_TTS.equals(key)) {
+            if (mTTS == null && mSettings.isTextToSpeechEnabled())
                 mTTS = new TextToSpeech(this, mTTSInitListener);
-            else if(mTTS != null && !mSettings.isTextToSpeechEnabled()) {
+            else if (mTTS != null && !mSettings.isTextToSpeechEnabled()) {
                 mTTS.shutdown();
                 mTTS = null;
             }
-        } else if(Settings.PREF_AMPLITUDE_BOOST.equals(key)) {
+        } else if (Settings.PREF_AMPLITUDE_BOOST.equals(key)) {
             try {
                 getBinder().setAmplitudeBoost(mSettings.getAmplitudeBoostMultiplier());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        } else if (Settings.PREF_HALF_DUPLEX.equals(key)) {
+            try {
+                getBinder().setHalfDuplex(mSettings.isHalfDuplex());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

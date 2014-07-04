@@ -26,6 +26,12 @@
         android:summary="@string/audioInputMethodSum"
         android:title="@string/audioInputMethod" />
 
+    <CheckBoxPreference
+        android:key="handset_mode"
+        android:title="@string/handsetMode"
+        android:summary="@string/handsetModeSum"
+        android:defaultValue="false"/>
+
     <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
         android:title="@string/audioInputVolume"
         android:summary="@string/audioInputVolumeSum"
