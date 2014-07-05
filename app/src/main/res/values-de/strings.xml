@@ -153,6 +153,8 @@
   <string name="trust_cleared">Vertrauensdatenbank geleert</string>
   <string name="cancelled">Abgebrochen</string>
   <string name="transmit_mode">Übertragungsmethode</string>
+  <string name="current_chat_target">Aktuelles Ziel</string>
+  <string name="channel_join">Betreten</string>
   <!--Drawer pane-->
   <string name="drawer_open">Drawer öffnen</string>
   <string name="drawer_close">Drawer schließen</string>

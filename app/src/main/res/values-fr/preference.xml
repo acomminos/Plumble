@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <string name="inputMethodPtt">Appuyer pour parler</string>
+  <string name="inputMethodContinuous">Continu</string>
   <string-array name="audioSampleRateNames">
     <item>128000Hz (expérimental)</item>
     <item>96000Hz (expérimental)</item>
@@ -94,8 +96,11 @@
   <string name="framesPerPacket">Frames par paquet</string>
   <string name="framesPerPacketSum">The number of audio frames per packet. A higher value results in less CPU usage and stuttering, but more latency.</string>
   <string name="inputQuality">Qualité d\'entrée</string>
+  <string name="pressKey">Appuyer sur une touche physique à lier à \"appuyer pour parler\"</string>
+  <string name="pressKeyInfo">Note : à cause de limitations de Android, l\'app doit être ouverte pour utiliser la touche pour \"appuyer pour parler\"</string>
   <string name="loadImagesSum">S\'il faut charger les images externes dans le chat.</string>
   <string name="loadImages">Charger des images externes</string>
   <string name="clearServerCertificates">Supprimer les certificats du serveur</string>
   <string name="clearServerCertificatesSum">Supprimer tous les certificats de serveur acceptés de la base de données de confiance de Plumble.</string>
+  <string name="version">Version</string>
 </resources>

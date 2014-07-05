@@ -3,7 +3,6 @@
   <string name="inputMethodVoice">Sprachaktivierung</string>
   <string name="inputMethodPtt">Push-To-Talk</string>
   <string name="inputMethodContinuous">Kontinuierlich</string>
-  <string name="inputMethodHandset">Hörer</string>
   <string-array name="audioSampleRateNames">
     <item>128000Hz (experimentell)</item>
     <item>96000Hz (experimentell)</item>
@@ -109,4 +108,6 @@
   <string name="version">Version</string>
   <string name="halfDuplex">Halbduplexmodus</string>
   <string name="halfDuplexSum">Deaktiviert den Gerätesound bei Verwendung von Push-To-Talk, um eine Rückkopplung zu den Benutzern im Kanal zu verhindern.</string>
+  <string name="handsetMode">Ohrhörer-Modus</string>
+  <string name="handsetModeSum">Verwendet die Lautsprecher des Ohrhörers und den Näherungssensor, um einen normalen Telefonanruf zu simulieren.</string>
 </resources>
