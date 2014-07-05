@@ -53,7 +53,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Server;
@@ -79,13 +78,18 @@ import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.util.JumbleServiceProvider;
 import com.morlunk.mumbleclient.util.PlumbleTrustStore;
 
+import org.spongycastle.util.encoders.Hex;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.security.KeyStore;
-import java.security.cert.Certificate;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -200,18 +204,23 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
             try {
                 CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-                final Certificate x509 = certFactory.generateCertificate(new ByteArrayInputStream(certBytes));
+                final X509Certificate x509 = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(certBytes));
 
                 AlertDialog.Builder adb = new AlertDialog.Builder(PlumbleActivity.this);
                 adb.setTitle(R.string.untrusted_certificate);
-                TextView certView = new TextView(PlumbleActivity.this);
-                certView.setText(x509.toString());
-                certView.setTypeface(Typeface.MONOSPACE);
-                certView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
-                certView.setHorizontallyScrolling(true);
-                certView.setMovementMethod(new ScrollingMovementMethod());
-                certView.setHorizontalScrollBarEnabled(true);
-                adb.setView(certView);
+                try {
+                    MessageDigest digest = MessageDigest.getInstance("SHA-1");
+                    byte[] certDigest = digest.digest(x509.getEncoded());
+                    String hexDigest = new String(Hex.encode(certDigest));
+                    adb.setMessage(getString(R.string.certificate_info,
+                            x509.getSubjectDN().getName(),
+                            x509.getNotBefore().toString(),
+                            x509.getNotAfter().toString(),
+                            hexDigest));
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                    adb.setMessage(x509.toString());
+                }
                 adb.setPositiveButton(R.string.allow, new DialogInterface.OnClickListener() {
 
                     @Override
