@@ -19,6 +19,13 @@
 <!-- Here be constants. These resources do NOT need translation. -->
 <resources>
     <string-array
+        name="audioInputNames">
+        <item>@string/inputMethodVoice</item>
+        <item>@string/inputMethodPtt</item>
+        <item>@string/inputMethodContinuous</item>
+    </string-array>
+
+    <string-array
         name="audioInputValues">
         <item>voiceActivity</item>
         <item>ptt</item>
