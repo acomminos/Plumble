@@ -55,6 +55,4 @@
     <color name="solarized_base1">#93a1a1</color>
     <color name="solarized_base2">#eee8d5</color>
     <color name="solarized_base3">#fdf6e3</color>
-    <color name="talk_active">#FF0000</color>
-    <color name="talk_inactive">#CCC</color>
 </resources>

@@ -19,6 +19,7 @@ package com.morlunk.mumbleclient.channel;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -38,7 +39,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
+import com.morlunk.jumble.IJumbleObserver;
+import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.model.User;
+import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
@@ -61,6 +67,26 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     /** Chat target listeners, notified when the chat target is changed. */
     private List<OnChatTargetSelectedListener> mChatTargetListeners = new ArrayList<OnChatTargetSelectedListener>();
     private boolean mTogglePTT;
+
+    private JumbleObserver mObserver = new JumbleObserver() {
+        @Override
+        public void onUserTalkStateUpdated(User user) throws RemoteException {
+            if (user != null && user.getSession() == getService().getSession()) {
+                // Manually set button selection colour when we receive a talk state update.
+                // This allows representation of talk state when using hot corners and PTT toggle.
+                switch (user.getTalkState()) {
+                    case TALKING:
+                    case SHOUTING:
+                    case WHISPERING:
+                        mTalkButton.setPressed(true);
+                        break;
+                    case PASSIVE:
+                        mTalkButton.setPressed(false);
+                        break;
+                }
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,14 +126,16 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
                         newState = mTogglePTT && oldState;
                     } else {
-                        return false;
+                        return true;
                     }
 
-                    getService().setTalkingState(newState);
+                    if (newState != oldState) {
+                        getService().setTalkingState(newState);
+                    }
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-                return false;
+                return true;
             }
         });
         configureInput();
@@ -166,6 +194,11 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         preferences.unregisterOnSharedPreferenceChangeListener(this);
         super.onDestroy();
+    }
+
+    @Override
+    public IJumbleObserver getServiceObserver() {
+        return mObserver;
     }
 
     /**
