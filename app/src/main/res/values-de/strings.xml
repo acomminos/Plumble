@@ -1,5 +1,65 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--Drawer pane-->
+  <string name="drawer_open">Drawer öffnen</string>
+  <string name="drawer_close">Drawer schließen</string>
+  <string name="drawer_not_connected">Nicht verbunden</string>
+  <string name="drawer_server">Server</string>
+  <string name="drawer_info">Informationen</string>
+  <string name="drawer_tokens">Zugriffscodes</string>
+  <string name="drawer_pinned">Gepinnte Kanäle</string>
+  <string name="drawer_header_servers">Server</string>
+  <string name="drawer_favorites">Favoriten</string>
+  <string name="drawer_lan">LAN</string>
+  <string name="drawer_public">Öffentliche Server</string>
+  <!--Chat formatting-->
+  <string name="chat_message_tree">(Baum)</string>
+  <string name="chat_message_channel">(Kanal)</string>
+  <string name="chat_message_to">%1$s → %2$s</string>
+  <!--User menu-->
+  <string name="user_menu_admin">Admin</string>
+  <string name="user_menu_kick">Kicken</string>
+  <string name="user_menu_ban">Bannen</string>
+  <string name="user_menu_mute">Stumm</string>
+  <string name="user_menu_deafen">Taub</string>
+  <string name="user_menu_move">Verschieben</string>
+  <string name="user_menu_priority_speaker">Bevorzugter Sprecher</string>
+  <string name="user_menu_local_mute">Lokal Stumm</string>
+  <string name="user_menu_ignore_messages">Nachrichten ignorieren</string>
+  <string name="user_menu_change_comment">Kommentar ändern</string>
+  <string name="user_menu_view_comment">Kommentar anzeigen</string>
+  <string name="user_menu_reset_comment">Kommentar zurücksetzen</string>
+  <string name="user_menu_send_message">Nachricht senden</string>
+  <string name="user_menu_information">Informationen</string>
+  <string name="user_menu_register">Registrieren</string>
+  <string name="user_menu_registered">Registriert</string>
+  <!--Channel menu-->
+  <string name="channel_menu_pin">Pin</string>
+  <!--Comment Fragment-->
+  <string name="comment_view">ANZEIGEN</string>
+  <string name="comment_edit_source">QUELLTEXT BEARBEITEN</string>
+  <string name="comment_view_source">QUELLTEXT ANZEIGEN</string>
+  <!--Server Info Fragment-->
+  <string name="control_channel">Steuerkanal</string>
+  <string name="tcp_encryption_mode">Verschlüsselt mit 256 bit AES256-SHA</string>
+  <string name="voice_channel">Sprachkanal</string>
+  <string name="udp_encryption_mode">Verschlüsselt mit 128 bit OCB-AES128</string>
+  <string name="audio_bandwidth">Audiobandbreite</string>
+  <string name="server_info_protocol">Protokoll %s.</string>
+  <string name="server_info_version">%1$s (%2$s)</string>
+  <string name="server_info_latency">%.2f ms Latenz</string>
+  <string name="server_info_host">Gegenstelle %1$s (Port %2$d)</string>
+  <string name="server_info_codec">Codec: %s</string>
+  <string name="server_info_max_bandwidth">Maximum %.1f kbit/s</string>
+  <string name="server_info_current_bandwidth">Aktuell %.1f kbit/s</string>
+  <!--Server matching-->
+  <string name="server_match">Server suchen</string>
+  <string name="server_match_progress">Einen Server finden...</string>
+  <string name="server_match_found">Server gefunden</string>
+  <string name="server_match_not_found">Server nicht gefunden</string>
+  <string name="server_match_expand_country">Konnte keinen optimalen Server in Ihrem Land finden. Suche auf die ganze Welt ausweiten?</string>
+  <string name="server_match_info">Name: %1$s\nAdresse: %2$s:%3$d\nBenutzer: %4$d / %5$d\nVersion: %6$s \nLand: %7$s \nLatenz: %8$d ms</string>
+  <string name="server_match_description">Plumble kann automatisch nach einem leeren Server suchen, optimiert nach Serverstandort, Version und Latenz.</string>
   <!--Common-->
   <string name="channels">Kanäle</string>
   <string name="no_servers">Keine Server hinzugefügt.\nDrücken Sie auf \'+\' in der Aktionsleiste.</string>
@@ -155,59 +215,5 @@
   <string name="transmit_mode">Übertragungsmethode</string>
   <string name="current_chat_target">Aktuelles Ziel</string>
   <string name="channel_join">Betreten</string>
-  <!--Drawer pane-->
-  <string name="drawer_open">Drawer öffnen</string>
-  <string name="drawer_close">Drawer schließen</string>
-  <string name="drawer_not_connected">Nicht verbunden</string>
-  <string name="drawer_server">Server</string>
-  <string name="drawer_info">Informationen</string>
-  <string name="drawer_tokens">Zugriffscodes</string>
-  <string name="drawer_pinned">Gepinnte Kanäle</string>
-  <string name="drawer_header_servers">Server</string>
-  <string name="drawer_favorites">Favoriten</string>
-  <string name="drawer_lan">LAN</string>
-  <string name="drawer_public">Öffentliche Server</string>
-  <!--Chat formatting-->
-  <string name="chat_message_tree">(Baum)</string>
-  <string name="chat_message_channel">(Kanal)</string>
-  <string name="chat_message_to">%1$s → %2$s</string>
-  <!--User menu-->
-  <string name="user_menu_admin">Admin</string>
-  <string name="user_menu_kick">Kicken</string>
-  <string name="user_menu_ban">Bannen</string>
-  <string name="user_menu_mute">Stumm</string>
-  <string name="user_menu_deafen">Taub</string>
-  <string name="user_menu_move">Verschieben</string>
-  <string name="user_menu_priority_speaker">Bevorzugter Sprecher</string>
-  <string name="user_menu_local_mute">Lokal Stumm</string>
-  <string name="user_menu_ignore_messages">Nachrichten ignorieren</string>
-  <string name="user_menu_change_comment">Kommentar ändern</string>
-  <string name="user_menu_view_comment">Kommentar anzeigen</string>
-  <string name="user_menu_reset_comment">Kommentar zurücksetzen</string>
-  <string name="user_menu_send_message">Nachricht senden</string>
-  <string name="user_menu_information">Informationen</string>
-  <string name="user_menu_register">Registrieren</string>
-  <string name="user_menu_registered">Registriert</string>
-  <!--Channel menu-->
-  <string name="channel_menu_pin">Pin</string>
-  <!--Comment Fragment-->
-  <string name="comment_view">ANZEIGEN</string>
-  <string name="comment_edit_source">QUELLTEXT BEARBEITEN</string>
-  <string name="comment_view_source">QUELLTEXT ANZEIGEN</string>
-  <!--Server Info Fragment-->
-  <string name="server_info_protocol">Protokoll %s.</string>
-  <string name="server_info_version">%1$s (%2$s)</string>
-  <string name="server_info_latency">%.2f ms Latenz</string>
-  <string name="server_info_host">Gegenstelle %1$s (Port %2$d)</string>
-  <string name="server_info_codec">Codec: %s</string>
-  <string name="server_info_max_bandwidth">Maximum %.1f kbit/s</string>
-  <string name="server_info_current_bandwidth">Aktuell %.1f kbit/s</string>
-  <!--Server matching-->
-  <string name="server_match">Server suchen</string>
-  <string name="server_match_progress">Suche Server…</string>
-  <string name="server_match_found">Server gefunden</string>
-  <string name="server_match_not_found">Server nicht gefunden</string>
-  <string name="server_match_expand_country">Konnte keinen optimalen Server in Ihrem Land finden. Suche auf die ganze Welt ausweiten?</string>
-  <string name="server_match_info">Name: %1$s\nAdresse: %2$s:%3$d\nBenutzer: %4$d / %5$d\nVersion: %6$s \nLand: %7$s \nLatenz: %8$d ms</string>
-  <string name="server_match_description">Plumble kann automatisch nach einem leeren Server suchen, optimiert nach Serverstandort, Version und Latenz.</string>
+  <string name="certificate_info">Allgemeiner Name:\n%1$s\n\nGültig von:\n%2$s\n\nGültig bis:\n%3$s\n\nPrüfsumme (SHA-1):\n%4$s</string>
 </resources>

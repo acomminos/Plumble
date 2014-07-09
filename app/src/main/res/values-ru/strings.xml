@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <!--Common-->
   <!--Drawer pane-->
   <!--Chat formatting-->
   <!--User menu-->
@@ -8,4 +7,5 @@
   <!--Comment Fragment-->
   <!--Server Info Fragment-->
   <!--Server matching-->
+  <!--Common-->
 </resources>

@@ -1,5 +1,65 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--Drawer pane-->
+  <string name="drawer_open">Ouvrir Drawer</string>
+  <string name="drawer_close">Fermer Drawer</string>
+  <string name="drawer_not_connected">Pas connecté</string>
+  <string name="drawer_server">Serveur</string>
+  <string name="drawer_info">Information</string>
+  <string name="drawer_tokens">Jetons d\'accès</string>
+  <string name="drawer_pinned">Canaux épinglés</string>
+  <string name="drawer_header_servers">Serveurs</string>
+  <string name="drawer_favorites">Favoris</string>
+  <string name="drawer_lan">LAN</string>
+  <string name="drawer_public">Serveurs publiques</string>
+  <!--Chat formatting-->
+  <string name="chat_message_tree">(Arborescence)</string>
+  <string name="chat_message_channel">(Canal)</string>
+  <string name="chat_message_to">%1$s → %2$s</string>
+  <!--User menu-->
+  <string name="user_menu_admin">Admin</string>
+  <string name="user_menu_kick">Expulser</string>
+  <string name="user_menu_ban">Bannir</string>
+  <string name="user_menu_mute">Muet</string>
+  <string name="user_menu_deafen">Sourd</string>
+  <string name="user_menu_move">Déplacer</string>
+  <string name="user_menu_priority_speaker">Priorité du haut-parleur</string>
+  <string name="user_menu_local_mute">Ne plus l\'écouter</string>
+  <string name="user_menu_ignore_messages">Ignorer les messages</string>
+  <string name="user_menu_change_comment">Changer le commentaire</string>
+  <string name="user_menu_view_comment">Voir le commentaire</string>
+  <string name="user_menu_reset_comment">Réinitialiser le commentaire</string>
+  <string name="user_menu_send_message">Envoyer un message</string>
+  <string name="user_menu_information">Information</string>
+  <string name="user_menu_register">Enregistrer</string>
+  <string name="user_menu_registered">Enregistré</string>
+  <!--Channel menu-->
+  <string name="channel_menu_pin">Épingle</string>
+  <!--Comment Fragment-->
+  <string name="comment_view">AFFICHAGE</string>
+  <string name="comment_edit_source">ÉDITER LA SOURCE</string>
+  <string name="comment_view_source">VOIR LA SOURCE</string>
+  <!--Server Info Fragment-->
+  <string name="control_channel">Canal de contrôle</string>
+  <string name="tcp_encryption_mode">Chiffré en AES256-SHA 256 bit</string>
+  <string name="voice_channel">Canal de voix</string>
+  <string name="udp_encryption_mode">Chiffré en OCB-AES128 128 bit</string>
+  <string name="audio_bandwidth">Débit audio</string>
+  <string name="server_info_protocol">Protocole %s.</string>
+  <string name="server_info_version">%1$s (%2$s)</string>
+  <string name="server_info_latency">%.2f ms de latence</string>
+  <string name="server_info_host">Hôte distant %1$s (port %2$d)</string>
+  <string name="server_info_codec">Codec : %s</string>
+  <string name="server_info_max_bandwidth">Maximum %.1f kbit/s</string>
+  <string name="server_info_current_bandwidth">Actuel %.1f kbit/s</string>
+  <!--Server matching-->
+  <string name="server_match">Trouver un serveur</string>
+  <string name="server_match_progress">Recherche un serveur...</string>
+  <string name="server_match_found">Serveur trouvé</string>
+  <string name="server_match_not_found">Impossible de trouver le serveur</string>
+  <string name="server_match_expand_country">Impossible de trouver aucun serveur optimal dans votre pays. Étendre la recherche au monde entier ?</string>
+  <string name="server_match_info">Nom : %1$s\nHôte : %2$s:%3$d\nUtilisateurs : %4$d / %5$d\nVersion:  %6$s \nPays : %7$s \nLatence : %8$d ms</string>
+  <string name="server_match_description">Plumble peut vous trouver automatiquement un serveur vide, en optimisant en se basant sur la position du serveur, sa version, et sa latence.</string>
   <!--Common-->
   <string name="channels">Canaux</string>
   <string name="no_servers">Aucun serveur ajouté.\nCliquez sur le bouton \'ajouter\' sur l\'action bar pour commencer.</string>
@@ -16,6 +76,7 @@
   <string name="menu_settings">Paramètres</string>
   <string name="ptt">APPUYER POUR PARLER</string>
   <string name="mute">Muet</string>
+  <string name="deafen">Sourd</string>
   <string name="disconnect">Déconnecter</string>
   <string name="disconnectSure">Êtes vous sur de vouloir vous déconnecter de Mumble ?</string>
   <string name="save">Sauvegarder</string>
@@ -38,10 +99,13 @@
   <string name="favoriteRemoved">Favori supprimé.</string>
   <string name="favoriteAdded">Favori ajouté.</string>
   <string name="noFavorites">Pas de canaux favoris.</string>
+  <string name="accessTokens">Jeton d\'accès</string>
+  <string name="accessAdd">Ajouter un jeton d\'accès</string>
+  <string name="pushToTalkHint">(Cocher la case pour permettre la bascule)</string>
   <string name="messageReceived">Nouveau message</string>
   <string name="generateCert">Générer un certificat</string>
   <string name="generateCertSuccess">Votre certificat a été définie et enregistré sous %s!</string>
-  <string name="generateCertFailure">Échec à la génération d\'un certificat.</string>
+  <string name="generateCertFailure">Échec de la génération du certificat.</string>
   <string name="generateCertProgress">Génération d\'un certificat…</string>
   <string name="search">Rechercher</string>
   <string name="searchHint">Rechercher des canaux et des utilisateurs</string>
@@ -55,6 +119,8 @@
   <string name="remove">Supprimer</string>
   <string name="delete">Effacer</string>
   <string name="retry">Réessayer</string>
+  <string name="messageToUser">Écrire un message à l\'utilisateur \'%s\'</string>
+  <string name="messageToChannel">Écrire un message dans le canal \'%s\'</string>
   <string name="online">En ligne</string>
   <string name="offline">Hors ligne</string>
   <string name="clearChat">Vider le chat</string>
@@ -67,10 +133,15 @@
   <string name="channel">Canal</string>
   <string name="user">Utilisateur</string>
   <string name="server">Serveur</string>
+  <string name="chat_notify_moved">%1$s a été déplacé de %2$s par %3$s.</string>
+  <string name="chat_notify_muted_deafened">Muet et sourd.</string>
   <string name="chat_notify_muted">Muet.</string>
   <string name="chat_notify_unmuted">Non muet.</string>
+  <string name="chat_notify_unmuted_undeafened">N\'est plus muet et sourd.</string>
+  <string name="chat_notify_now_muted_deafened">%s et maintenant muet et sourd.</string>
   <string name="chat_notify_now_muted">%s est maintenant muet.</string>
   <string name="chat_notify_now_unmuted">%s n\'est maintenant plus muet.</string>
+  <string name="chat_notify_now_unmuted_undeafened">%s n\'est plus muet et sourd.</string>
   <string name="chat_notify_connected">%s connecté.</string>
   <string name="chat_notify_disconnected">%s déconnecté.</string>
   <string name="unknown">Inconnu</string>
@@ -85,6 +156,8 @@
   <string name="share">Partager</string>
   <string name="description">Description</string>
   <string name="shareMessage">Rejoindre ce serveur Mumble avec Plumble ! %s</string>
+  <string name="noServerInfo">Pinguer pour récupérer des infos</string>
+  <string name="status_notify_muted_and_deafened">Muet et sourd.</string>
   <string name="status_notify_muted">Muet.</string>
   <string name="comment">Commenter</string>
   <string name="close">Fermer</string>
@@ -97,6 +170,7 @@
   <string name="fullscreen_channel">Canal</string>
   <string name="fetchingServers">Veuillez attendre, récupération de la liste des serveurs publiques.</string>
   <string name="information">Information</string>
+  <string name="register">S\'enregistrer</string>
   <string name="userControl">Contrôle de l\'utilisateur</string>
   <string name="registerSelfSuccess">Demande d\'inscription envoyé</string>
   <string name="error_fetching_servers">Impossible de contacter les serveurs !\nVérifiez est votre connexion Internet.</string>
@@ -104,6 +178,7 @@
   <string name="search_channel_users">%d utilisateurs</string>
   <string name="reconnecting">Reconnexion dans %d secondes.</string>
   <string name="tapToReconnect">Appuyez pour vous reconnecter</string>
+  <string name="overlay">Recouvrement</string>
   <string name="hint_reason">Raison</string>
   <string name="hint_ptt">Appuyer pour parler</string>
   <string name="hint_ptt_summary">Appuyez simplement sur ce bouton enfoncé pour parler. Double-cliquez pour l\'activer.</string>
@@ -123,63 +198,20 @@
   <string name="channel_add">Ajouter un canal</string>
   <string name="tts_failed">Erreur de l\'initialisation de TTS</string>
   <string name="mumble_url_parse_failed">Échec de l\'analyse de l\'URL Mumble !</string>
+  <string name="first_run_generate_certificate_title">Bienvenue dans Plumble!</string>
   <string name="first_run_generate_certificate">Générer un certificat est très recommandé, et nécessaire pour la connexion à certains serveurs.</string>
   <string name="generate">Générer</string>
   <string name="certificate_not_valid">Impossible de charger le certificat \'%s\'!</string>
   <string name="invalid_password">Mot de passe invalide.</string>
   <string name="send_message">Envoyer un message</string>
   <string name="channel_menu_view_description">Voir la description</string>
-  <!--Drawer pane-->
-  <string name="drawer_open">Ouvrir Drawer</string>
-  <string name="drawer_close">Fermer Drawer</string>
-  <string name="drawer_not_connected">Pas connecté</string>
-  <string name="drawer_server">Serveur</string>
-  <string name="drawer_info">Information</string>
-  <string name="drawer_tokens">Jetons d\'accès</string>
-  <string name="drawer_pinned">Canaux épinglés</string>
-  <string name="drawer_header_servers">Serveurs</string>
-  <string name="drawer_favorites">Favoris</string>
-  <string name="drawer_lan">LAN</string>
-  <string name="drawer_public">Serveurs publiques</string>
-  <!--Chat formatting-->
-  <string name="chat_message_tree">(Arborescence)</string>
-  <string name="chat_message_channel">(Canal)</string>
-  <string name="chat_message_to">%1$s → %2$s</string>
-  <!--User menu-->
-  <string name="user_menu_admin">Admin</string>
-  <string name="user_menu_kick">Expulser</string>
-  <string name="user_menu_ban">Bannir</string>
-  <string name="user_menu_mute">Muet</string>
-  <string name="user_menu_move">Déplacer</string>
-  <string name="user_menu_priority_speaker">Priorité du haut-parleur</string>
-  <string name="user_menu_ignore_messages">Ignorer les messages</string>
-  <string name="user_menu_change_comment">Changer le commentaire</string>
-  <string name="user_menu_view_comment">Voir le commentaire</string>
-  <string name="user_menu_reset_comment">Réinitialiser le commentaire</string>
-  <string name="user_menu_send_message">Envoyer un message</string>
-  <string name="user_menu_information">Information</string>
-  <string name="user_menu_register">Enregistrer</string>
-  <string name="user_menu_registered">Enregistré</string>
-  <!--Channel menu-->
-  <string name="channel_menu_pin">Épingle</string>
-  <!--Comment Fragment-->
-  <string name="comment_view">AFFICHAGE</string>
-  <string name="comment_edit_source">ÉDITER LA SOURCE</string>
-  <string name="comment_view_source">VOIR LA SOURCE</string>
-  <!--Server Info Fragment-->
-  <string name="server_info_protocol">Protocole %s.</string>
-  <string name="server_info_version">%1$s (%2$s)</string>
-  <string name="server_info_latency">%.2f ms de latence</string>
-  <string name="server_info_host">Hôte distant %1$s (port %2$d)</string>
-  <string name="server_info_codec">Codec : %s</string>
-  <string name="server_info_max_bandwidth">Maximum %.1f kbit/s</string>
-  <string name="server_info_current_bandwidth">Actuel %.1f kbit/s</string>
-  <!--Server matching-->
-  <string name="server_match">Trouver un serveur</string>
-  <string name="server_match_progress">Trouver un serveur...</string>
-  <string name="server_match_found">Serveur trouvé</string>
-  <string name="server_match_not_found">Impossible de trouver le serveur</string>
-  <string name="server_match_expand_country">Impossible de trouver aucun serveur optimal dans votre pays. Étendre la recherche au monde entier ?</string>
-  <string name="server_match_info">Nom : %1$s\nHôte : %2$s:%3$d\nUtilisateurs : %4$d / %5$d\nVersion:  %6$s \nPays : %7$s \nLatence : %8$d ms</string>
-  <string name="server_match_description">Plumble peut vous trouver automatiquement un serveur vide, en optimisant en se basant sur la position du serveur, sa version, et sa latence.</string>
+  <string name="untrusted_certificate">Certificat non autorisé</string>
+  <string name="allow">Autoriser</string>
+  <string name="trust_added">Certificat ajouté dans la base de confiance</string>
+  <string name="trust_add_failed">Échec de l\'ajout du certificat à la base de confiance!</string>
+  <string name="trust_cleared">Base de confiance effacée</string>
+  <string name="cancelled">Annulé</string>
+  <string name="transmit_mode">Mode de transmission</string>
+  <string name="channel_join">Joindre</string>
+  <string name="certificate_info">Sujet:\n%1$s\n\nValide de :\n%2$s\n\nValide pour:\n%3$s\n\nHash (SHA-1):\n%4$s</string>
 </resources>

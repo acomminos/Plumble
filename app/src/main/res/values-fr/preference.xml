@@ -1,5 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <string-array name="audioInputNames">
+    <item>@string/inputMethodVoice</item>
+    <item>@string/inputMethodPtt</item>
+    <item>@string/inputMethodContinuous</item>
+  </string-array>
+  <string name="inputMethodVoice">Activité vocale</string>
   <string name="inputMethodPtt">Appuyer pour parler</string>
   <string name="inputMethodContinuous">Continu</string>
   <string-array name="audioSampleRateNames">
@@ -68,6 +74,7 @@
   <string name="audio">Audio</string>
   <string name="audioSum">Ajuster les entrées et sorties audio</string>
   <string name="audioSampleRate">Input Sample Rate</string>
+  <string name="audioSampleRateSum">La fréquence d\'échantillonnage préférée. Tous les échantillonnages ne sont pas supportés par tous les appareils.</string>
   <string name="noCert">Pas de certificat</string>
   <string name="chatNotifications">Notifications du chat</string>
   <string name="chatNotificationsSum">Afficher une notification lorsqu\'un utilisateur poste dans le chat.</string>
@@ -96,6 +103,7 @@
   <string name="framesPerPacket">Frames par paquet</string>
   <string name="framesPerPacketSum">The number of audio frames per packet. A higher value results in less CPU usage and stuttering, but more latency.</string>
   <string name="inputQuality">Qualité d\'entrée</string>
+  <string name="inputQualitySum">La qualité d\'entrée en bps.</string>
   <string name="pressKey">Appuyer sur une touche physique à lier à \"appuyer pour parler\"</string>
   <string name="pressKeyInfo">Note : à cause de limitations de Android, l\'app doit être ouverte pour utiliser la touche pour \"appuyer pour parler\"</string>
   <string name="loadImagesSum">S\'il faut charger les images externes dans le chat.</string>
@@ -103,4 +111,8 @@
   <string name="clearServerCertificates">Supprimer les certificats du serveur</string>
   <string name="clearServerCertificatesSum">Supprimer tous les certificats de serveur acceptés de la base de données de confiance de Plumble.</string>
   <string name="version">Version</string>
+  <string name="halfDuplex">Mode half-duplex</string>
+  <string name="halfDuplexSum">Coupe les sons de l\'appareil en mode \"appuyer pour parler\", supprime le retour audio des canaux.</string>
+  <string name="handsetMode">Mode combiné</string>
+  <string name="handsetModeSum">Utilise le haut-parleur frontal et le capteur de proximité pour simuler un appel.</string>
 </resources>

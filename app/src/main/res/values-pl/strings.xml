@@ -1,5 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--Drawer pane-->
+  <!--Chat formatting-->
+  <!--User menu-->
+  <!--Channel menu-->
+  <!--Comment Fragment-->
+  <!--Server Info Fragment-->
+  <!--Server matching-->
   <!--Common-->
   <string name="channels">Kanały</string>
   <string name="no_servers">Żaden serwer nie został dodany.\nNaciśnij przycisk \'Dodaj\', aby dodać serwer.</string>
@@ -107,11 +114,4 @@
   <string name="registerSelfSuccess">Wysłano żądanie rejestracji</string>
   <string name="error_fetching_servers">Wystąpił błąd podczas pobierania publicznej listy serwerów!\nSprawdź swoje połączenie z internetem.</string>
   <string name="coming_soon">Funkcja będzie dostępna wkrótce.</string>
-  <!--Drawer pane-->
-  <!--Chat formatting-->
-  <!--User menu-->
-  <!--Channel menu-->
-  <!--Comment Fragment-->
-  <!--Server Info Fragment-->
-  <!--Server matching-->
 </resources>
