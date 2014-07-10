@@ -241,4 +241,7 @@
     <string name="current_chat_target">Current chat target</string>
     <string name="channel_join">Join</string>
     <string name="certificate_info">Subject:\n%1$s\n\nValid from:\n%2$s\n\nValid to:\n%3$s\n\nDigest (SHA-1):\n%4$s</string>
+    <string name="invalid_host">Invalid host</string>
+    <string name="invalid_port_range">Invalid port (0–65535)</string>
+    <string name="invalid_username">Invalid username</string>
 </resources>

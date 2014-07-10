@@ -18,16 +18,12 @@
 package com.morlunk.mumbleclient.servers;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -38,23 +34,18 @@ import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
 
 public class ServerEditFragment extends DialogFragment {
-
-    public interface ServerEditListener {
-        public void serverInfoUpdated();
-        public void connectToServer(Server server);
-    }
-
     private TextView mNameTitle;
 	private EditText mNameEdit;
 	private EditText mHostEdit;
 	private EditText mPortEdit;
 	private EditText mUsernameEdit;
     private EditText mPasswordEdit;
+    private TextView mErrorText;
 	
 	private ServerEditListener mListener;
     private DatabaseProvider mDatabaseProvider;
 
-	@Override
+    @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 
@@ -65,78 +56,70 @@ public class ServerEditFragment extends DialogFragment {
             throw new ClassCastException(activity.toString()+" must implement DatabaseProvider and ServerEditListener!");
         }
 	}
-	
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Settings settings = Settings.getInstance(getActivity());
-
-		View view = inflater.inflate(R.layout.dialog_server_edit, null, false);
-		alertBuilder.setView(view);
+        View view = inflater.inflate(R.layout.dialog_server_edit, container, false);
 
         mNameTitle = (TextView) view.findViewById(R.id.server_edit_name_title);
-		mNameEdit = (EditText) view.findViewById(R.id.server_edit_name);
-		mHostEdit = (EditText) view.findViewById(R.id.server_edit_host);
-		mPortEdit = (EditText) view.findViewById(R.id.server_edit_port);
-		mUsernameEdit = (EditText) view.findViewById(R.id.server_edit_username);
+        mNameEdit = (EditText) view.findViewById(R.id.server_edit_name);
+        mHostEdit = (EditText) view.findViewById(R.id.server_edit_host);
+        mPortEdit = (EditText) view.findViewById(R.id.server_edit_port);
+        mUsernameEdit = (EditText) view.findViewById(R.id.server_edit_username);
         mUsernameEdit.setHint(settings.getDefaultUsername());
         mPasswordEdit = (EditText) view.findViewById(R.id.server_edit_password);
-		if (getServer() != null) {
+        mErrorText = (TextView) view.findViewById(R.id.server_edit_error);
+        if (getServer() != null) {
             Server oldServer = getServer();
-			mNameEdit.setText(oldServer.getName());
-			mHostEdit.setText(oldServer.getHost());
-			mPortEdit.setText(String.valueOf(oldServer.getPort()));
-			mUsernameEdit.setText(oldServer.getUsername());
+            mNameEdit.setText(oldServer.getName());
+            mHostEdit.setText(oldServer.getHost());
+            mPortEdit.setText(String.valueOf(oldServer.getPort()));
+            mUsernameEdit.setText(oldServer.getUsername());
             mPasswordEdit.setText(oldServer.getPassword());
-		}
+        }
 
-        if(!shouldSave()) {
+        if (!shouldSave()) {
             mNameTitle.setVisibility(View.GONE);
             mNameEdit.setVisibility(View.GONE);
         }
 
         int actionTitle;
-        if(shouldSave() && getServer() == null) {
+        if (shouldSave() && getServer() == null) {
             actionTitle = R.string.add;
-        } else if(shouldSave()) {
+        } else if (shouldSave()) {
             actionTitle = R.string.save;
         } else {
             actionTitle = R.string.connect;
         }
-		
-		alertBuilder.setPositiveButton(actionTitle, new OnClickListener() {
 
+        Button positiveButton = (Button) view.findViewById(R.id.server_edit_positive);
+        positiveButton.setText(actionTitle);
+        positiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Server server = createServer(shouldSave());
+            public void onClick(View v) {
+                if (validate()) {
+                    Server server = createServer(shouldSave());
 
-                // If we're not committing this server, connect immediately.
-                if(!shouldSave()) mListener.connectToServer(server);
+                    // If we're not committing this server, connect immediately.
+                    if (!shouldSave()) mListener.connectToServer(server);
 
+                    dismiss();
+                }
+            }
+        });
+
+        view.findViewById(R.id.server_edit_negative).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 dismiss();
             }
         });
 
-		alertBuilder.setNegativeButton(android.R.string.cancel, new OnClickListener() {
+        getDialog().setTitle(R.string.server);
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dismiss();
-            }
-        });
-		
-		alertBuilder.setOnCancelListener(new OnCancelListener() {
-
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                dismiss();
-            }
-        });
-
-		return alertBuilder.create();
-	}
+        return view;
+    }
 
     private boolean shouldSave() {
         return getArguments() == null || getArguments().getBoolean("save", true);
@@ -165,7 +148,7 @@ public class ServerEditFragment extends DialogFragment {
 		String username = (mUsernameEdit).getText().toString().trim();
         String password = mPasswordEdit.getText().toString();
 
-        if(username.equals(""))
+        if (username.equals(""))
             username = mUsernameEdit.getHint().toString();
 
         Server server;
@@ -187,4 +170,39 @@ public class ServerEditFragment extends DialogFragment {
 
         return server;
 	}
+
+    /**
+     * Checks all fields in this ServerEditFragment for validity.
+     * If an invalid field is found, an error is shown and false is returned.
+     * @return true if the inputted values are valid, false otherwise.
+     */
+    public boolean validate() {
+        String error = null;
+
+        if (mHostEdit.getText().length() == 0) {
+            error = getString(R.string.invalid_host);
+        } else if (mPortEdit.getText().length() > 0) {
+            try {
+                int port = Integer.parseInt(mPortEdit.getText().toString());
+                if (port < 0 || port > 65535) {
+                    error = getString(R.string.invalid_port_range);
+                }
+            } catch (NumberFormatException nfe) {
+                error = getString(R.string.invalid_port_range);
+            }
+        }
+
+        mErrorText.setVisibility(mErrorText != null ? View.VISIBLE : View.GONE);
+        if (error != null) {
+            mErrorText.setText(error);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public interface ServerEditListener {
+        public void serverInfoUpdated();
+        public void connectToServer(Server server);
+    }
 }
