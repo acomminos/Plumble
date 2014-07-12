@@ -35,7 +35,7 @@ repositories {
 
 dependencies {
     compile project(":libraries:Jumble")
-    compile project(":libraries:libonionkit:libonionkit")
+    compile project(":libraries:NetCipher:libnetcipher")
     compile 'com.android.support:support-v4:19.1.+'
     compile 'com.android.support:appcompat-v7:19.1.+'
     compile 'com.google.guava:guava:17.+'
