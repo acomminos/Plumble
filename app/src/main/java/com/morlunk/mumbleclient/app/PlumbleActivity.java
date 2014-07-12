@@ -93,6 +93,8 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
+import info.guardianproject.onionkit.ui.OrbotHelper;
+
 public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener, FavouriteServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider, SharedPreferences.OnSharedPreferenceChangeListener, DrawerAdapter.DrawerDataProvider, ServerEditFragment.ServerEditListener {
     public static final int RECONNECT_DELAY = 10000;
 
@@ -602,6 +604,15 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             }
         } catch (RemoteException e) {
             e.printStackTrace();
+        }
+
+        // Prompt to start Orbot if enabled but not running
+        if (mSettings.isTorEnabled()) {
+            OrbotHelper orbotHelper = new OrbotHelper(this);
+            if (!orbotHelper.isOrbotRunning()) {
+                orbotHelper.requestOrbotStart(this);
+                return;
+            }
         }
 
         mConnectingDialog.setMessage(getString(R.string.connecting_to_server, server.getHost(), server.getPort()));
