@@ -19,13 +19,36 @@ Building on GNU/Linux
 
 It's that simple!
 
-
-Translate
----------
-
-Contribute translations to Plumble using [Transifex](https://www.transifex.com/projects/p/plumble/)!
-
 Inter-process communication
 ---------------------------
 
 Documentation on integrating your app with Plumble's IPC features [here](https://github.com/Morlunk/Plumble/wiki/Inter-process-communication).
+
+Contributing
+============
+
+Coding
+------
+
+Standard FOSS project procedure applies; fork and submit a PR!
+
+Please use Transifex for translations, not pull requests.
+
+Testing
+-------
+
+[Help test the latest Plumble nightly builds here.](https://www.morlunk.com/jenkins/) File issue reports with Nightly version number.
+
+Translation
+-----------
+
+Contribute translations to Plumble using [Transifex](https://www.transifex.com/projects/p/plumble/)!
+
+Donate
+------
+
+Plumble is a lot of work to develop! All donations are appreciated, via the paid version on Google Play or here.
+
+[Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ALTS7G56K2CGS)
+
+[Bitcoin](bitcoin:1ySD4UzFDtPLq9agRg9eiFtWmz6DJ7bBf?label=Plumble%20Donations) (1ySD4UzFDtPLq9agRg9eiFtWmz6DJ7bBf)
