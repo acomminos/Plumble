@@ -81,7 +81,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         @Override
         public void onInit(int status) {
             if(status == TextToSpeech.ERROR)
-                logWarning(getString(R.string.tts_failed));
+                log(Message.Type.WARNING, getString(R.string.tts_failed));
         }
     };
 
@@ -149,7 +149,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
 
         @Override
         public void onUserStateUpdated(User user) throws RemoteException {
-            if(user.getSession() == getSession()) {
+            if(user.getSession() == mBinder.getSession()) {
                 mSettings.setMutedAndDeafened(user.isSelfMuted(), user.isSelfDeafened()); // Update settings mute/deafen state
                 updateNotificationState();
             }
@@ -377,11 +377,11 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     /**
      * Updates the status notification with unread messages (if applicable), or status updates.
      */
-    public void updateNotificationState() {
+    public void updateNotificationState() throws RemoteException {
         if(mStatusNotificationBuilder == null) return;
         String contentText;
         if(isConnected()) {
-            User currentUser = getUserHandler().getUser(getSession());
+            User currentUser = mBinder.getSessionUser();
             if(currentUser.isSelfMuted() && currentUser.isSelfDeafened())
                 contentText = getString(R.string.status_notify_muted_and_deafened);
             else if(currentUser.isSelfMuted())
@@ -392,10 +392,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             contentText = getString(R.string.disconnected);
         }
 
-        try {
-            if(getBinder().isReconnecting()) contentText = getString(R.string.reconnecting, PlumbleActivity.RECONNECT_DELAY/1000);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if(getBinder().isReconnecting()) {
+            contentText = getString(R.string.reconnecting, PlumbleActivity.RECONNECT_DELAY/1000);
         }
 
         if(!mUnreadMessages.isEmpty() && isConnected()) {

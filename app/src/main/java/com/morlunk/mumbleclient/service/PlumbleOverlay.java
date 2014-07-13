@@ -58,7 +58,7 @@ public class PlumbleOverlay {
 
         @Override
         public void onUserJoinedChannel(User user, Channel newChannel, Channel oldChannel) throws RemoteException {
-            if(user.getSession() == mService.getSession()) // Session user has changed channels
+            if(user.getSession() == mService.getBinder().getSession()) // Session user has changed channels
                 mChannelAdapter.setChannel(mService.getBinder().getSessionChannel());
             else if(newChannel.getId() == mService.getBinder().getSessionChannel().getId() ||
                     oldChannel.getId() == mService.getBinder().getSessionChannel().getId())
