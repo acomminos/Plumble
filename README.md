@@ -10,8 +10,6 @@ Plumble is a robust GPLv3 Mumble client for Android that uses the [Jumble](https
   <img alt="Get it on F-Droid" src="https://fsfe.org/campaigns/android/f-droid.png" width="45" />
 </a>
 
-You can find legacy Plumble code and issues at https://www.github.com/Morlunk/Plumble-Legacy/
-
 Building on GNU/Linux
 ---------------------
 
@@ -26,3 +24,8 @@ Translate
 ---------
 
 Contribute translations to Plumble using [Transifex](https://www.transifex.com/projects/p/plumble/)!
+
+Inter-process communication
+---------------------------
+
+Documentation on integrating your app with Plumble's IPC features [here](https://github.com/Morlunk/Plumble/wiki/Inter-process-communication).
