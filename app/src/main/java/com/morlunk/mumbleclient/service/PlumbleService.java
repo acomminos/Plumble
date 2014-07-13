@@ -54,6 +54,11 @@ import java.util.List;
  * Created by andrew on 28/07/13.
  */
 public class PlumbleService extends JumbleService implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public static final String BROADCAST_TALK = "com.morlunk.mumbleclient.action.TALK";
+    public static final String EXTRA_TALK_STATUS = "status";
+    public static final String TALK_STATUS_ON = "on";
+    public static final String TALK_STATUS_OFF = "off";
+    public static final String TALK_STATUS_TOGGLE = "toggle";
 
     /** Undocumented constant that permits a proximity-sensing wake lock. */
     public static final int PROXIMITY_SCREEN_OFF_WAKE_LOCK = 32;
@@ -135,6 +140,30 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         }
     };
 
+    private BroadcastReceiver mTalkReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (!isConnected()) return;
+            try {
+                if (BROADCAST_TALK.equals(intent.getAction())) {
+                    String status = intent.getStringExtra(EXTRA_TALK_STATUS);
+                    if (status == null) status = TALK_STATUS_TOGGLE;
+                    if (TALK_STATUS_ON.equals(status)) {
+                        mBinder.setTalkingState(true);
+                    } else if (TALK_STATUS_OFF.equals(status)) {
+                        mBinder.setTalkingState(false);
+                    } else if (TALK_STATUS_TOGGLE.equals(status)) {
+                        mBinder.setTalkingState(!mBinder.isTalking());
+                    }
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
     private JumbleObserver mObserver = new JumbleObserver() {
 
         @Override
@@ -201,6 +230,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         notificationIntentFilter.addAction(BROADCAST_DEAFEN);
         notificationIntentFilter.addAction(BROADCAST_TOGGLE_OVERLAY);
         registerReceiver(mNotificationReceiver, notificationIntentFilter);
+        registerReceiver(mTalkReceiver, new IntentFilter(BROADCAST_TALK));
 
         try {
             getBinder().registerObserver(mObserver);
@@ -229,6 +259,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.unregisterOnSharedPreferenceChangeListener(this);
         unregisterReceiver(mNotificationReceiver);
+        unregisterReceiver(mTalkReceiver);
         try {
             getBinder().unregisterObserver(mObserver);
         } catch (RemoteException e) {
