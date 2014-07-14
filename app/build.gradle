@@ -60,8 +60,8 @@ android {
         minSdkVersion 9
         targetSdkVersion 19
         applicationId "com.morlunk.mumbleclient"
-        versionCode 64
-        versionName "3.0.6"
+        versionCode 65
+        versionName "3.1.0"
         buildConfigField "boolean", "DONATE_NAG", "false"
     }
 
