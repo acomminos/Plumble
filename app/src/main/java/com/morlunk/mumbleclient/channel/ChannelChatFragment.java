@@ -315,20 +315,26 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
             TextView timeText = (TextView) v.findViewById(R.id.list_chat_item_time);
 
             Message message = getItem(position);
-            String targetMessage = null;
+            String targetMessage = getContext().getString(R.string.unknown);
             boolean selfAuthored = false;
             try {
                 selfAuthored = message.getActor() == mService.getSession();
 
                 if (message.getChannels() != null && !message.getChannels().isEmpty()) {
                     Channel currentChannel = message.getChannels().get(0);
-                    targetMessage = getContext().getString(R.string.chat_message_to, message.getActorName(), currentChannel.getName());
+                    if (currentChannel.getName() != null) {
+                        targetMessage = getContext().getString(R.string.chat_message_to, message.getActorName(), currentChannel.getName());
+                    }
                 } else if (message.getTrees() != null && !message.getTrees().isEmpty()) {
                     Channel currentChannel = message.getTrees().get(0);
-                    targetMessage = getContext().getString(R.string.chat_message_to, message.getActorName(), currentChannel.getName());
+                    if (currentChannel.getName() != null) {
+                        targetMessage = getContext().getString(R.string.chat_message_to, message.getActorName(), currentChannel.getName());
+                    }
                 } else if (message.getUsers() != null && !message.getUsers().isEmpty()) {
                     User user = message.getUsers().get(0);
-                    targetMessage = getContext().getString(R.string.chat_message_to, message.getActorName(), user.getName());
+                    if (user.getName() != null) {
+                        targetMessage = getContext().getString(R.string.chat_message_to, message.getActorName(), user.getName());
+                    }
                 } else {
                     targetMessage = message.getActorName();
                 }
