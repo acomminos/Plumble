@@ -208,6 +208,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
                         mTTS != null &&
                         message.getType() == Message.Type.TEXT_MESSAGE &&
                         strippedMessage.length() <= TTS_THRESHOLD &&
+                        getBinder().getSessionUser() != null &&
                         !getBinder().getSessionUser().isSelfDeafened()) {
                     mTTS.speak(formattedMessage, TextToSpeech.QUEUE_ADD, null);
                 }
