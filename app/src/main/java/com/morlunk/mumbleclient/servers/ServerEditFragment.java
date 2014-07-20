@@ -46,6 +46,12 @@ public class ServerEditFragment extends DialogFragment {
     private DatabaseProvider mDatabaseProvider;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_TITLE, 0);
+    }
+
+    @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 
@@ -115,8 +121,6 @@ public class ServerEditFragment extends DialogFragment {
                 dismiss();
             }
         });
-
-        getDialog().setTitle(R.string.server);
 
         return view;
     }
