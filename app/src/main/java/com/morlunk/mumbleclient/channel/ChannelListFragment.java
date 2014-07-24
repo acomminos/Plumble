@@ -56,7 +56,7 @@ import com.morlunk.mumbleclient.view.PlumbleNestedListView;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedChildClickListener;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedGroupClickListener;
 
-public class ChannelListFragment extends JumbleServiceFragment implements OnNestedChildClickListener, OnNestedGroupClickListener {
+public class ChannelListFragment extends JumbleServiceFragment implements OnNestedChildClickListener, OnNestedGroupClickListener, UserActionModeCallback.LocalUserUpdateListener {
 
 	private IJumbleObserver mServiceObserver = new JumbleObserver() {
         @Override
@@ -388,7 +388,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
             // Dismiss action mode if double pressed. FIXME: use list view selection instead?
             mActionMode.finish();
         } else {
-            ActionMode.Callback cb = new UserActionModeCallback(getActivity(), getService(), user, mTargetProvider, getChildFragmentManager()) {
+            ActionMode.Callback cb = new UserActionModeCallback(getActivity(), getService(), user, mTargetProvider, getChildFragmentManager(), this) {
                 @Override
                 public void onDestroyActionMode(ActionMode actionMode) {
                     super.onDestroyActionMode(actionMode);
@@ -419,6 +419,15 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
                 }
             };
             mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
+        }
+    }
+
+    @Override
+    public void onLocalUserStateUpdated(User user) {
+        try {
+            updateUser(user);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 }

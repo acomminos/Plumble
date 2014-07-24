@@ -53,17 +53,20 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
     private IJumbleService mService;
     private User mUser;
     private FragmentManager mFragmentManager;
+    private LocalUserUpdateListener mListener;
 
     public UserActionModeCallback(Context context,
                                   IJumbleService service,
                                   User user,
                                   ChatTargetProvider chatTargetProvider,
-                                  FragmentManager fragmentManager) {
+                                  FragmentManager fragmentManager,
+                                  LocalUserUpdateListener listener) {
         super(chatTargetProvider);
         mContext = context;
         mService = service;
         mUser = user;
         mFragmentManager = fragmentManager;
+        mListener = listener;
     }
 
     @Override
@@ -190,9 +193,11 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
                     break;
                 case R.id.context_local_mute:
                     mUser.setLocalMuted(!mUser.isLocalMuted());
+                    mListener.onLocalUserStateUpdated(mUser);
                     break;
                 case R.id.context_ignore_messages:
                     mUser.setLocalIgnored(!mUser.isLocalIgnored());
+                    mListener.onLocalUserStateUpdated(mUser);
                     break;
                 case R.id.context_change_comment:
                     showUserComment(true);
@@ -271,5 +276,15 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
             }
         });
         adb.show();
+    }
+
+    /**
+     * Interface for observers that wish to be notified when the user state needs to be redrawn.
+     * Note that this is only for local changes- server-side state changes will be propagated to
+     * the respective Jumble callbacks.
+     * i.e. if the user becomes local muted.
+     */
+    public interface LocalUserUpdateListener {
+        public void onLocalUserStateUpdated(User user);
     }
 }
