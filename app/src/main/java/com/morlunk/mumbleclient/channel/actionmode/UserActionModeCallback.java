@@ -128,7 +128,7 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
 //            informationItem.enabled = (((perms & (Permissions.Write | Permissions.Register))) > 0 || (channelPermissions & (Permissions.Write | Permissions.Enter)) > 0 || (mUser.getSession() == mService.getSession()));
 
             // Highlight toggles
-            menu.findItem(R.id.context_mute).setChecked(mUser.isMuted());
+            menu.findItem(R.id.context_mute).setChecked(mUser.isMuted() || mUser.isSuppressed());
             menu.findItem(R.id.context_deafen).setChecked(mUser.isDeafened());
             menu.findItem(R.id.context_priority).setChecked(mUser.isPrioritySpeaker());
             menu.findItem(R.id.context_local_mute).setChecked(mUser.isLocalMuted());
@@ -177,7 +177,7 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
                     alertBuilder.show();
                     break;
                 case R.id.context_mute:
-                    mService.setMuteDeafState(mUser.getSession(), !mUser.isMuted(), mUser.isDeafened());
+                    mService.setMuteDeafState(mUser.getSession(), !(mUser.isMuted() || mUser.isSuppressed()), mUser.isDeafened());
                     break;
                 case R.id.context_deafen:
                     mService.setMuteDeafState(mUser.getSession(), mUser.isMuted(), !mUser.isDeafened());
