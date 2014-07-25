@@ -91,7 +91,6 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         public void onInit(int status) {
             if(status == TextToSpeech.ERROR)
                 log(Message.Type.WARNING, getString(R.string.tts_failed));
-
         }
     };
 
@@ -228,13 +227,11 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
 
         @Override
         public void onUserTalkStateUpdated(User user) throws RemoteException {
-            if (mBinder.getSession() == user.getSession()) {
-                if (mBinder.getTransmitMode() == Constants.TRANSMIT_PUSH_TO_TALK) {
-                    if (user.getTalkState() == User.TalkState.TALKING) {
-                        AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-                        audioManager.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, -1);
-                    }
-                }
+            if (mBinder.getSession() == user.getSession()
+                    && mBinder.getTransmitMode() == Constants.TRANSMIT_PUSH_TO_TALK
+                    && mPTTSound && user.getTalkState() == User.TalkState.TALKING) {
+                AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+                audioManager.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, -1);
             }
         }
     };

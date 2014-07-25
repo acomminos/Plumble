@@ -67,9 +67,9 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="pttSound"
-            android:summary="Play sound effect when Push to Talk button is pressed."
-            android:title="Push to Talk Sound"/>
+            android:key="ptt_sound"
+            android:summary="@string/pttSoundSum"
+            android:title="@string/pttSound"/>
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="hidePtt"

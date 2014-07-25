@@ -126,7 +126,7 @@ public class Settings {
     public static final String PREF_HANDSET_MODE = "handset_mode";
     public static final boolean DEFAULT_HANDSET_MODE = false;
 
-    public static final String PREF_PTT_SOUND = "pttSound";
+    public static final String PREF_PTT_SOUND = "ptt_sound";
     public static final boolean DEFAULT_PTT_SOUND = false;
 
     static {
