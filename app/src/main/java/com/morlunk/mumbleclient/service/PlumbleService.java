@@ -82,6 +82,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     private PlumbleOverlay mChannelOverlay;
     /** Proximity lock for handset mode. */
     private PowerManager.WakeLock mProximityLock;
+    /** Play sound when push to talk key is pressed */
+    private boolean mPTTSound;
 
     private TextToSpeech mTTS;
     private TextToSpeech.OnInitListener mTTSInitListener = new TextToSpeech.OnInitListener() {
@@ -89,6 +91,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         public void onInit(int status) {
             if(status == TextToSpeech.ERROR)
                 log(Message.Type.WARNING, getString(R.string.tts_failed));
+
         }
     };
 
@@ -378,6 +381,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        } else if (Settings.PREF_PTT_SOUND.equals(key)) {
+            mPTTSound = mSettings.isPttSoundEnabled();
         }
     }
 
