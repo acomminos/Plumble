@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.media.AudioManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -39,6 +40,7 @@ import android.view.WindowManager;
 import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.JumbleService;
+import com.morlunk.jumble.audio.AudioOutput;
 import com.morlunk.jumble.model.Message;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.JumbleObserver;
@@ -219,6 +221,18 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         public void onPermissionDenied(String reason) throws RemoteException {
             if(!mSettings.isChatNotifyEnabled()) return;
             updateNotificationTicker(reason);
+        }
+
+        @Override
+        public void onUserTalkStateUpdated(User user) throws RemoteException {
+            if (mBinder.getSession() == user.getSession()) {
+                if (mBinder.getTransmitMode() == Constants.TRANSMIT_PUSH_TO_TALK) {
+                    if (user.getTalkState() == User.TalkState.TALKING) {
+                        AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+                        audioManager.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, -1);
+                    }
+                }
+            }
         }
     };
 
