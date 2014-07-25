@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.media.AudioManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -39,6 +40,7 @@ import android.view.WindowManager;
 import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.JumbleService;
+import com.morlunk.jumble.audio.AudioOutput;
 import com.morlunk.jumble.model.Message;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.JumbleObserver;
@@ -80,6 +82,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     private PlumbleOverlay mChannelOverlay;
     /** Proximity lock for handset mode. */
     private PowerManager.WakeLock mProximityLock;
+    /** Play sound when push to talk key is pressed */
+    private boolean mPTTSound;
 
     private TextToSpeech mTTS;
     private TextToSpeech.OnInitListener mTTSInitListener = new TextToSpeech.OnInitListener() {
@@ -219,6 +223,16 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         public void onPermissionDenied(String reason) throws RemoteException {
             if(!mSettings.isChatNotifyEnabled()) return;
             updateNotificationTicker(reason);
+        }
+
+        @Override
+        public void onUserTalkStateUpdated(User user) throws RemoteException {
+            if (mBinder.getSession() == user.getSession()
+                    && mBinder.getTransmitMode() == Constants.TRANSMIT_PUSH_TO_TALK
+                    && mPTTSound && user.getTalkState() == User.TalkState.TALKING) {
+                AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+                audioManager.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, -1);
+            }
         }
     };
 
@@ -364,6 +378,8 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        } else if (Settings.PREF_PTT_SOUND.equals(key)) {
+            mPTTSound = mSettings.isPttSoundEnabled();
         }
     }
 

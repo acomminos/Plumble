@@ -136,4 +136,6 @@
     <string name="halfDuplexSum">Mutes device sound when using push to talk, removing audio feedback for channel users.</string>
     <string name="handsetMode">Handset Mode</string>
     <string name="handsetModeSum">Uses the front speaker and proximity sensor to simulate a traditional phone call.</string>
+    <string name="pttSound">Push to Talk Sound</string>
+    <string name="pttSoundSum">Play sound effect when Push to Talk button is pressed.</string>
 </resources>

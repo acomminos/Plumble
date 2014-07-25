@@ -126,6 +126,9 @@ public class Settings {
     public static final String PREF_HANDSET_MODE = "handset_mode";
     public static final boolean DEFAULT_HANDSET_MODE = false;
 
+    public static final String PREF_PTT_SOUND = "ptt_sound";
+    public static final boolean DEFAULT_PTT_SOUND = false;
+
     static {
         ARRAY_INPUT_METHODS = new HashSet<String>();
         ARRAY_INPUT_METHODS.add(ARRAY_INPUT_METHOD_VOICE);
@@ -349,5 +352,9 @@ public class Settings {
 
     public boolean isHandsetMode() {
         return preferences.getBoolean(PREF_HANDSET_MODE, DEFAULT_HANDSET_MODE);
+    }
+
+    public boolean isPttSoundEnabled() {
+        return preferences.getBoolean(PREF_PTT_SOUND, DEFAULT_PTT_SOUND);
     }
 }
