@@ -28,6 +28,7 @@ import android.content.IntentFilter;
 import android.database.CursorWrapper;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.view.MenuItemCompat;
@@ -51,6 +52,7 @@ import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.channel.actionmode.ChannelActionModeCallback;
 import com.morlunk.mumbleclient.channel.actionmode.UserActionModeCallback;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
+import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedChildClickListener;
@@ -423,11 +425,33 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
     }
 
     @Override
-    public void onLocalUserStateUpdated(User user) {
+    public void onLocalUserStateUpdated(final User user) {
         try {
             updateUser(user);
         } catch (RemoteException e) {
             e.printStackTrace();
+        }
+
+        // Add or remove registered user from local mute history
+        if (user.getUserId() >= 0) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        PlumbleDatabase database = mDatabaseProvider.getDatabase();
+                        long server = getService().getConnectedServer().getId();
+                        if (user.isLocalMuted()) {
+                            database.addLocalMutedUser(server, user.getUserId());
+                        } else {
+                            database.removeLocalMutedUser(server, user.getUserId());
+                        }
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
     }
 }
