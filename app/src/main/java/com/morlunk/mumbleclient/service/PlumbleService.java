@@ -17,9 +17,7 @@
 
 package com.morlunk.mumbleclient.service;
 
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -39,37 +37,20 @@ import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.app.PlumbleActivity;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.morlunk.mumbleclient.service.ipc.TalkBroadcastReceiver;
 
 /**
  * An extension of the Jumble service with some added Plumble-exclusive non-standard Mumble features.
  * Created by andrew on 28/07/13.
  */
 public class PlumbleService extends JumbleService implements SharedPreferences.OnSharedPreferenceChangeListener {
-    public static final String BROADCAST_TALK = "com.morlunk.mumbleclient.action.TALK";
-    public static final String EXTRA_TALK_STATUS = "status";
-    public static final String TALK_STATUS_ON = "on";
-    public static final String TALK_STATUS_OFF = "off";
-    public static final String TALK_STATUS_TOGGLE = "toggle";
-
     /** Undocumented constant that permits a proximity-sensing wake lock. */
     public static final int PROXIMITY_SCREEN_OFF_WAKE_LOCK = 32;
     public static final int TTS_THRESHOLD = 250; // Maximum number of characters to read
 
-    public static final String BROADCAST_MUTE = "broadcast_mute";
-    public static final String BROADCAST_DEAFEN = "broadcast_deafen";
-    public static final String BROADCAST_TOGGLE_OVERLAY = "broadcast_toggle_overlay";
-
-    public static final int STATUS_NOTIFICATION_ID = 1;
-
     private PlumbleBinder mBinder = new PlumbleBinder();
-    private NotificationCompat.Builder mStatusNotificationBuilder;
-    /** A list of messages to be displayed in the chat notification. Should be cleared when notification pressed. */
-    private List<String> mUnreadMessages = new ArrayList<String>();
-
     private Settings mSettings;
+    private PlumbleNotification mNotification;
     /** Channel view overlay. */
     private PlumbleOverlay mChannelOverlay;
     /** Proximity lock for handset mode. */
@@ -110,55 +91,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         }
     };
 
-    private BroadcastReceiver mNotificationReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(!isConnected()) return;
-            try {
-                if(BROADCAST_MUTE.equals(intent.getAction())) {
-                    User user = getBinder().getSessionUser();
-                    boolean muted = !user.isSelfMuted();
-                    boolean deafened = user.isSelfDeafened();
-                    deafened &= muted;
-                    getBinder().setSelfMuteDeafState(muted, deafened);
-                } else if(BROADCAST_DEAFEN.equals(intent.getAction())) {
-                    User user = getBinder().getSessionUser();
-                    getBinder().setSelfMuteDeafState(!user.isSelfDeafened(), !user.isSelfDeafened());
-                } else if(BROADCAST_TOGGLE_OVERLAY.equals(intent.getAction())) {
-                    if(!mChannelOverlay.isShown())
-                        mChannelOverlay.show();
-                    else
-                        mChannelOverlay.hide();
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    private BroadcastReceiver mTalkReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (!isConnected()) return;
-            try {
-                if (BROADCAST_TALK.equals(intent.getAction())) {
-                    String status = intent.getStringExtra(EXTRA_TALK_STATUS);
-                    if (status == null) status = TALK_STATUS_TOGGLE;
-                    if (TALK_STATUS_ON.equals(status)) {
-                        mBinder.setTalkingState(true);
-                    } else if (TALK_STATUS_OFF.equals(status)) {
-                        mBinder.setTalkingState(false);
-                    } else if (TALK_STATUS_TOGGLE.equals(status)) {
-                        mBinder.setTalkingState(!mBinder.isTalking());
-                    }
-                } else {
-                    throw new UnsupportedOperationException();
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    };
+    private BroadcastReceiver mTalkReceiver;
 
     private JumbleObserver mObserver = new JumbleObserver() {
 
@@ -166,9 +99,10 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         public void onConnectionError(String message, boolean reconnecting) throws RemoteException {
             if(reconnecting) {
                 String tickerMessage = getString(R.string.reconnecting, PlumbleActivity.RECONNECT_DELAY/1000);
-                if(mNotificationReceiver == null) createNotification();
-                updateNotificationTicker(tickerMessage);
-                updateNotificationState();
+                if (mNotification != null) {
+                    mNotification.setCustomContentText(tickerMessage);
+                    mNotification.setReconnecting(true);
+                }
             }
         }
 
@@ -176,7 +110,16 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         public void onUserStateUpdated(User user) throws RemoteException {
             if(user.getSession() == mBinder.getSession()) {
                 mSettings.setMutedAndDeafened(user.isSelfMuted(), user.isSelfDeafened()); // Update settings mute/deafen state
-                updateNotificationState();
+                if(mNotification != null) {
+                    String contentText;
+                    if (user.isSelfMuted() && user.isSelfDeafened())
+                        contentText = getString(R.string.status_notify_muted_and_deafened);
+                    else if (user.isSelfMuted())
+                        contentText = getString(R.string.status_notify_muted);
+                    else
+                        contentText = getString(R.string.connected);
+                    mNotification.setCustomContentText(contentText);
+                }
             }
         }
 
@@ -187,16 +130,11 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
 
             // Only read text messages. TODO: make this an option.
             if(message.getType() == Message.Type.TEXT_MESSAGE) {
-                User actor = getBinder().getUser(message.getActor());
-                String actorName = actor != null ? actor.getName() : getString(R.string.server);
+                String formattedMessage = getString(R.string.notification_message,
+                        message.getActorName(), message.getMessage());
 
-                String formattedMessage = actorName + ": " + strippedMessage;
-                mUnreadMessages.add(formattedMessage);
-
-                if(mSettings.isChatNotifyEnabled() && mStatusNotificationBuilder != null) {
-                    // Set the ticker to be the last message received
-                    mStatusNotificationBuilder.setTicker(mUnreadMessages.get(mUnreadMessages.size() - 1));
-                    updateNotificationState();
+                if(mSettings.isChatNotifyEnabled() && mNotification != null) {
+                    mNotification.addMessage(strippedMessage);
                 }
 
                 // Read if TTS is enabled, the message is less than threshold, is a text message, and not deafened
@@ -213,8 +151,10 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
 
         @Override
         public void onPermissionDenied(String reason) throws RemoteException {
-            if(!mSettings.isChatNotifyEnabled()) return;
-            updateNotificationTicker(reason);
+            if(mSettings.isChatNotifyEnabled() &&
+                    mNotification != null) {
+                mNotification.setCustomTicker(reason);
+            }
         }
 
         @Override
@@ -229,18 +169,55 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             }
         }
     };
+    private PlumbleNotification.OnActionListener mNotificationActionListener = new PlumbleNotification.OnActionListener() {
+        @Override
+        public void onMuteToggled() {
+            try {
+                User user = mBinder.getSessionUser();
+                if (isConnected() && user != null) {
+                    boolean muted = !user.isSelfMuted();
+                    boolean deafened = user.isSelfDeafened() && muted;
+                    mBinder.setSelfMuteDeafState(muted, deafened);
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onDeafenToggled() {
+            try {
+                User user = mBinder.getSessionUser();
+                if (isConnected() && user != null) {
+                    mBinder.setSelfMuteDeafState(!user.isSelfDeafened(), !user.isSelfDeafened());
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onOverlayToggled() {
+            if (!mChannelOverlay.isShown()) {
+                mChannelOverlay.show();
+            } else {
+                mChannelOverlay.hide();
+            }
+        }
+
+        @Override
+        public void onReconnectCanceled() {
+            try {
+                mBinder.cancelReconnect();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void onCreate() {
         super.onCreate();
-        // Register for notification actions
-        IntentFilter notificationIntentFilter = new IntentFilter();
-        notificationIntentFilter.addAction(BROADCAST_MUTE);
-        notificationIntentFilter.addAction(BROADCAST_DEAFEN);
-        notificationIntentFilter.addAction(BROADCAST_TOGGLE_OVERLAY);
-        registerReceiver(mNotificationReceiver, notificationIntentFilter);
-        registerReceiver(mTalkReceiver, new IntentFilter(BROADCAST_TALK));
-
         try {
             getBinder().registerObserver(mObserver);
         } catch (RemoteException e) {
@@ -255,12 +232,13 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
 
         // Instantiate overlay view
         mChannelOverlay = new PlumbleOverlay(this);
-
         mHotCorner = new PlumbleHotCorner(this, mSettings.getHotCornerGravity(), mHotCornerListener);
 
         // Set up TTS
         if(mSettings.isTextToSpeechEnabled())
             mTTS = new TextToSpeech(this, mTTSInitListener);
+
+        mTalkReceiver = new TalkBroadcastReceiver(getBinder());
     }
 
     @Override
@@ -268,8 +246,12 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         stopForeground(true);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.unregisterOnSharedPreferenceChangeListener(this);
-        unregisterReceiver(mNotificationReceiver);
-        unregisterReceiver(mTalkReceiver);
+        try {
+            unregisterReceiver(mTalkReceiver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+
         try {
             getBinder().unregisterObserver(mObserver);
         } catch (RemoteException e) {
@@ -296,7 +278,16 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     @Override
     public void onConnectionSynchronized() {
         super.onConnectionSynchronized();
-        createNotification();
+
+        // Remove old notification left from reconnect,
+        if (mNotification != null) {
+            mNotification.hide();
+            mNotification = null;
+        }
+
+        mNotification = PlumbleNotification.showForeground(this, mNotificationActionListener);
+
+        registerReceiver(mTalkReceiver, new IntentFilter(TalkBroadcastReceiver.BROADCAST_TALK));
 
         if (mSettings.isHotCornerEnabled()) {
             mHotCorner.setShown(true);
@@ -310,6 +301,12 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     @Override
     public void onConnectionDisconnected() {
         super.onConnectionDisconnected();
+        try {
+            unregisterReceiver(mTalkReceiver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+
         // Remove overlay if present.
         mChannelOverlay.hide();
 
@@ -318,8 +315,9 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         setProximitySensorOn(false);
 
         try {
-            if(!getBinder().isReconnecting()) {
-                hideNotification();
+            if(!getBinder().isReconnecting() && mNotification != null) {
+                mNotification.hide();
+                mNotification = null;
 //                stopSelf(); // Stop manual control of the service's lifecycle.
             }
         } catch (RemoteException e) {
@@ -378,90 +376,6 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         }
     }
 
-    /**
-     * Creates a new NotificationCompat.Builder configured for the service, and shows it.
-     */
-    public void createNotification() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setSmallIcon(R.drawable.ic_stat_notify);
-        builder.setTicker(getResources().getString(R.string.plumbleConnected));
-        builder.setContentTitle(getResources().getString(R.string.app_name));
-        builder.setContentText(getResources().getString(R.string.connected));
-        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
-        builder.setOngoing(true);
-
-        // Add notification triggers
-        Intent muteIntent = new Intent(BROADCAST_MUTE);
-        Intent deafenIntent = new Intent(BROADCAST_DEAFEN);
-        Intent overlayIntent = new Intent(BROADCAST_TOGGLE_OVERLAY);
-
-        if(isConnected()) {
-            builder.addAction(R.drawable.ic_action_microphone,
-                    getString(R.string.mute), PendingIntent.getBroadcast(this, 1,
-                    muteIntent, PendingIntent.FLAG_CANCEL_CURRENT));
-            builder.addAction(R.drawable.ic_action_audio,
-                    getString(R.string.deafen), PendingIntent.getBroadcast(this, 1,
-                    deafenIntent, PendingIntent.FLAG_CANCEL_CURRENT));
-            builder.addAction(R.drawable.ic_action_channels,
-                    getString(R.string.overlay), PendingIntent.getBroadcast(this, 2,
-                    overlayIntent, PendingIntent.FLAG_CANCEL_CURRENT));
-        }
-
-        Intent channelListIntent = new Intent(this, PlumbleActivity.class);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, channelListIntent, 0);
-
-        builder.setContentIntent(pendingIntent);
-
-        mStatusNotificationBuilder = builder;
-        startForeground(STATUS_NOTIFICATION_ID, builder.build());
-    }
-
-    /**
-     * Updates the status notification with unread messages (if applicable), or status updates.
-     */
-    public void updateNotificationState() throws RemoteException {
-        if(mStatusNotificationBuilder == null) return;
-        String contentText;
-        if(isConnected()) {
-            User currentUser = mBinder.getSessionUser();
-            if(currentUser.isSelfMuted() && currentUser.isSelfDeafened())
-                contentText = getString(R.string.status_notify_muted_and_deafened);
-            else if(currentUser.isSelfMuted())
-                contentText = getString(R.string.status_notify_muted);
-            else
-                contentText = getString(R.string.connected);
-        } else {
-            contentText = getString(R.string.disconnected);
-        }
-
-        if(getBinder().isReconnecting()) {
-            contentText = getString(R.string.reconnecting, PlumbleActivity.RECONNECT_DELAY/1000);
-        }
-
-        if(!mUnreadMessages.isEmpty() && isConnected()) {
-            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-            for(String message : mUnreadMessages)
-                inboxStyle.addLine(message);
-            mStatusNotificationBuilder.setStyle(inboxStyle);
-        } else {
-            mStatusNotificationBuilder.setStyle(null);
-        }
-
-        mStatusNotificationBuilder.setContentText(contentText);
-        startForeground(STATUS_NOTIFICATION_ID, mStatusNotificationBuilder.build());
-    }
-
-    public void updateNotificationTicker(String message) {
-        if(mStatusNotificationBuilder == null) return;
-        mStatusNotificationBuilder.setTicker(message);
-        startForeground(STATUS_NOTIFICATION_ID, mStatusNotificationBuilder.build());
-    }
-
-    public void hideNotification() {
-        stopForeground(true);
-    }
-
     private void setProximitySensorOn(boolean on) {
         if(on) {
             PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
@@ -500,10 +414,15 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         }
 
         public void clearChatNotifications() throws RemoteException {
-            if(mUnreadMessages.size() > 0) {
-                mUnreadMessages.clear();
-                if(isConnected()) updateNotificationState();
+            if (mNotification != null) mNotification.clearMessages();
+        }
+
+        public void cancelReconnect() throws RemoteException {
+            if (mNotification != null) {
+                mNotification.hide();
+                mNotification = null;
             }
+            super.cancelReconnect();
         }
     }
 }
