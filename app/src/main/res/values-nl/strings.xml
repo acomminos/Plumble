@@ -1,21 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ Copyright (C) 2014 Andrew Comminos
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <resources>
   <!--Drawer pane-->
   <string name="drawer_open">Open Luik</string>
@@ -57,7 +40,9 @@
   <string name="comment_edit_source">BEWERK BRON</string>
   <string name="comment_view_source">BEKIJK BRON</string>
   <!--Server Info Fragment-->
+  <string name="control_channel">Controle Kanaal</string>
   <string name="tcp_encryption_mode">Versleuteld met 256 bit AES256-SHA</string>
+  <string name="voice_channel">Stem Kanaal</string>
   <string name="udp_encryption_mode">Versleuteld met 128 bit OCB-AES128</string>
   <string name="audio_bandwidth">Audio bandbreedte</string>
   <string name="server_info_protocol">Protocol %s.</string>
@@ -227,5 +212,11 @@
   <string name="trust_add_failed">Certificaat kon niet toegevoegd worden aan vertrouwde opslag!</string>
   <string name="trust_cleared">Vertrouwde opslag database geleegd</string>
   <string name="cancelled">Geannuleerd</string>
+  <string name="transmit_mode">Doorstuur Modus</string>
+  <string name="current_chat_target">Huidig chat doelwit</string>
+  <string name="channel_join">Aansluiten</string>
   <string name="certificate_info">Onderwerp:\n%1$s\n\nGeldig van:\n%2$s\n\nGeldig tot:\n%3$s\n\nDigest (SHA-1):\n%4$s</string>
+  <string name="invalid_host">Ongeldige host</string>
+  <string name="invalid_port_range">Ongeldige poort (0–65535)</string>
+  <string name="invalid_username">Ongeldige Gebruikersnaam</string>
 </resources>

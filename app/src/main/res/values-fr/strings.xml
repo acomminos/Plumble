@@ -1,21 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ Copyright (C) 2014 Andrew Comminos
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <resources>
   <!--Drawer pane-->
   <string name="drawer_open">Ouvrir Drawer</string>
@@ -24,14 +7,14 @@
   <string name="drawer_server">Serveur</string>
   <string name="drawer_info">Information</string>
   <string name="drawer_tokens">Jetons d\'accès</string>
-  <string name="drawer_pinned">Canaux épinglés</string>
+  <string name="drawer_pinned">Salons épinglés</string>
   <string name="drawer_header_servers">Serveurs</string>
   <string name="drawer_favorites">Favoris</string>
   <string name="drawer_lan">LAN</string>
   <string name="drawer_public">Serveurs publiques</string>
   <!--Chat formatting-->
   <string name="chat_message_tree">(Arborescence)</string>
-  <string name="chat_message_channel">(Canal)</string>
+  <string name="chat_message_channel">(Salon)</string>
   <string name="chat_message_to">%1$s → %2$s</string>
   <!--User menu-->
   <string name="user_menu_admin">Admin</string>
@@ -78,7 +61,7 @@
   <string name="server_match_info">Nom : %1$s\nHôte : %2$s:%3$d\nUtilisateurs : %4$d / %5$d\nVersion:  %6$s \nPays : %7$s \nLatence : %8$d ms</string>
   <string name="server_match_description">Plumble peut vous trouver automatiquement un serveur vide, en optimisant en se basant sur la position du serveur, sa version, et sa latence.</string>
   <!--Common-->
-  <string name="channels">Canaux</string>
+  <string name="channels">Salons</string>
   <string name="no_servers">Aucun serveur ajouté.\nCliquez sur le bouton \'ajouter\' sur l\'action bar pour commencer.</string>
   <string name="server_add">Ajouter un serveur</string>
   <string name="server_password">Mot de passe</string>
@@ -89,7 +72,7 @@
   <string name="connecting">Connexion</string>
   <string name="connecting_to_server">Connexion à %1$s:%2$s</string>
   <string name="fragment_chat">Chat</string>
-  <string name="fragment_channel">Canal</string>
+  <string name="fragment_channel">Salon</string>
   <string name="menu_settings">Paramètres</string>
   <string name="ptt">APPUYER POUR PARLER</string>
   <string name="mute">Muet</string>
@@ -99,11 +82,12 @@
   <string name="save">Sauvegarder</string>
   <string name="add">Ajouter</string>
   <string name="preferences">Préférences</string>
+  <string name="togglelocalmute">Activer/désactiver ne plus l\'écouter</string>
   <string name="chat">Chat</string>
   <string name="perm_denied">Permission non accordée !</string>
   <string name="connectionRefused">Connexion refusée</string>
   <string name="confirm_delete_server">Êtes vous sur vouloir supprimer ce serveur ?</string>
-  <string name="confirm_delete_channel">Êtes vous sur de vouloir supprimer ce canal ?</string>
+  <string name="confirm_delete_channel">Êtes vous sur de vouloir supprimer ce salon?</string>
   <string name="disconnected">Déconnecté</string>
   <string name="kicked_message">Expulsé du serveur.\nRaison : %s</string>
   <string name="loading">Chargement…</string>
@@ -115,7 +99,7 @@
   <string name="favorites">Favoris</string>
   <string name="favoriteRemoved">Favori supprimé.</string>
   <string name="favoriteAdded">Favori ajouté.</string>
-  <string name="noFavorites">Pas de canaux favoris.</string>
+  <string name="noFavorites">Pas de salon favoris.</string>
   <string name="accessTokens">Jeton d\'accès</string>
   <string name="accessAdd">Ajouter un jeton d\'accès</string>
   <string name="pushToTalkHint">(Cocher la case pour permettre la bascule)</string>
@@ -125,7 +109,7 @@
   <string name="generateCertFailure">Échec de la génération du certificat.</string>
   <string name="generateCertProgress">Génération d\'un certificat…</string>
   <string name="search">Rechercher</string>
-  <string name="searchHint">Rechercher des canaux et des utilisateurs</string>
+  <string name="searchHint">Rechercher des salons et des utilisateurs</string>
   <string name="undocumentedWakeLock">Malheuresement, il ne semble pas que nous puissions proposer le déverrouillage grâce aux capteurs de proximité pour votre appareil. Veuillez changer le mode d\'appel à haut-parleur.</string>
   <string name="bluetooth">Bluetooth</string>
   <string name="recordingVolume">Recording Volume Boost</string>
@@ -137,7 +121,7 @@
   <string name="delete">Effacer</string>
   <string name="retry">Réessayer</string>
   <string name="messageToUser">Écrire un message à l\'utilisateur \'%s\'</string>
-  <string name="messageToChannel">Écrire un message dans le canal \'%s\'</string>
+  <string name="messageToChannel">Écrire un message dans le salon\'%s\'</string>
   <string name="online">En ligne</string>
   <string name="offline">Hors ligne</string>
   <string name="clearChat">Vider le chat</string>
@@ -147,7 +131,7 @@
   <string name="plumbleDisconnected">Plumble déconnecté</string>
   <string name="lostConnection">Connexion au serveur perdu.</string>
   <string name="resume">Reprendre</string>
-  <string name="channel">Canal</string>
+  <string name="channel">Salon</string>
   <string name="user">Utilisateur</string>
   <string name="server">Serveur</string>
   <string name="chat_notify_moved">%1$s a été déplacé de %2$s par %3$s.</string>
@@ -184,7 +168,7 @@
   <string name="preferences_immutable">Ce paramètre ne peut pas être changé pendant une connexion au serveur.</string>
   <string name="fullscreen">Plein écran</string>
   <string name="fullscreen_chat">Chat</string>
-  <string name="fullscreen_channel">Canal</string>
+  <string name="fullscreen_channel">Salon</string>
   <string name="fetchingServers">Veuillez attendre, récupération de la liste des serveurs publiques.</string>
   <string name="information">Information</string>
   <string name="register">S\'enregistrer</string>
@@ -200,19 +184,19 @@
   <string name="hint_ptt">Appuyer pour parler</string>
   <string name="hint_ptt_summary">Appuyez simplement sur ce bouton enfoncé pour parler. Double-cliquez pour l\'activer.</string>
   <string name="hint_server_add">Bienvenue sur Plumble</string>
-  <string name="hint_server_add_summary">Pour commence, ajouter un serveur favori en appuyant sur le bouton ajoute de \'action bar.</string>
+  <string name="hint_server_add_summary">Pour commence, ajouter un serveur favori en appuyant sur le bouton ajouter dans la barre d\'action.</string>
   <string name="hint_switching">Basculer entre les vues</string>
-  <string name="hint_switching_summary">Basculer entre le chat et la vue du canal en utilisant les boutons en haut à gauche ou en swipant.</string>
+  <string name="hint_switching_summary">Basculer entre le chat et le salon en utilisant les boutons en haut à gauche ou en glissant.</string>
   <string name="action_settings">Paramètres</string>
   <string name="reconnect">Reconnect</string>
-  <string name="reconnect_dialog_message">You are already connected to a server. Connect to this server instead?</string>
-  <string name="confirm_reset_comment">Are you sure you want to reset the comment of user %s?</string>
+  <string name="reconnect_dialog_message">Vous êtes déjà connecté à un serveur. Se connecter à ce serveur à la place?</string>
+  <string name="confirm_reset_comment">Êtes vous sûr de vouloir remettre à zéro le commentaire de l\'utilisateur %s?</string>
   <string name="confirm">Confirmer</string>
   <string name="expand">Développer</string>
   <string name="temporary">Temporaire</string>
   <string name="position">Position</string>
-  <string name="channel_edit">Éditer le canal</string>
-  <string name="channel_add">Ajouter un canal</string>
+  <string name="channel_edit">Éditer le salon</string>
+  <string name="channel_add">Ajouter un salon</string>
   <string name="tts_failed">Erreur de l\'initialisation de TTS</string>
   <string name="mumble_url_parse_failed">Échec de l\'analyse de l\'URL Mumble !</string>
   <string name="first_run_generate_certificate_title">Bienvenue dans Plumble!</string>
@@ -229,6 +213,10 @@
   <string name="trust_cleared">Base de confiance effacée</string>
   <string name="cancelled">Annulé</string>
   <string name="transmit_mode">Mode de transmission</string>
+  <string name="current_chat_target">Discussion cible actuelle</string>
   <string name="channel_join">Joindre</string>
   <string name="certificate_info">Sujet:\n%1$s\n\nValide de :\n%2$s\n\nValide pour:\n%3$s\n\nHash (SHA-1):\n%4$s</string>
+  <string name="invalid_host">Hôte invalide</string>
+  <string name="invalid_port_range">Port invalide (0-65535)</string>
+  <string name="invalid_username">Nom d\'utilisateur invalide</string>
 </resources>

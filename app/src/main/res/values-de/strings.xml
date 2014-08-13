@@ -1,21 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ Copyright (C) 2014 Andrew Comminos
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <resources>
   <!--Drawer pane-->
   <string name="drawer_open">Drawer öffnen</string>
@@ -233,4 +216,7 @@
   <string name="current_chat_target">Aktuelles Ziel</string>
   <string name="channel_join">Betreten</string>
   <string name="certificate_info">Allgemeiner Name:\n%1$s\n\nGültig von:\n%2$s\n\nGültig bis:\n%3$s\n\nPrüfsumme (SHA-1):\n%4$s</string>
+  <string name="invalid_host">Ungültiger Host</string>
+  <string name="invalid_port_range">Ungültiger Port (0-65535)</string>
+  <string name="invalid_username">Ungültiger Benutzername</string>
 </resources>

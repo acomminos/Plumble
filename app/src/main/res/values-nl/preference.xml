@@ -1,22 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ Copyright (C) 2014 Andrew Comminos
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <resources>
+  <string name="inputMethodVoice">Stem Activiteit</string>
+  <string name="inputMethodPtt">Push to Talk</string>
+  <string name="inputMethodContinuous">Doorlopend</string>
   <string-array name="audioSampleRateNames">
     <item>128000Hz (experimenteel)</item>
     <item>96000Hz (experimenteel)</item>
@@ -120,4 +106,10 @@
   <string name="clearServerCertificates">Wis Server Certificaten</string>
   <string name="clearServerCertificatesSum">Wis alle toegestane certificaten uit de Plumble database.</string>
   <string name="version">Versie</string>
+  <string name="halfDuplex">Half Duplex Modus</string>
+  <string name="halfDuplexSum">Dempt het geluid van het toestel bij push to talk om feedback te voorkomen.</string>
+  <string name="handsetMode">Telefoon Modus</string>
+  <string name="handsetModeSum">Gebruikt frontale luidspreker en nabijheidssensor om een normaal telefoongesprek na te bootsen.</string>
+  <string name="pttSound">Push to Talk Geluid</string>
+  <string name="pttSoundSum">Speelt geluidseffect wanneer Push to Talk knop ingedrukt wordt.</string>
 </resources>
