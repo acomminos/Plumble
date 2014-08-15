@@ -28,6 +28,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.morlunk.jumble.model.Message;
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.app.DrawerAdapter;
 import com.morlunk.mumbleclient.app.PlumbleActivity;
 
 import java.util.ArrayList;
@@ -194,7 +195,9 @@ public class PlumbleNotification {
         }
 
         Intent channelListIntent = new Intent(mService, PlumbleActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(mService, 0, channelListIntent, 0);
+        channelListIntent.putExtra(PlumbleActivity.EXTRA_DRAWER_FRAGMENT, DrawerAdapter.ITEM_SERVER);
+        // FLAG_CANCEL_CURRENT ensures that the extra always gets sent.
+        PendingIntent pendingIntent = PendingIntent.getActivity(mService, 0, channelListIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         builder.setContentIntent(pendingIntent);
 
         Notification notification = builder.build();

@@ -96,6 +96,10 @@ import java.util.List;
 import info.guardianproject.onionkit.ui.OrbotHelper;
 
 public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener, FavouriteServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider, SharedPreferences.OnSharedPreferenceChangeListener, DrawerAdapter.DrawerDataProvider, ServerEditFragment.ServerEditListener {
+    /**
+     * If specified, the provided integer drawer fragment ID is shown when the activity is created.
+     */
+    public static final String EXTRA_DRAWER_FRAGMENT = "drawer_fragment";
     public static final int RECONNECT_DELAY = 10000;
 
     private PlumbleService.PlumbleBinder mService;
@@ -329,7 +333,12 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         mDisconnectPromptBuilder = dadb;
 
         if(savedInstanceState == null) {
-            loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+            if (getIntent() != null && getIntent().hasExtra(EXTRA_DRAWER_FRAGMENT)) {
+                loadDrawerFragment(getIntent().getIntExtra(EXTRA_DRAWER_FRAGMENT,
+                        DrawerAdapter.ITEM_FAVOURITES));
+            } else {
+                loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+            }
         }
 
         // If we're given a Mumble URL to show, open up a server edit fragment.
