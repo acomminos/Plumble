@@ -49,4 +49,8 @@ public interface PlumbleDatabase {
     public List<Integer> getLocalMutedUsers(long serverId);
     public void addLocalMutedUser(long serverId, int userId);
     public void removeLocalMutedUser(long serverId, int userId);
+
+    public List<Integer> getLocalIgnoredUsers(long serverId);
+    public void addLocalIgnoredUser(long serverId, int userId);
+    public void removeLocalIgnoredUser(long serverId, int userId);
 }

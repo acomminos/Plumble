@@ -667,7 +667,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         connectIntent.putExtra(JumbleService.EXTRAS_HALF_DUPLEX, mSettings.isHalfDuplex());
         if (server.isSaved()) {
             ArrayList<Integer> muteHistory = (ArrayList<Integer>) mDatabase.getLocalMutedUsers(server.getId());
+            ArrayList<Integer> ignoreHistory = (ArrayList<Integer>) mDatabase.getLocalIgnoredUsers(server.getId());
             connectIntent.putExtra(JumbleService.EXTRAS_LOCAL_MUTE_HISTORY, muteHistory);
+            connectIntent.putExtra(JumbleService.EXTRAS_LOCAL_IGNORE_HISTORY, ignoreHistory);
         }
         connectIntent.setAction(JumbleService.ACTION_CONNECT);
         startService(connectIntent);
