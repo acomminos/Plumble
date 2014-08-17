@@ -116,6 +116,12 @@
             android:defaultValue="6"
             android:text=" frames"/>
 
+        <CheckBoxPreference
+            android:key="preprocessor_enabled"
+            android:title="@string/preprocessor_enabled"
+            android:summary="@string/preprocessor_enabled_sum"
+            android:defaultValue="true" />
+
         <!-- TODO: REIMPLEMENT -->
         <!--
         <ListPreference

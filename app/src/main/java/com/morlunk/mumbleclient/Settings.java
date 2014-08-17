@@ -129,6 +129,9 @@ public class Settings {
     public static final String PREF_PTT_SOUND = "ptt_sound";
     public static final boolean DEFAULT_PTT_SOUND = false;
 
+    private static final String PREF_PREPROCESSOR_ENABLED = "preprocessor_enabled";
+    private static final boolean DEFAULT_PREPROCESSOR_ENABLED = true;
+
     static {
         ARRAY_INPUT_METHODS = new HashSet<String>();
         ARRAY_INPUT_METHODS.add(ARRAY_INPUT_METHOD_VOICE);
@@ -356,5 +359,9 @@ public class Settings {
 
     public boolean isPttSoundEnabled() {
         return preferences.getBoolean(PREF_PTT_SOUND, DEFAULT_PTT_SOUND);
+    }
+
+    public boolean isPreprocessorEnabled() {
+        return preferences.getBoolean(PREF_PREPROCESSOR_ENABLED, DEFAULT_PREPROCESSOR_ENABLED);
     }
 }

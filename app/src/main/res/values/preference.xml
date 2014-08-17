@@ -138,4 +138,6 @@
     <string name="handsetModeSum">Uses the front speaker and proximity sensor to simulate a traditional phone call.</string>
     <string name="pttSound">Push to Talk Sound</string>
     <string name="pttSoundSum">Play sound effect when Push to Talk button is pressed.</string>
+    <string name="preprocessor_enabled">Enable Input Preprocessor</string>
+    <string name="preprocessor_enabled_sum">Enable the Speex preprocessor for noise reduction and cancellation.</string>
 </resources>
