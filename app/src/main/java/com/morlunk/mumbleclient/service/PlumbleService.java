@@ -131,10 +131,10 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             // Only read text messages. TODO: make this an option.
             if(message.getType() == Message.Type.TEXT_MESSAGE) {
                 String formattedMessage = getString(R.string.notification_message,
-                        message.getActorName(), message.getMessage());
+                        message.getActorName(), strippedMessage);
 
                 if(mSettings.isChatNotifyEnabled() && mNotification != null) {
-                    mNotification.addMessage(strippedMessage);
+                    mNotification.addMessage(formattedMessage);
                 }
 
                 // Read if TTS is enabled, the message is less than threshold, is a text message, and not deafened
