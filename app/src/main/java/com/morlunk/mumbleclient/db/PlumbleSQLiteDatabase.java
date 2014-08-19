@@ -115,6 +115,7 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
         db.execSQL(TABLE_TOKENS_CREATE_SQL);
         db.execSQL(TABLE_COMMENTS_CREATE_SQL);
         db.execSQL(TABLE_LOCAL_MUTE_CREATE_SQL);
+        db.execSQL(TABLE_LOCAL_IGNORE_CREATE_SQL);
     }
 
     @Override
