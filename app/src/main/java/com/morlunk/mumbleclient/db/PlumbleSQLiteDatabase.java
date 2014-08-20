@@ -108,6 +108,10 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
         super(context, DATABASE_NAME, null, CURRENT_DB_VERSION);
     }
 
+    public PlumbleSQLiteDatabase(Context context, String name) {
+        super(context, name, null, CURRENT_DB_VERSION);
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(TABLE_SERVER_CREATE_SQL);
