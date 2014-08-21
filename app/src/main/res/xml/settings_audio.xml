@@ -94,7 +94,7 @@
             android:defaultValue="48000"
             android:title="@string/audioSampleRate"
             android:summary="@string/audioSampleRateSum"
-            android:entries="@array/audioSampleRateNames"
+            android:entries="@array/audioSampleRateValues"
             android:entryValues="@array/audioSampleRateValues"/>
 
         <com.morlunk.mumbleclient.preference.SeekBarDialogPreference

@@ -33,21 +33,6 @@
     </string-array>
 
     <string-array
-        name="audioSampleRateNames">
-        <!-- Experimental -->
-        <!--<item>128000Hz (experimental)</item>-->
-        <!--<item>96000Hz (experimental)</item>-->
-        <!--<item>72000Hz (experimental)</item>-->
-
-        <item>48000Hz</item>
-        <item>44100Hz</item>
-        <item>22050Hz</item>
-        <item>16000Hz</item>
-        <item>11025Hz</item>
-        <item>8000Hz</item>
-    </string-array>
-
-    <string-array
         name="audioSampleRateValues">
         <!-- Experimental -->
         <!--<item>128000</item>-->
