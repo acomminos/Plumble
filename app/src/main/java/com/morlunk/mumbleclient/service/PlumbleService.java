@@ -47,6 +47,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     /** Undocumented constant that permits a proximity-sensing wake lock. */
     public static final int PROXIMITY_SCREEN_OFF_WAKE_LOCK = 32;
     public static final int TTS_THRESHOLD = 250; // Maximum number of characters to read
+    public static final int RECONNECT_DELAY = 10000;
 
     private PlumbleBinder mBinder = new PlumbleBinder();
     private Settings mSettings;
@@ -98,7 +99,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         @Override
         public void onConnectionError(String message, boolean reconnecting) throws RemoteException {
             if(reconnecting) {
-                String tickerMessage = getString(R.string.reconnecting, PlumbleActivity.RECONNECT_DELAY/1000);
+                String tickerMessage = getString(R.string.reconnecting, RECONNECT_DELAY/1000);
                 if (mNotification != null) {
                     mNotification.setCustomContentText(tickerMessage);
                     mNotification.setReconnecting(true);
