@@ -117,8 +117,8 @@ public class Settings {
     public static final String PREF_LOAD_IMAGES = "load_images";
     public static final boolean DEFAULT_LOAD_IMAGES = true;
 
-    public static final String PREF_FRAMES_PER_PACKET = "frames_per_packet";
-    public static final int DEFAULT_FRAMES_PER_PACKET = 2;
+    public static final String PREF_FRAMES_PER_PACKET = "audio_per_packet";
+    public static final String DEFAULT_FRAMES_PER_PACKET = "2";
 
     public static final String PREF_HALF_DUPLEX = "half_duplex";
     public static final boolean DEFAULT_HALF_DUPLEX = false;
@@ -346,7 +346,7 @@ public class Settings {
     }
 
     public int getFramesPerPacket() {
-        return preferences.getInt(PREF_FRAMES_PER_PACKET, DEFAULT_FRAMES_PER_PACKET);
+        return Integer.parseInt(preferences.getString(PREF_FRAMES_PER_PACKET, DEFAULT_FRAMES_PER_PACKET));
     }
 
     public boolean isHalfDuplex() {

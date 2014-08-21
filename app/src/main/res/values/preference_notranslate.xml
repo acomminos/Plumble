@@ -33,11 +33,26 @@
     </string-array>
 
     <string-array
+        name="audioSampleRateNames">
+        <!-- Experimental -->
+        <!--<item>128000Hz (experimental)</item>-->
+        <!--<item>96000Hz (experimental)</item>-->
+        <!--<item>72000Hz (experimental)</item>-->
+
+        <item>48000Hz</item>
+        <item>44100Hz</item>
+        <item>22050Hz</item>
+        <item>16000Hz</item>
+        <item>11025Hz</item>
+        <item>8000Hz</item>
+    </string-array>
+
+    <string-array
         name="audioSampleRateValues">
         <!-- Experimental -->
-        <item>128000</item>
-        <item>96000</item>
-        <item>72000</item>
+        <!--<item>128000</item>-->
+        <!--<item>96000</item>-->
+        <!--<item>72000</item>-->
         <!-- Likely supported -->
         <item>48000</item>
         <item>44100</item>
@@ -66,6 +81,20 @@
         <item>bottomLeft</item>
         <item>topRight</item>
         <item>bottomRight</item>
+    </string-array>
+
+    <string-array name="audio_per_packet_names">
+        <item>10ms</item>
+        <item>20ms</item>
+        <item>40ms</item>
+        <item>60ms</item>
+    </string-array>
+
+    <string-array name="audio_per_packet_values">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
     </string-array>
 
     <string name="copyright">Copyright &#169; Andrew Comminos 2014</string>

@@ -107,14 +107,13 @@
             android:defaultValue="40"
             android:text=" bps"/>
 
-        <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
-            android:key="frames_per_packet"
-            android:title="@string/framesPerPacket"
-            android:summary="@string/framesPerPacketSum"
-            max="6"
-            min="1"
+        <ListPreference
+            android:key="audio_per_packet"
+            android:title="@string/audio_per_packet"
+            android:summary="@string/audio_per_packet_sum"
             android:defaultValue="2"
-            android:text=" frames"/>
+            android:entries="@array/audio_per_packet_names"
+            android:entryValues="@array/audio_per_packet_values" />
 
         <CheckBoxPreference
             android:key="preprocessor_enabled"

@@ -20,21 +20,6 @@
     <string name="inputMethodVoice">Voice Activity</string>
     <string name="inputMethodPtt">Push to Talk</string>
     <string name="inputMethodContinuous">Continuous</string>
-
-    <string-array
-        name="audioSampleRateNames">
-        <!-- Experimental -->
-        <item>128000Hz (experimental)</item>
-        <item>96000Hz (experimental)</item>
-        <item>72000Hz (experimental)</item>
-
-        <item>48000Hz</item>
-        <item>44100Hz</item>
-        <item>22050Hz</item>
-        <item>16000Hz</item>
-        <item>11025Hz</item>
-        <item>8000Hz</item>
-    </string-array>
 	
 	<string-array
 	    name="themeNames">
@@ -121,8 +106,6 @@
     <string name="autoReconnectSum">Automatically try to re-establish a connection when the server connection is lost.</string>
     <string name="useTor">Connect via Tor</string>
     <string name="useTorSum">Requires Orbot app</string>
-    <string name="framesPerPacket">Frames per Packet</string>
-    <string name="framesPerPacketSum">The number of audio frames per packet. A higher value results in less CPU usage and stuttering, but more latency.</string>
     <string name="inputQuality">Input Quality</string>
     <string name="inputQualitySum">The target input quality in bps.</string>
     <string name="pressKey">Press a hardware key to bind to push-to-talk.</string>
@@ -140,4 +123,6 @@
     <string name="pttSoundSum">Play sound effect when Push to Talk button is pressed.</string>
     <string name="preprocessor_enabled">Enable Input Preprocessor</string>
     <string name="preprocessor_enabled_sum">Enable the Speex preprocessor for noise reduction and cancellation.</string>
+    <string name="audio_per_packet">Audio per packet</string>
+    <string name="audio_per_packet_sum">The length of audio per voice packet.</string>
 </resources>
