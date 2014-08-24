@@ -60,8 +60,8 @@ android {
         minSdkVersion 9
         targetSdkVersion 19
         applicationId "com.morlunk.mumbleclient"
-        versionCode 69
-        versionName "3.1.4"
+        versionCode 70
+        versionName "3.1.5"
         testPackageName "com.morlunk.mumbleclient.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         buildConfigField "boolean", "DONATE_NAG", "false"
