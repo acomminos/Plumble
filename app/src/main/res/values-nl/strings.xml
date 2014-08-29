@@ -58,11 +58,9 @@
   <string name="server_match_found">Server gevonden</string>
   <string name="server_match_not_found">Server niet gevonden</string>
   <string name="server_match_expand_country">Kon geen optimale servers in uw land vinden. Zoekopdracht wereldwijd uitbreiden?</string>
-  <string name="server_match_info">Naam: %1$s\nHost: %2$s:%3$d\nGebruikers: %4$d / %5$d\nVersie: %6$s \nLand: %7$s \nLatency: %8$d ms</string>
   <string name="server_match_description">Plumble kan automatisch een lege server zoeken, geoptimaliseerd aan de hand van locatie, versie en latency.</string>
   <!--Common-->
   <string name="channels">Kanalen</string>
-  <string name="no_servers">Geen servers toegevoegd.\nDruk op \'toevoegen\' in de taakbalk om te starten.</string>
   <string name="server_add">Server toevoegen</string>
   <string name="server_password">Wachtwoord</string>
   <string name="server_username">Gebruikersnaam</string>
@@ -89,7 +87,6 @@
   <string name="confirm_delete_server">Bent u zeker dat u deze server wilt verwijderen?</string>
   <string name="confirm_delete_channel">Bent u zeker dat u dit kanaal wilt verwijderen?</string>
   <string name="disconnected">Verbinding verbroken</string>
-  <string name="kicked_message">Uit de server gezet.\nReden: %s</string>
   <string name="loading">Laden...</string>
   <string name="reset_key">Reset Knop</string>
   <string name="externalStorageUnavailable">Externe opslag niet bereikbaar, kan certificaat niet laden</string>
@@ -174,7 +171,6 @@
   <string name="register">Registreer Jezelf</string>
   <string name="userControl">Gebruiker Beheer</string>
   <string name="registerSelfSuccess">Registratie verzoek verzonden</string>
-  <string name="error_fetching_servers">Fout bij servers ophalen!\nControleer uw internet verbinding.</string>
   <string name="coming_soon">Deze functie is binnenkort beschhikbaar.</string>
   <string name="search_channel_users">%d gebruikers</string>
   <string name="reconnecting">Herverbinden over %d seconden.</string>
@@ -215,8 +211,8 @@
   <string name="transmit_mode">Doorstuur Modus</string>
   <string name="current_chat_target">Huidig chat doelwit</string>
   <string name="channel_join">Aansluiten</string>
-  <string name="certificate_info">Onderwerp:\n%1$s\n\nGeldig van:\n%2$s\n\nGeldig tot:\n%3$s\n\nDigest (SHA-1):\n%4$s</string>
   <string name="invalid_host">Ongeldige host</string>
   <string name="invalid_port_range">Ongeldige poort (0–65535)</string>
   <string name="invalid_username">Ongeldige Gebruikersnaam</string>
+  <string name="cancel_reconnect">Herverbinden annuleren </string>
 </resources>

@@ -3,18 +3,6 @@
   <string name="inputMethodVoice">Stem Activiteit</string>
   <string name="inputMethodPtt">Push to Talk</string>
   <string name="inputMethodContinuous">Doorlopend</string>
-  <string-array name="audioSampleRateNames">
-    <item>128000Hz (experimenteel)</item>
-    <item>96000Hz (experimenteel)</item>
-    <item>72000Hz (experimenteel)</item>
-    <item>48000Hz</item>
-    <item>44100Hz</item>
-    <item>22050Hz</item>
-    <item>16000Hz</item>
-    <item>11025Hz</item>
-    <item>8000Hz</item>
-  </string-array>
-  <!--Experimental-->
   <string-array name="themeNames">
     <item>Licht</item>
     <item>Donker</item>
@@ -95,8 +83,6 @@
   <string name="autoReconnectSum">Automatisch proberen herverbinden wanneer de verbinding met de server wegvalt.</string>
   <string name="useTor">Verbind via Tor</string>
   <string name="useTorSum">Vereist Orbot applicatie</string>
-  <string name="framesPerPacket">Frames per Pakket</string>
-  <string name="framesPerPacketSum">Het aantal audio frames per pakket. Hogere waarden vereisen minder CPU gebruik en stotter, maar meer vertraging.</string>
   <string name="inputQuality">Invoer Kwaliteit</string>
   <string name="inputQualitySum">De beoogde invoer kwaiteit in bps.</string>
   <string name="pressKey">Druk op een hardware knop om aan push-to-talk te binden.</string>

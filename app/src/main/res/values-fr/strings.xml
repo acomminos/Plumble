@@ -14,7 +14,7 @@
   <string name="drawer_public">Serveurs publiques</string>
   <!--Chat formatting-->
   <string name="chat_message_tree">(Arborescence)</string>
-  <string name="chat_message_channel">(Salon)</string>
+  <string name="chat_message_channel">(Canal)</string>
   <string name="chat_message_to">%1$s → %2$s</string>
   <!--User menu-->
   <string name="user_menu_admin">Admin</string>
@@ -58,21 +58,19 @@
   <string name="server_match_found">Serveur trouvé</string>
   <string name="server_match_not_found">Impossible de trouver le serveur</string>
   <string name="server_match_expand_country">Impossible de trouver aucun serveur optimal dans votre pays. Étendre la recherche au monde entier ?</string>
-  <string name="server_match_info">Nom : %1$s\nHôte : %2$s:%3$d\nUtilisateurs : %4$d / %5$d\nVersion:  %6$s \nPays : %7$s \nLatence : %8$d ms</string>
   <string name="server_match_description">Plumble peut vous trouver automatiquement un serveur vide, en optimisant en se basant sur la position du serveur, sa version, et sa latence.</string>
   <!--Common-->
-  <string name="channels">Salons</string>
-  <string name="no_servers">Aucun serveur ajouté.\nCliquez sur le bouton \'ajouter\' sur l\'action bar pour commencer.</string>
+  <string name="channels">Canaux</string>
   <string name="server_add">Ajouter un serveur</string>
   <string name="server_password">Mot de passe</string>
   <string name="server_username">Nom d\'utilisateur</string>
   <string name="server_port">Port</string>
-  <string name="server_host">Addresse</string>
+  <string name="server_host">Adresse</string>
   <string name="server_label">Libellé</string>
   <string name="connecting">Connexion</string>
   <string name="connecting_to_server">Connexion à %1$s:%2$s</string>
   <string name="fragment_chat">Chat</string>
-  <string name="fragment_channel">Salon</string>
+  <string name="fragment_channel">canal</string>
   <string name="menu_settings">Paramètres</string>
   <string name="ptt">APPUYER POUR PARLER</string>
   <string name="mute">Muet</string>
@@ -89,7 +87,6 @@
   <string name="confirm_delete_server">Êtes vous sur vouloir supprimer ce serveur ?</string>
   <string name="confirm_delete_channel">Êtes vous sur de vouloir supprimer ce salon?</string>
   <string name="disconnected">Déconnecté</string>
-  <string name="kicked_message">Expulsé du serveur.\nRaison : %s</string>
   <string name="loading">Chargement…</string>
   <string name="reset_key">Touche pour reset</string>
   <string name="externalStorageUnavailable">Stockage externe indisponible, impossible de charger le certificat</string>
@@ -174,12 +171,11 @@
   <string name="register">S\'enregistrer</string>
   <string name="userControl">Contrôle de l\'utilisateur</string>
   <string name="registerSelfSuccess">Demande d\'inscription envoyé</string>
-  <string name="error_fetching_servers">Impossible de contacter les serveurs !\nVérifiez est votre connexion Internet.</string>
   <string name="coming_soon">Cette fonctionnalité arrivera bientôt.</string>
   <string name="search_channel_users">%d utilisateurs</string>
   <string name="reconnecting">Reconnexion dans %d secondes.</string>
   <string name="tapToReconnect">Appuyez pour vous reconnecter</string>
-  <string name="overlay">Recouvrement</string>
+  <string name="overlay">Overlay</string>
   <string name="hint_reason">Raison</string>
   <string name="hint_ptt">Appuyer pour parler</string>
   <string name="hint_ptt_summary">Appuyez simplement sur ce bouton enfoncé pour parler. Double-cliquez pour l\'activer.</string>
@@ -215,8 +211,8 @@
   <string name="transmit_mode">Mode de transmission</string>
   <string name="current_chat_target">Discussion cible actuelle</string>
   <string name="channel_join">Joindre</string>
-  <string name="certificate_info">Sujet:\n%1$s\n\nValide de :\n%2$s\n\nValide pour:\n%3$s\n\nHash (SHA-1):\n%4$s</string>
   <string name="invalid_host">Hôte invalide</string>
   <string name="invalid_port_range">Port invalide (0-65535)</string>
   <string name="invalid_username">Nom d\'utilisateur invalide</string>
+  <string name="cancel_reconnect">Annuler la reconnexion</string>
 </resources>

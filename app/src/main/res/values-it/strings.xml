@@ -32,7 +32,6 @@
   <string name="server_match">Cerca server</string>
   <string name="server_match_found">Server trovato</string>
   <string name="server_match_not_found">Impossibile trovare server</string>
-  <string name="server_match_info">Nome: %1$s\nHost: %2$s:%3$d\nUtenti: %4$d / %5$d\nVersione: %6$s \nNazione: %7$s \nLatenza: %8$d ms</string>
   <!--Common-->
   <string name="channels">Canali</string>
   <string name="server_add">Aggiungi server</string>

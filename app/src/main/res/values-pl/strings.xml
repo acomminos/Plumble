@@ -9,7 +9,6 @@
   <!--Server matching-->
   <!--Common-->
   <string name="channels">Kanały</string>
-  <string name="no_servers">Żaden serwer nie został dodany.\nNaciśnij przycisk \'Dodaj\', aby dodać serwer.</string>
   <string name="server_add">Dodaj serwer</string>
   <string name="server_password">Hasło (Opcjonalne)</string>
   <string name="server_username">Nazwa użytkownika</string>
@@ -33,7 +32,6 @@
   <string name="connectionRefused">Połączenie Odrzucone</string>
   <string name="confirm_delete_server">Usunąć ten serwer?</string>
   <string name="disconnected">Rozłączono</string>
-  <string name="kicked_message">Zostałeś wykopany z serwera z powodu: %s</string>
   <string name="loading">Ładowanie…</string>
   <string name="reset_key">Resetuj</string>
   <string name="externalStorageUnavailable">Pamięć zewnętrzna jest niedostępna, nie można załadować certyfikatu</string>
@@ -112,6 +110,5 @@
   <string name="register">Rejestracja</string>
   <string name="userControl">Kontrola użytkownika</string>
   <string name="registerSelfSuccess">Wysłano żądanie rejestracji</string>
-  <string name="error_fetching_servers">Wystąpił błąd podczas pobierania publicznej listy serwerów!\nSprawdź swoje połączenie z internetem.</string>
   <string name="coming_soon">Funkcja będzie dostępna wkrótce.</string>
 </resources>

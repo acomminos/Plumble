@@ -3,18 +3,6 @@
   <string name="inputMethodVoice">Activité vocale</string>
   <string name="inputMethodPtt">Appuyer pour parler</string>
   <string name="inputMethodContinuous">Continu</string>
-  <string-array name="audioSampleRateNames">
-    <item>128000Hz (expérimental)</item>
-    <item>96000Hz (expérimental)</item>
-    <item>72000Hz (expérimental)</item>
-    <item>48000Hz</item>
-    <item>44100Hz</item>
-    <item>22050Hz</item>
-    <item>16000Hz</item>
-    <item>11025Hz</item>
-    <item>8000Hz</item>
-  </string-array>
-  <!--Experimental-->
   <string-array name="themeNames">
     <item>Clair</item>
     <item>Sombre</item>
@@ -56,7 +44,7 @@
   <string name="pttKey">Touche pour \"appuyer pour parler\"</string>
   <string name="pttKeySum">Une touche à lier à \"appuyer pour parler\".</string>
   <string name="hotCorner">Coin d\'activation pour \"appuyer pour parler\"</string>
-  <string name="hotCornerSum">Un coin spécifique de l\'écran qui, lorsqu\'appuyé, déclenchera \"appuyer pour parle\" dans Android.</string>
+  <string name="hotCornerSum">Un coin spécifique de l\'écran qui, lorsqu\'appuyé, déclenchera \"appuyer pour parler\" dans Android.</string>
   <string name="general">Général</string>
   <string name="generalSum">Régler les paramètres généraux</string>
   <string name="appearance">Apparence</string>
@@ -95,8 +83,6 @@
   <string name="autoReconnectSum">Essayer automatiquement de rétablir une connexion quand la connexion au serveur est perdu.</string>
   <string name="useTor">Se connecter via Tor</string>
   <string name="useTorSum">Nécessite l\'app Orbot</string>
-  <string name="framesPerPacket">Frames par paquet</string>
-  <string name="framesPerPacketSum">Le nombre de frames audio par paquet. Une valeur élevée baisse l\'utilisation du CPU et les à-coup, mais ajoute de la latence.</string>
   <string name="inputQuality">Qualité d\'entrée</string>
   <string name="inputQualitySum">La qualité d\'entrée en bps.</string>
   <string name="pressKey">Appuyer sur une touche physique à lier à \"Appuyer pour parler\"</string>
@@ -112,4 +98,9 @@
   <string name="handsetModeSum">Utilise le haut-parleur frontal et le capteur de proximité pour simuler un appel.</string>
   <string name="pttSound">Son \'Appuyer pour parler\'</string>
   <string name="pttSoundSum">Joue un son quand le bouton \'Appuyer pour parler\' est appuyé.</string>
+  <string name="preprocessor_enabled">Activer le préprocesseur d\'entrée</string>
+  <string name="preprocessor_enabled_sum">Activer le préprocesseur Speex pour la réduction de bruit indésirable.</string>
+  <string name="audio_per_packet"> 
+Trames audio par paquet</string>
+  <string name="audio_per_packet_sum">Durée de la trame audio par paquet.</string>
 </resources>

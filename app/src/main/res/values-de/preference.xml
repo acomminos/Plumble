@@ -3,18 +3,6 @@
   <string name="inputMethodVoice">Sprachaktivierung</string>
   <string name="inputMethodPtt">Push-To-Talk</string>
   <string name="inputMethodContinuous">Kontinuierlich</string>
-  <string-array name="audioSampleRateNames">
-    <item>128000Hz (experimentell)</item>
-    <item>96000Hz (experimentell)</item>
-    <item>72000Hz (experimentell)</item>
-    <item>48000Hz</item>
-    <item>44100Hz</item>
-    <item>22050Hz</item>
-    <item>16000Hz</item>
-    <item>11025Hz</item>
-    <item>8000Hz</item>
-  </string-array>
-  <!--Experimental-->
   <string-array name="themeNames">
     <item>Hell</item>
     <item>Dunkel</item>
@@ -95,8 +83,6 @@
   <string name="autoReconnectSum">Nach einem Verbindungsbbruch automatisch wiederzuverbinden.</string>
   <string name="useTor">Über Tor verbinden</string>
   <string name="useTorSum">Benötigt die Orbot App</string>
-  <string name="framesPerPacket">Frames pro Paket</string>
-  <string name="framesPerPacketSum">Die Anzahl an Audio Frames pro Paket. Ein höherer Wert bedeutet weniger CPU-Last und Stottern, aber eine höhere Latenz.</string>
   <string name="inputQuality">Eingabequalität</string>
   <string name="inputQualitySum">Die zu erzielende Eingabequalität in bps.</string>
   <string name="pressKey">Drücken Sie eine Hardwaretaste, um dieser Push-To-Talk zuzuweisen.</string>
@@ -112,4 +98,7 @@
   <string name="handsetModeSum">Verwendet die Lautsprecher des Ohrhörers und den Näherungssensor, um einen normalen Telefonanruf zu simulieren.</string>
   <string name="pttSound">Push-To-Talk Sound</string>
   <string name="pttSoundSum">Spiele einen Sound ab, wenn der Push-To-Talk Knopf gedrückt wird.</string>
+  <string name="preprocessor_enabled">Aktiviere Eingabe-Präprozessor</string>
+  <string name="audio_per_packet">Audio pro Paket</string>
+  <string name="audio_per_packet_sum">Die Länge des Audios pro Sprachpaket.</string>
 </resources>
