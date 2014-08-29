@@ -3,23 +3,6 @@
   <string name="inputMethodVoice">Sprachaktivierung</string>
   <string name="inputMethodPtt">Push-To-Talk</string>
   <string name="inputMethodContinuous">Kontinuierlich</string>
-  <string-array name="themeNames">
-    <item>Hell</item>
-    <item>Dunkel</item>
-    <item>Solarized Light</item>
-    <item>Solarized Dark</item>
-  </string-array>
-  <string-array name="callModeNames">
-    <item>Freisprechen</item>
-    <item>Telefonanruf</item>
-  </string-array>
-  <string-array name="hotCornerNames">
-    <item>Keine</item>
-    <item>Oben Links</item>
-    <item>Unten Links</item>
-    <item>Oben Rechts</item>
-    <item>Unten Rechts</item>
-  </string-array>
   <!--About-->
   <string name="about">Über</string>
   <string name="aboutSum">Rechtliches und Danksagungen</string>

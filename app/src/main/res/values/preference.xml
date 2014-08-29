@@ -20,27 +20,23 @@
     <string name="inputMethodVoice">Voice Activity</string>
     <string name="inputMethodPtt">Push to Talk</string>
     <string name="inputMethodContinuous">Continuous</string>
-	
-	<string-array
-	    name="themeNames">
-	    <item>Light</item>
-	    <item>Dark</item>
-        <item>Solarized Light</item>
-        <item>Solarized Dark</item>
-	</string-array>
-	
-	<string-array name="callModeNames">
-	    <item>Speakerphone</item>
-	    <item>Voice Call</item>
-	</string-array>
-	
-	<string-array name="hotCornerNames">
-	    <item>None</item>
-	    <item>Top Left</item>
-	    <item>Bottom Left</item>
-	    <item>Top Right</item>
-	    <item>Bottom Right</item>
-	</string-array>
+
+    <!-- Theme names -->
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_solarized_light">Solarized Light</string>
+    <string name="theme_solarized_dark">Solarized Dark</string>
+
+    <!-- Call modes -->
+    <string name="call_mode_speakerphone">Speakerphone</string>
+    <string name="call_mode_voice_call">Voice Call</string>
+
+    <!-- Hot corner -->
+    <string name="hot_corner_none">None</string>
+    <string name="hot_corner_top_left">Top Left</string>
+    <string name="hot_corner_bottom_left">Bottom Left</string>
+    <string name="hot_corner_top_right">Top Right</string>
+    <string name="hot_corner_bottom_right">Bottom Right</string>
 
     <!-- About -->
     <string name="about">About</string>

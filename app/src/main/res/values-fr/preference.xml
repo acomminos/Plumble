@@ -3,23 +3,6 @@
   <string name="inputMethodVoice">Activité vocale</string>
   <string name="inputMethodPtt">Appuyer pour parler</string>
   <string name="inputMethodContinuous">Continu</string>
-  <string-array name="themeNames">
-    <item>Clair</item>
-    <item>Sombre</item>
-    <item>Solaire</item>
-    <item>Lunaire</item>
-  </string-array>
-  <string-array name="callModeNames">
-    <item>Haut-parleur</item>
-    <item>Appel vocal</item>
-  </string-array>
-  <string-array name="hotCornerNames">
-    <item>Aucun</item>
-    <item>Haut gauche</item>
-    <item>Bas gauche</item>
-    <item>Haut droit</item>
-    <item>Bas droit</item>
-  </string-array>
   <!--About-->
   <string name="about">À propos</string>
   <string name="aboutSum">Mentions et remerciements</string>

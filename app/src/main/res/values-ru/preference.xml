@@ -1,22 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-  <string-array name="themeNames">
-    <item>Светлая</item>
-    <item>Темная</item>
-    <item>Solarized Light</item>
-    <item>Solarized Dark</item>
-  </string-array>
-  <string-array name="callModeNames">
-    <item>Громкая связь</item>
-    <item>Голосовой динамик</item>
-  </string-array>
-  <string-array name="hotCornerNames">
-    <item>None</item>
-    <item>Top Left</item>
-    <item>Bottom Left</item>
-    <item>Top Right</item>
-    <item>Bottom Right</item>
-  </string-array>
   <!--About-->
   <string name="about">О программе</string>
   <string name="aboutSum">Юридическая информация и благодарности</string>

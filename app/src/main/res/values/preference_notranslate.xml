@@ -47,6 +47,13 @@
         <item>8000</item>
     </string-array>
 
+    <string-array name="themeNames">
+        <item>@string/theme_light</item>
+        <item>@string/theme_dark</item>
+        <item>@string/theme_solarized_light</item>
+        <item>@string/theme_solarized_dark</item>
+    </string-array>
+
     <string-array
         name="themeValues">
         <item>lightDark</item>
@@ -55,9 +62,22 @@
         <item>solarizedDark</item>
     </string-array>
 
+    <string-array name="callModeNames">
+        <item>@string/call_mode_speakerphone</item>
+        <item>@string/call_mode_voice_call</item>
+    </string-array>
+
     <string-array name="callModeValues">
         <item>speakerphone</item>
         <item>voice</item>
+    </string-array>
+
+    <string-array name="hotCornerNames">
+        <item>@string/hot_corner_none</item>
+        <item>@string/hot_corner_top_left</item>
+        <item>@string/hot_corner_bottom_left</item>
+        <item>@string/hot_corner_top_right</item>
+        <item>@string/hot_corner_bottom_right</item>
     </string-array>
 
     <string-array name="hotCornerValues">

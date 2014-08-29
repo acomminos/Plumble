@@ -3,23 +3,6 @@
   <string name="inputMethodVoice">Stem Activiteit</string>
   <string name="inputMethodPtt">Push to Talk</string>
   <string name="inputMethodContinuous">Doorlopend</string>
-  <string-array name="themeNames">
-    <item>Licht</item>
-    <item>Donker</item>
-    <item>Ingestraald Licht</item>
-    <item>Ingestraald Donker</item>
-  </string-array>
-  <string-array name="callModeNames">
-    <item>Luidspreker</item>
-    <item>Oproep</item>
-  </string-array>
-  <string-array name="hotCornerNames">
-    <item>Geen</item>
-    <item>Linksboven</item>
-    <item>Linksonder</item>
-    <item>Rechtsboven</item>
-    <item>Rechtsonder</item>
-  </string-array>
   <!--About-->
   <string name="about">Over</string>
   <string name="aboutSum">Legaal en dankbetuigingen</string>
