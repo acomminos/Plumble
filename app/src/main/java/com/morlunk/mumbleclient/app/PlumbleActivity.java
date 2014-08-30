@@ -96,7 +96,10 @@ import java.util.List;
 import info.guardianproject.onionkit.ui.OrbotHelper;
 
 public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener, FavouriteServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider, SharedPreferences.OnSharedPreferenceChangeListener, DrawerAdapter.DrawerDataProvider, ServerEditFragment.ServerEditListener {
-    public static final int RECONNECT_DELAY = 10000;
+    /**
+     * If specified, the provided integer drawer fragment ID is shown when the activity is created.
+     */
+    public static final String EXTRA_DRAWER_FRAGMENT = "drawer_fragment";
 
     private PlumbleService.PlumbleBinder mService;
     private PlumbleDatabase mDatabase;
@@ -182,7 +185,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 ab.setPositiveButton(android.R.string.ok, null);
             } else {
                 ab.setTitle(R.string.connectionRefused);
-                ab.setMessage(message+"\n"+getString(R.string.reconnecting, RECONNECT_DELAY/1000));
+                ab.setMessage(message+"\n"+getString(R.string.reconnecting, PlumbleService.RECONNECT_DELAY/1000));
                 ab.setPositiveButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -329,7 +332,12 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         mDisconnectPromptBuilder = dadb;
 
         if(savedInstanceState == null) {
-            loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+            if (getIntent() != null && getIntent().hasExtra(EXTRA_DRAWER_FRAGMENT)) {
+                loadDrawerFragment(getIntent().getIntExtra(EXTRA_DRAWER_FRAGMENT,
+                        DrawerAdapter.ITEM_FAVOURITES));
+            } else {
+                loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+            }
         }
 
         // If we're given a Mumble URL to show, open up a server edit fragment.
@@ -618,46 +626,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         mConnectingDialog.setMessage(getString(R.string.connecting_to_server, server.getHost(), server.getPort()));
         mConnectingDialog.show();
 
-        /* Convert input method defined in settings to an integer format used by Jumble. */
-        int inputMethod = mSettings.getJumbleInputMethod();
-
-        int audioSource = mSettings.isHandsetMode() ?
-                MediaRecorder.AudioSource.DEFAULT : MediaRecorder.AudioSource.MIC;
-        int audioStream = mSettings.isHandsetMode() ?
-                AudioManager.STREAM_VOICE_CALL : AudioManager.STREAM_MUSIC;
-
-        String applicationVersion = "";
-        try {
-            applicationVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        Intent connectIntent = new Intent(this, PlumbleService.class);
-        connectIntent.putExtra(JumbleService.EXTRAS_SERVER, server);
-        connectIntent.putExtra(JumbleService.EXTRAS_CLIENT_NAME, getString(R.string.app_name)+" "+applicationVersion);
-        connectIntent.putExtra(JumbleService.EXTRAS_TRANSMIT_MODE, inputMethod);
-        connectIntent.putExtra(JumbleService.EXTRAS_DETECTION_THRESHOLD, mSettings.getDetectionThreshold());
-        connectIntent.putExtra(JumbleService.EXTRAS_AMPLITUDE_BOOST, mSettings.getAmplitudeBoostMultiplier());
-        connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE, mSettings.getCertificate());
-        connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE_PASSWORD, mSettings.getCertificatePassword());
-        connectIntent.putExtra(JumbleService.EXTRAS_AUTO_RECONNECT, mSettings.isAutoReconnectEnabled());
-        connectIntent.putExtra(JumbleService.EXTRAS_AUTO_RECONNECT_DELAY, RECONNECT_DELAY);
-        connectIntent.putExtra(JumbleService.EXTRAS_USE_OPUS, !mSettings.isOpusDisabled());
-        connectIntent.putExtra(JumbleService.EXTRAS_INPUT_RATE, mSettings.getInputSampleRate());
-        connectIntent.putExtra(JumbleService.EXTRAS_INPUT_QUALITY, mSettings.getInputQuality());
-        connectIntent.putExtra(JumbleService.EXTRAS_FORCE_TCP, mSettings.isTcpForced());
-        connectIntent.putExtra(JumbleService.EXTRAS_USE_TOR, mSettings.isTorEnabled());
-        connectIntent.putStringArrayListExtra(JumbleService.EXTRAS_ACCESS_TOKENS, (ArrayList<String>) mDatabase.getAccessTokens(server.getId()));
-        connectIntent.putExtra(JumbleService.EXTRAS_AUDIO_SOURCE, audioSource);
-        connectIntent.putExtra(JumbleService.EXTRAS_AUDIO_STREAM, audioStream);
-        connectIntent.putExtra(JumbleService.EXTRAS_FRAMES_PER_PACKET, mSettings.getFramesPerPacket());
-        connectIntent.putExtra(JumbleService.EXTRAS_TRUST_STORE, PlumbleTrustStore.getTrustStorePath(this));
-        connectIntent.putExtra(JumbleService.EXTRAS_TRUST_STORE_PASSWORD, PlumbleTrustStore.getTrustStorePassword());
-        connectIntent.putExtra(JumbleService.EXTRAS_TRUST_STORE_FORMAT, PlumbleTrustStore.getTrustStoreFormat());
-        connectIntent.putExtra(JumbleService.EXTRAS_HALF_DUPLEX, mSettings.isHalfDuplex());
-        connectIntent.setAction(JumbleService.ACTION_CONNECT);
-        startService(connectIntent);
+        ServerConnectTask connectTask = new ServerConnectTask(this, mDatabase);
+        connectTask.execute(server);
     }
 
     public void connectToPublicServer(final PublicServer server) {

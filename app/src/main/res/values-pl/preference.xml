@@ -1,38 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ Copyright (C) 2014 Andrew Comminos
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <resources>
-  <!--Experimental-->
-  <string-array name="themeNames">
-    <item>Jasny</item>
-    <item>Ciemny</item>
-  </string-array>
-  <string-array name="callModeNames">
-    <item>Głośnik</item>
-    <item>Słuchawka</item>
-  </string-array>
-  <string-array name="hotCornerNames">
-    <item>Żaden</item>
-    <item>Lewy górny</item>
-    <item>Lewy dolny</item>
-    <item>Prawy górny</item>
-    <item>Prawy dolny</item>
-  </string-array>
   <!--About-->
   <string name="authentication">Uwierzytelnianie</string>
   <string name="certificateFile">Plik certyfikatu</string>

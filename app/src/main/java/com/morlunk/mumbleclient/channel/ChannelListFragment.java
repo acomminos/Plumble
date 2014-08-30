@@ -28,6 +28,7 @@ import android.content.IntentFilter;
 import android.database.CursorWrapper;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.view.MenuItemCompat;
@@ -45,18 +46,20 @@ import android.widget.AdapterView;
 import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.channel.actionmode.ChannelActionModeCallback;
 import com.morlunk.mumbleclient.channel.actionmode.UserActionModeCallback;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
+import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedChildClickListener;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedGroupClickListener;
 
-public class ChannelListFragment extends JumbleServiceFragment implements OnNestedChildClickListener, OnNestedGroupClickListener {
+public class ChannelListFragment extends JumbleServiceFragment implements OnNestedChildClickListener, OnNestedGroupClickListener, UserActionModeCallback.LocalUserUpdateListener {
 
 	private IJumbleObserver mServiceObserver = new JumbleObserver() {
         @Override
@@ -388,7 +391,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
             // Dismiss action mode if double pressed. FIXME: use list view selection instead?
             mActionMode.finish();
         } else {
-            ActionMode.Callback cb = new UserActionModeCallback(getActivity(), getService(), user, mTargetProvider, getChildFragmentManager()) {
+            ActionMode.Callback cb = new UserActionModeCallback(getActivity(), getService(), user, mTargetProvider, getChildFragmentManager(), this) {
                 @Override
                 public void onDestroyActionMode(ActionMode actionMode) {
                     super.onDestroyActionMode(actionMode);
@@ -419,6 +422,37 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
                 }
             };
             mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
+        }
+    }
+
+    @Override
+    public void onLocalUserStateUpdated(final User user) {
+        try {
+            updateUser(user);
+
+            // Add or remove registered user from local mute history
+            final PlumbleDatabase database = mDatabaseProvider.getDatabase();
+            final Server server = getService().getConnectedServer();
+
+            if (user.getUserId() >= 0 && server.isSaved()) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (user.isLocalMuted()) {
+                            database.addLocalMutedUser(server.getId(), user.getUserId());
+                        } else {
+                            database.removeLocalMutedUser(server.getId(), user.getUserId());
+                        }
+                        if (user.isLocalIgnored()) {
+                            database.addLocalIgnoredUser(server.getId(), user.getUserId());
+                        } else {
+                            database.removeLocalIgnoredUser(server.getId(), user.getUserId());
+                        }
+                    }
+                }).start();
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 }

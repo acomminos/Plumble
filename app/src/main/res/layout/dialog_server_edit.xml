@@ -16,11 +16,10 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp"
-    android:minWidth="300dp">
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/server_edit_name_title"
@@ -93,26 +92,4 @@
         android:layout_gravity="center_horizontal"
         android:padding="8dp"
         android:visibility="gone"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:divider="?android:attr/dividerHorizontal"
-        android:orientation="horizontal"
-        android:showDividers="middle">
-        <Button
-            android:id="@+id/server_edit_negative"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@android:string/cancel"
-            style="@style/Plumble.BorderlessButton"/>
-        <Button
-            android:id="@+id/server_edit_positive"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/save"
-            style="@style/Plumble.BorderlessButton"/>
-    </LinearLayout>
 </LinearLayout>

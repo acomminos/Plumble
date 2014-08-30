@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDatabase {
-
     public static final String DATABASE_NAME = "mumble.db";
 
     public static final String TABLE_SERVER = "server";
@@ -80,13 +79,37 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
             + "`" + COMMENTS_SEEN + "` DATE NOT NULL"
             + ");";
 
+    public static final String TABLE_LOCAL_MUTE = "local_mute";
+    public static final String LOCAL_MUTE_SERVER = "server";
+    public static final String LOCAL_MUTE_USER = "user";
+    public static final String TABLE_LOCAL_MUTE_CREATE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_LOCAL_MUTE + " ("
+            + "`" + LOCAL_MUTE_SERVER +"` INTEGER NOT NULL,"
+            + "`" + LOCAL_MUTE_USER + "` INTEGER NOT NULL,"
+            + "CONSTRAINT server_user UNIQUE(" + LOCAL_MUTE_SERVER + "," + LOCAL_MUTE_USER + ")"
+            + ");";
+
+    public static final String TABLE_LOCAL_IGNORE = "local_ignore";
+    public static final String LOCAL_IGNORE_SERVER = "server";
+    public static final String LOCAL_IGNORE_USER = "user";
+    public static final String TABLE_LOCAL_IGNORE_CREATE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_LOCAL_IGNORE + " ("
+            + "`" + LOCAL_IGNORE_SERVER +"` INTEGER NOT NULL,"
+            + "`" + LOCAL_IGNORE_USER + "` INTEGER NOT NULL,"
+            + "CONSTRAINT server_user UNIQUE(" + LOCAL_IGNORE_SERVER + "," + LOCAL_IGNORE_USER + ")"
+            + ");";
+
     public static final Integer PRE_FAVOURITES_DB_VERSION = 2;
     public static final Integer PRE_TOKENS_DB_VERSION = 3;
     public static final Integer PRE_COMMENTS_DB_VERSION = 4;
-    public static final Integer CURRENT_DB_VERSION = 5;
+    public static final Integer PRE_LOCAL_MUTE_DB_VERSION = 5;
+    public static final Integer PRE_LOCAL_IGNORE_DB_VERSION = 6;
+    public static final Integer CURRENT_DB_VERSION = 7;
 
     public PlumbleSQLiteDatabase(Context context) {
         super(context, DATABASE_NAME, null, CURRENT_DB_VERSION);
+    }
+
+    public PlumbleSQLiteDatabase(Context context, String name) {
+        super(context, name, null, CURRENT_DB_VERSION);
     }
 
     @Override
@@ -95,6 +118,8 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
         db.execSQL(TABLE_FAVOURITES_CREATE_SQL);
         db.execSQL(TABLE_TOKENS_CREATE_SQL);
         db.execSQL(TABLE_COMMENTS_CREATE_SQL);
+        db.execSQL(TABLE_LOCAL_MUTE_CREATE_SQL);
+        db.execSQL(TABLE_LOCAL_IGNORE_CREATE_SQL);
     }
 
     @Override
@@ -113,6 +138,14 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
 
         if (oldVersion <= PRE_COMMENTS_DB_VERSION) {
             db.execSQL(TABLE_COMMENTS_CREATE_SQL);
+        }
+
+        if (oldVersion <= PRE_LOCAL_MUTE_DB_VERSION) {
+            db.execSQL(TABLE_LOCAL_MUTE_CREATE_SQL);
+        }
+
+        if (oldVersion <= PRE_LOCAL_IGNORE_DB_VERSION) {
+            db.execSQL(TABLE_LOCAL_IGNORE_CREATE_SQL);
         }
     }
 
@@ -181,7 +214,17 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
 
     @Override
     public void removeServer(Server server) {
-        getWritableDatabase().delete(TABLE_SERVER, SERVER_ID + " = " + server.getId(), null);
+        getWritableDatabase().delete(TABLE_SERVER, SERVER_ID + "=?",
+                new String[] { String.valueOf(server.getId()) });
+        // Clean up server-specific entries
+        getWritableDatabase().delete(TABLE_FAVOURITES, FAVOURITES_SERVER + "=?",
+                new String[] { String.valueOf(server.getId()) });
+        getWritableDatabase().delete(TABLE_TOKENS, TOKENS_SERVER + "=?",
+                new String[] { String.valueOf(server.getId()) });
+        getWritableDatabase().delete(TABLE_LOCAL_MUTE, LOCAL_MUTE_SERVER + "=?",
+                new String[] { String.valueOf(server.getId()) });
+        getWritableDatabase().delete(TABLE_LOCAL_IGNORE, LOCAL_IGNORE_SERVER + "=?",
+                new String[] { String.valueOf(server.getId()) });
     }
 
     public List<Integer> getPinnedChannels(long serverId) {
@@ -258,6 +301,68 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
     @Override
     public void removeAccessToken(long serverId, String token) {
         getWritableDatabase().delete(TABLE_TOKENS, TOKENS_SERVER+"=? AND "+TOKENS_VALUE+"=?", new String[] {String.valueOf(serverId), token });
+    }
+
+    @Override
+    public List<Integer> getLocalMutedUsers(long serverId) {
+        Cursor cursor = getReadableDatabase().query(TABLE_LOCAL_MUTE,
+                new String[] { LOCAL_MUTE_USER },
+                LOCAL_MUTE_SERVER + "=?",
+                new String[] { String.valueOf(serverId) },
+                null, null, null);
+        cursor.moveToNext();
+        List<Integer> users = new ArrayList<Integer>();
+        while (!cursor.isAfterLast()) {
+            users.add(cursor.getInt(0));
+            cursor.moveToNext();
+        }
+        return users;
+    }
+
+    @Override
+    public void addLocalMutedUser(long serverId, int userId) {
+        ContentValues values = new ContentValues();
+        values.put(LOCAL_MUTE_SERVER, serverId);
+        values.put(LOCAL_MUTE_USER, userId);
+        getWritableDatabase().insert(TABLE_LOCAL_MUTE, null, values);
+    }
+
+    @Override
+    public void removeLocalMutedUser(long serverId, int userId) {
+        getWritableDatabase().delete(TABLE_LOCAL_MUTE,
+                LOCAL_MUTE_SERVER + "=? AND " + LOCAL_MUTE_USER + "=?",
+                new String[] { String.valueOf(serverId), String.valueOf(userId) });
+    }
+
+    @Override
+    public List<Integer> getLocalIgnoredUsers(long serverId) {
+        Cursor cursor = getReadableDatabase().query(TABLE_LOCAL_IGNORE,
+                new String[] { LOCAL_IGNORE_USER },
+                LOCAL_IGNORE_SERVER + "=?",
+                new String[] { String.valueOf(serverId) },
+                null, null, null);
+        cursor.moveToFirst();
+        List<Integer> users = new ArrayList<Integer>();
+        while (!cursor.isAfterLast()) {
+            users.add(cursor.getInt(0));
+            cursor.moveToNext();
+        }
+        return users;
+    }
+
+    @Override
+    public void addLocalIgnoredUser(long serverId, int userId) {
+        ContentValues values = new ContentValues();
+        values.put(LOCAL_IGNORE_SERVER, serverId);
+        values.put(LOCAL_IGNORE_USER, userId);
+        getWritableDatabase().insert(TABLE_LOCAL_IGNORE, null, values);
+    }
+
+    @Override
+    public void removeLocalIgnoredUser(long serverId, int userId) {
+        getWritableDatabase().delete(TABLE_LOCAL_IGNORE,
+                LOCAL_IGNORE_SERVER + "=? AND " + LOCAL_IGNORE_USER + "=?",
+                new String[] { String.valueOf(serverId), String.valueOf(userId) });
     }
 
     @Override

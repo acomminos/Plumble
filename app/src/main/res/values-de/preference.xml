@@ -1,54 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ Copyright (C) 2014 Andrew Comminos
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <resources>
   <string name="inputMethodVoice">Sprachaktivierung</string>
   <string name="inputMethodPtt">Push-To-Talk</string>
   <string name="inputMethodContinuous">Kontinuierlich</string>
-  <string-array name="audioSampleRateNames">
-    <item>128000Hz (experimentell)</item>
-    <item>96000Hz (experimentell)</item>
-    <item>72000Hz (experimentell)</item>
-    <item>48000Hz</item>
-    <item>44100Hz</item>
-    <item>22050Hz</item>
-    <item>16000Hz</item>
-    <item>11025Hz</item>
-    <item>8000Hz</item>
-  </string-array>
-  <!--Experimental-->
-  <string-array name="themeNames">
-    <item>Hell</item>
-    <item>Dunkel</item>
-    <item>Solarized Light</item>
-    <item>Solarized Dark</item>
-  </string-array>
-  <string-array name="callModeNames">
-    <item>Freisprechen</item>
-    <item>Telefonanruf</item>
-  </string-array>
-  <string-array name="hotCornerNames">
-    <item>Keine</item>
-    <item>Oben Links</item>
-    <item>Unten Links</item>
-    <item>Oben Rechts</item>
-    <item>Unten Rechts</item>
-  </string-array>
   <!--About-->
   <string name="about">Über</string>
   <string name="aboutSum">Rechtliches und Danksagungen</string>
@@ -112,8 +66,6 @@
   <string name="autoReconnectSum">Nach einem Verbindungsbbruch automatisch wiederzuverbinden.</string>
   <string name="useTor">Über Tor verbinden</string>
   <string name="useTorSum">Benötigt die Orbot App</string>
-  <string name="framesPerPacket">Frames pro Paket</string>
-  <string name="framesPerPacketSum">Die Anzahl an Audio Frames pro Paket. Ein höherer Wert bedeutet weniger CPU-Last und Stottern, aber eine höhere Latenz.</string>
   <string name="inputQuality">Eingabequalität</string>
   <string name="inputQualitySum">Die zu erzielende Eingabequalität in bps.</string>
   <string name="pressKey">Drücken Sie eine Hardwaretaste, um dieser Push-To-Talk zuzuweisen.</string>
@@ -127,4 +79,9 @@
   <string name="halfDuplexSum">Deaktiviert den Gerätesound bei Verwendung von Push-To-Talk, um eine Rückkopplung zu den Benutzern im Kanal zu verhindern.</string>
   <string name="handsetMode">Ohrhörer-Modus</string>
   <string name="handsetModeSum">Verwendet die Lautsprecher des Ohrhörers und den Näherungssensor, um einen normalen Telefonanruf zu simulieren.</string>
+  <string name="pttSound">Push-To-Talk Sound</string>
+  <string name="pttSoundSum">Spiele einen Sound ab, wenn der Push-To-Talk Knopf gedrückt wird.</string>
+  <string name="preprocessor_enabled">Aktiviere Eingabe-Präprozessor</string>
+  <string name="audio_per_packet">Audio pro Paket</string>
+  <string name="audio_per_packet_sum">Die Länge des Audios pro Sprachpaket.</string>
 </resources>

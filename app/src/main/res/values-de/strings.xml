@@ -1,21 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ Copyright (C) 2014 Andrew Comminos
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <resources>
   <!--Drawer pane-->
   <string name="drawer_open">Drawer öffnen</string>
@@ -75,11 +58,11 @@
   <string name="server_match_found">Server gefunden</string>
   <string name="server_match_not_found">Server nicht gefunden</string>
   <string name="server_match_expand_country">Konnte keinen optimalen Server in Ihrem Land finden. Suche auf die ganze Welt ausweiten?</string>
-  <string name="server_match_info">Name: %1$s\nAdresse: %2$s:%3$d\nBenutzer: %4$d / %5$d\nVersion: %6$s \nLand: %7$s \nLatenz: %8$d ms</string>
+  <string name="server_match_info">Name: %1$s\nHost: %2$s:%3$d\nBenutzer: %4$d / %5$d\nVersion: %6$s \nLand: %7$s \nLatenz: %8$d ms</string>
   <string name="server_match_description">Plumble kann automatisch nach einem leeren Server suchen, optimiert nach Serverstandort, Version und Latenz.</string>
   <!--Common-->
   <string name="channels">Kanäle</string>
-  <string name="no_servers">Keine Server hinzugefügt.\nDrücken Sie auf \'+\' in der Aktionsleiste.</string>
+  <string name="no_servers">Keine Server hinzugefügt.\nDrücken Sie den \'Hinzufügen\' Knopf in der Action Bar, um zu beginnen.</string>
   <string name="server_add">Server hinzufügen</string>
   <string name="server_password">Passwort</string>
   <string name="server_username">Benutzername</string>
@@ -106,7 +89,7 @@
   <string name="confirm_delete_server">Sind sie sicher, dass Sie diesen Server entfernen möchten?</string>
   <string name="confirm_delete_channel">Sind Sie sicher, dass Sie diesen Kanal entfernen möchten?</string>
   <string name="disconnected">Getrennt</string>
-  <string name="kicked_message">Vom Server geworfen. Grund: %s</string>
+  <string name="kicked_message">Vom Server gekickt.\nGrund: %s</string>
   <string name="loading">Lade…</string>
   <string name="reset_key">Taste zurücksetzen</string>
   <string name="externalStorageUnavailable">Externer Speicher nicht verfügbar, kann Zertifikat nicht laden</string>
@@ -191,7 +174,7 @@
   <string name="register">Selbst registrieren</string>
   <string name="userControl">Benutzersteuerung</string>
   <string name="registerSelfSuccess">Registrierungsanfrage gesendet</string>
-  <string name="error_fetching_servers">Fehler beim Abrufen der Server!\nPrüfen Sie Ihre Internetverbindung.</string>
+  <string name="error_fetching_servers">Fehler beim Abrufen der Server!\nÜberprüfen Sie ihre Internetverbindung.</string>
   <string name="coming_soon">Diese Funktion ist demnächst verfügbar.</string>
   <string name="search_channel_users">%d Benutzer</string>
   <string name="reconnecting">Wiederverbinden in %d Sekunden.</string>
@@ -232,5 +215,8 @@
   <string name="transmit_mode">Übertragungsmethode</string>
   <string name="current_chat_target">Aktuelles Ziel</string>
   <string name="channel_join">Betreten</string>
-  <string name="certificate_info">Allgemeiner Name:\n%1$s\n\nGültig von:\n%2$s\n\nGültig bis:\n%3$s\n\nPrüfsumme (SHA-1):\n%4$s</string>
+  <string name="invalid_host">Ungültiger Host</string>
+  <string name="invalid_port_range">Ungültiger Port (0-65535)</string>
+  <string name="invalid_username">Ungültiger Benutzername</string>
+  <string name="cancel_reconnect">Neuverbinden abbrechen</string>
 </resources>

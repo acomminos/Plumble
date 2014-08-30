@@ -1,51 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!--
-  ~ Copyright (C) 2014 Andrew Comminos
-  ~
-  ~ This program is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
 <resources>
-  <string-array name="audioSampleRateNames">
-    <item>128000Hz (экспериментально)</item>
-    <item>96000Hz (экспериментально)</item>
-    <item>72000Hz (экспериментально)</item>
-    <item>48000Hz</item>
-    <item>44100Hz</item>
-    <item>22050Hz</item>
-    <item>16000Hz</item>
-    <item>11025Hz</item>
-    <item>8000Hz</item>
-  </string-array>
-  <!--Experimental-->
-  <string-array name="themeNames">
-    <item>Светлая</item>
-    <item>Темная</item>
-    <item>Solarized Light</item>
-    <item>Solarized Dark</item>
-  </string-array>
-  <string-array name="callModeNames">
-    <item>Громкая связь</item>
-    <item>Голосовой динамик</item>
-  </string-array>
-  <string-array name="hotCornerNames">
-    <item>None</item>
-    <item>Top Left</item>
-    <item>Bottom Left</item>
-    <item>Top Right</item>
-    <item>Bottom Right</item>
-  </string-array>
   <!--About-->
   <string name="about">О программе</string>
   <string name="aboutSum">Юридическая информация и благодарности</string>
@@ -105,8 +59,6 @@
   <string name="autoReconnectSum">Автоматически пытаться восстановить соединение при обрыве связи.</string>
   <string name="useTor">Подключаться через Tor</string>
   <string name="useTorSum">Требуется приложение Orbot</string>
-  <string name="framesPerPacket">Кадров в пакете</string>
-  <string name="framesPerPacketSum">Количество кадров в пакете. Более высокое значение приводит к меньшей нагрузке на процессор и заикания, но теряет качество.</string>
   <string name="inputQuality">Качество звука</string>
   <string name="inputQualitySum">Качество входящего звука в bps.</string>
   <string name="pressKey">Нажмите аппаратную кнопку для установки активации голоса.</string>

@@ -117,14 +117,20 @@ public class Settings {
     public static final String PREF_LOAD_IMAGES = "load_images";
     public static final boolean DEFAULT_LOAD_IMAGES = true;
 
-    public static final String PREF_FRAMES_PER_PACKET = "frames_per_packet";
-    public static final int DEFAULT_FRAMES_PER_PACKET = 6;
+    public static final String PREF_FRAMES_PER_PACKET = "audio_per_packet";
+    public static final String DEFAULT_FRAMES_PER_PACKET = "2";
 
     public static final String PREF_HALF_DUPLEX = "half_duplex";
     public static final boolean DEFAULT_HALF_DUPLEX = false;
 
     public static final String PREF_HANDSET_MODE = "handset_mode";
     public static final boolean DEFAULT_HANDSET_MODE = false;
+
+    public static final String PREF_PTT_SOUND = "ptt_sound";
+    public static final boolean DEFAULT_PTT_SOUND = false;
+
+    private static final String PREF_PREPROCESSOR_ENABLED = "preprocessor_enabled";
+    private static final boolean DEFAULT_PREPROCESSOR_ENABLED = true;
 
     static {
         ARRAY_INPUT_METHODS = new HashSet<String>();
@@ -340,7 +346,7 @@ public class Settings {
     }
 
     public int getFramesPerPacket() {
-        return preferences.getInt(PREF_FRAMES_PER_PACKET, DEFAULT_FRAMES_PER_PACKET);
+        return Integer.parseInt(preferences.getString(PREF_FRAMES_PER_PACKET, DEFAULT_FRAMES_PER_PACKET));
     }
 
     public boolean isHalfDuplex() {
@@ -349,5 +355,13 @@ public class Settings {
 
     public boolean isHandsetMode() {
         return preferences.getBoolean(PREF_HANDSET_MODE, DEFAULT_HANDSET_MODE);
+    }
+
+    public boolean isPttSoundEnabled() {
+        return preferences.getBoolean(PREF_PTT_SOUND, DEFAULT_PTT_SOUND);
+    }
+
+    public boolean isPreprocessorEnabled() {
+        return preferences.getBoolean(PREF_PREPROCESSOR_ENABLED, DEFAULT_PREPROCESSOR_ENABLED);
     }
 }

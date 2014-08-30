@@ -18,6 +18,8 @@
 package com.morlunk.mumbleclient.servers;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -64,9 +66,44 @@ public class ServerEditFragment extends DialogFragment {
 	}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onStart() {
+        super.onStart();
+        // Override positive button to not automatically dismiss on press.
+        // We can't accomplish this with AlertDialog.Builder.
+        ((AlertDialog)getDialog()).getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (validate()) {
+                    Server server = createServer(shouldSave());
+
+                    // If we're not committing this server, connect immediately.
+                    if (!shouldSave()) mListener.connectToServer(server);
+
+                    dismiss();
+                }
+            }
+        });
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
         Settings settings = Settings.getInstance(getActivity());
-        View view = inflater.inflate(R.layout.dialog_server_edit, container, false);
+
+        int actionTitle;
+        if (shouldSave() && getServer() == null) {
+            actionTitle = R.string.add;
+        } else if (shouldSave()) {
+            actionTitle = R.string.save;
+        } else {
+            actionTitle = R.string.connect;
+        }
+
+        adb.setPositiveButton(actionTitle, null);
+        adb.setNegativeButton(android.R.string.cancel, null);
+
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        View view = inflater.inflate(R.layout.dialog_server_edit, null, false);
 
         mNameTitle = (TextView) view.findViewById(R.id.server_edit_name_title);
         mNameEdit = (EditText) view.findViewById(R.id.server_edit_name);
@@ -90,39 +127,9 @@ public class ServerEditFragment extends DialogFragment {
             mNameEdit.setVisibility(View.GONE);
         }
 
-        int actionTitle;
-        if (shouldSave() && getServer() == null) {
-            actionTitle = R.string.add;
-        } else if (shouldSave()) {
-            actionTitle = R.string.save;
-        } else {
-            actionTitle = R.string.connect;
-        }
+        adb.setView(view);
 
-        Button positiveButton = (Button) view.findViewById(R.id.server_edit_positive);
-        positiveButton.setText(actionTitle);
-        positiveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (validate()) {
-                    Server server = createServer(shouldSave());
-
-                    // If we're not committing this server, connect immediately.
-                    if (!shouldSave()) mListener.connectToServer(server);
-
-                    dismiss();
-                }
-            }
-        });
-
-        view.findViewById(R.id.server_edit_negative).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
-
-        return view;
+        return adb.create();
     }
 
     private boolean shouldSave() {
