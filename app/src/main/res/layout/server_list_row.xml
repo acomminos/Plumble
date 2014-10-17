@@ -16,12 +16,15 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+<RelativeLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:ignore="NewApi"
-    android:background="?attr/cardBackground">
+    tools:ignore="NewApi">
 
     <LinearLayout
         android:id="@+id/server_card"
@@ -159,3 +162,4 @@
         android:src="@drawable/ic_card_overflow" />
 
 </RelativeLayout>
+</android.support.v7.widget.CardView>

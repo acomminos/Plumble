@@ -279,7 +279,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         mDrawerList.setOnItemClickListener(this);
         mDrawerAdapter = new DrawerAdapter(this, this);
         mDrawerList.setAdapter(mDrawerAdapter);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_home, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 supportInvalidateOptionsMenu();
