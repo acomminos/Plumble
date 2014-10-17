@@ -28,6 +28,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,7 @@ import java.util.List;
  */
 class PublicServerFetchTask extends AsyncTask<Void, Void, List<PublicServer>> {
 
-    private static final String MUMBLE_PUBLIC_URL = "http://www.mumble.info/list2.cgi";
+    private static final String MUMBLE_PUBLIC_URL = "http://mumble.info/list2.cgi";
 
     @Override
     protected List<PublicServer> doInBackground(Void... params) {
@@ -68,7 +70,13 @@ class PublicServerFetchTask extends AsyncTask<Void, Void, List<PublicServer>> {
             parser.require(XmlPullParser.END_TAG, null, "servers");
 
             return serverList;
-        } catch (Exception e) {
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
