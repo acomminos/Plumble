@@ -43,7 +43,6 @@ dependencies {
     compile 'com.android.support:cardview-v7:21.+'
     compile 'com.android.support:palette-v7:21.+'
     compile 'com.android.support:recyclerview-v7:21.+'
-    compile 'com.google.guava:guava:17.+'
 }
 
 
@@ -52,19 +51,19 @@ signingFile = file 'signing.gradle';
 if(signingFile.exists()) apply from: 'signing.gradle'
 
 android {
-    compileSdkVersion "android-L"
-    buildToolsVersion "19.1"
+    compileSdkVersion 21
+    buildToolsVersion "21"
 
     // Fixes crash with support lib and gradle 0.9.1, see:
     // https://stackoverflow.com/questions/22509850/actionbaractivity-closes-after-pressing-hardware-menu-button-without-stack-trac
     aaptOptions.useAaptPngCruncher = true
 
     defaultConfig {
-        minSdkVersion "L"
-        targetSdkVersion "L"
+        minSdkVersion 9
+        targetSdkVersion 21
         applicationId "com.morlunk.mumbleclient"
         versionCode 70
-        versionName "3.1.5"
+        versionName "3.2.0"
         testPackageName "com.morlunk.mumbleclient.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         buildConfigField "boolean", "DONATE_NAG", "false"

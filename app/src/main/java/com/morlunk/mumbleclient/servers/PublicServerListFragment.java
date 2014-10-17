@@ -47,8 +47,6 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
@@ -61,6 +59,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -393,15 +392,16 @@ public class PublicServerListFragment extends Fragment implements OnItemClickLis
             final String country = params.length > 0 ? params[0] : null; // If a country is provided, search within country
 
             Collection<PublicServer> servers;
-            if(country != null)
-                servers = Collections2.filter(mServers, new Predicate<PublicServer>() {
-                    @Override
-                    public boolean apply(PublicServer publicServer) {
-                        return country.equals(publicServer.getCountryCode());
+            if(country != null) {
+                servers = new LinkedList<PublicServer>();
+                for (PublicServer server : mServers) {
+                    if (country.equals(server.getCountryCode())) {
+                        servers.add(server);
                     }
-                });
-            else
+                }
+            } else {
                 servers = mServers;
+            }
 
             // For countries with 0 servers, immediately return null.
             if(servers.size() == 0)

@@ -30,8 +30,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.User;
@@ -40,6 +38,7 @@ import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.channel.ChatTargetProvider;
 import com.morlunk.mumbleclient.channel.comment.UserCommentFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -258,13 +257,11 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
         AlertDialog.Builder adb = new AlertDialog.Builder(mContext);
         adb.setTitle(R.string.user_menu_move);
         final List<Channel> channels = mService.getChannelList();
-        List<CharSequence> channelNames = Lists.transform(channels, new Function<Channel, CharSequence>() {
-            @Override
-            public CharSequence apply(Channel channel) {
-                return channel.getName();
-            }
-        });
-        adb.setItems(channelNames.toArray(new CharSequence[channelNames.size()]), new DialogInterface.OnClickListener() {
+        final CharSequence[] channelNames = new CharSequence[channels.size()];
+        for (int i = 0; i < channels.size(); i++) {
+            channelNames[i] = channels.get(i).getName();
+        }
+        adb.setItems(channelNames, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Channel channel = channels.get(which);
