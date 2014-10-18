@@ -19,8 +19,6 @@ package com.morlunk.mumbleclient.channel;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.graphics.drawable.TransitionDrawable;
-import android.os.Build;
 import android.os.RemoteException;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -102,10 +100,6 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
             uvh.mUserName.setTypeface(null, user.getSession() == mService.getSession() ? Typeface.BOLD : Typeface.NORMAL);
         } catch (RemoteException e) {
             e.printStackTrace();
-        }
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            uvh.mUserAvatar.setClipToOutline(true);
         }
 
         if (user.getTexture() != null) {

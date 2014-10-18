@@ -110,7 +110,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         @Override
         public void onUserConnected(User user) throws RemoteException {
             // Immediately request avatar upon connection.
-            // FIXME: do we need to refresh avatar when hash changes?
+            // FIXME: we need to refresh avatar when hash changes
             getBinder().requestAvatar(user.getSession());
         }
 

@@ -4,9 +4,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
        android:shape="oval">
 
-    <stroke
-        android:width="2dp"
-        android:color="@color/ripple_talk_state_off"/>
+    <stroke android:color="@color/ripple_talk_state_disabled" android:width="2dp" />
 
     <size
         android:width="48dp"

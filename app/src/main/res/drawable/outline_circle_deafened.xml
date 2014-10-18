@@ -4,14 +4,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="oval">
-            <gradient android:type="radial"
-                android:endColor="@color/ripple_talk_state_disabled"
-                android:startColor="@android:color/transparent"
-                android:gradientRadius="50%"/>
-
-            <stroke
-                android:width="2dp"
-                android:color="@color/ripple_talk_state_disabled"/>
+            <solid android:color="@color/ripple_talk_state_disabled" />
 
             <size
                 android:width="48dp"

@@ -25,16 +25,17 @@
     android:background="@drawable/list_background_user">
 
     <FrameLayout
-        android:layout_width="34dp"
-        android:layout_height="34dp">
+        android:layout_width="36dp"
+        android:layout_height="36dp">
 
-        <ImageView
+        <com.morlunk.mumbleclient.view.CircleImageView
             android:id="@+id/user_row_avatar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/ic_action_microphone_dark"
             android:layout_margin="2dp"
-            android:background="@drawable/outline_circle"/>
+            android:background="@drawable/outline_circle"
+            android:scaleType="centerCrop"/>
 
         <View
             android:id="@+id/user_row_talk_highlight"
