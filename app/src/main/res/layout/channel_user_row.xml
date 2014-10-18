@@ -24,11 +24,24 @@
     android:padding="8dp"
     android:background="@drawable/list_background_user">
 
-    <ImageView
-        android:id="@+id/user_row_state"
-        android:layout_width="24dp"
-        android:layout_height="match_parent"
-        android:src="@drawable/ic_talking_off" />
+    <FrameLayout
+        android:layout_width="34dp"
+        android:layout_height="34dp">
+
+        <ImageView
+            android:id="@+id/user_row_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_action_microphone_dark"
+            android:layout_margin="2dp"
+            android:background="@drawable/outline_circle"/>
+
+        <View
+            android:id="@+id/user_row_talk_highlight"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/outline_circle_talking_off"/>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/user_row_name"

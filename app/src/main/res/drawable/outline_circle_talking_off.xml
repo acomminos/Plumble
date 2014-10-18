@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- A ring shown around the user's avatar when not talking. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+       android:shape="oval">
+
+    <stroke
+        android:width="2dp"
+        android:color="@color/ripple_talk_state_off"/>
+
+    <size
+        android:width="48dp"
+        android:height="48dp" />
+</shape>

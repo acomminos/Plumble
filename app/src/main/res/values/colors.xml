@@ -58,4 +58,5 @@
 
     <!-- Ripple talk states -->
     <color name="ripple_talk_state_on">#55FF0000</color>
+    <color name="ripple_talk_state_off">#55999999</color>
 </resources>

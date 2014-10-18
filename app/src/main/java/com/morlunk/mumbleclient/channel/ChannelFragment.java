@@ -100,7 +100,7 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
         mViewPager = (ViewPager) view.findViewById(R.id.channel_view_pager);
         mTabStrip = (PagerTabStrip) view.findViewById(R.id.channel_tab_strip);
         if(mTabStrip != null) {
-            int[] attrs = new int[] { R.attr.secondaryBackground, android.R.attr.textColorPrimaryInverse };
+            int[] attrs = new int[] { R.attr.colorPrimary, android.R.attr.textColorPrimaryInverse };
             TypedArray a = getActivity().obtainStyledAttributes(attrs);
             int titleStripBackground = a.getColor(0, -1);
             int titleStripColor = a.getColor(1, -1);

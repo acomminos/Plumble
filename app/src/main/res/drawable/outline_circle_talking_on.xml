@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- The red talk indicator to surround the user's avatar. Pulsates uses animator/talk_{on,off}. -->
+<!-- The red talk indicator to surround the user's avatar when talking. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
        android:shape="oval">
     <gradient android:type="radial"

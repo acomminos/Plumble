@@ -24,8 +24,7 @@
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:ignore="NewApi"
-    android:background="?attr/cardBackground">
+    tools:ignore="NewApi">
 
     <LinearLayout
         android:id="@+id/server_card"

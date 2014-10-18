@@ -19,6 +19,8 @@ package com.morlunk.mumbleclient.channel;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.RemoteException;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -47,24 +49,13 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
     private PlumbleDatabase mDatabase;
     private List<Integer> mRootChannels = new ArrayList<Integer>();
 
-    private boolean mShowPinnedOnly;
-
-    public ChannelListAdapter(Context context, IJumbleService service, PlumbleDatabase database, boolean showPinnedOnly) {
+    public ChannelListAdapter(Context context, IJumbleService service, PlumbleDatabase database, boolean showPinnedOnly) throws RemoteException {
         super(context);
         mService = service;
         mDatabase = database;
-        mShowPinnedOnly = showPinnedOnly;
-    }
-
-    /**
-     * Fetches a new list of channels from the service.
-     */
-    public void updateChannelList() throws RemoteException {
-        if(!mService.isConnected()) return;
 
         mRootChannels = new ArrayList<Integer>();
-
-        if(mShowPinnedOnly) {
+        if(showPinnedOnly) {
             mRootChannels = mDatabase.getPinnedChannels(mService.getConnectedServer().getId());
         } else {
             mRootChannels.add(0);
@@ -96,7 +87,8 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
 
             uvh = new UserViewHolder();
             uvh.mUserHolder = (LinearLayout) v.findViewById(R.id.user_row_title);
-            uvh.mUserTalkState = (ImageView) v.findViewById(R.id.user_row_state);
+            uvh.mUserAvatar = (ImageView) v.findViewById(R.id.user_row_avatar);
+            uvh.mUserTalkHighlight = v.findViewById(R.id.user_row_talk_highlight);
             uvh.mUserName = (TextView) v.findViewById(R.id.user_row_name);
             v.setTag(uvh);
         } else {
@@ -112,29 +104,23 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
             e.printStackTrace();
         }
 
-//        if (Build.VERSION.SDK_INT >= 21) {
-//            uvh.mUserAvatar.setClipToOutline(true);
-//        }
-//        uvh.mUserAvatar.setImageBitmap(user.getTexture());
+        if (Build.VERSION.SDK_INT >= 21) {
+            uvh.mUserAvatar.setClipToOutline(true);
+        }
 
-        int talkStateRes;
-        if (user.isSelfDeafened())
-            talkStateRes = R.drawable.ic_deafened;
-        else if (user.isSelfMuted())
-            talkStateRes = R.drawable.ic_muted;
-        else if (user.isDeafened())
-            talkStateRes = R.drawable.ic_server_deafened;
-        else if (user.isMuted())
-            talkStateRes = R.drawable.ic_server_muted;
-        else if (user.isSuppressed())
-            talkStateRes = R.drawable.ic_suppressed;
-        else if (user.isLocalMuted())
-            talkStateRes = R.drawable.ic_muted_local;
-        else if (user.getTalkState() == User.TalkState.TALKING)
-            talkStateRes = R.drawable.ic_talking_on;
-        else
-            talkStateRes = R.drawable.ic_talking_off;
-        uvh.mUserTalkState.setImageResource(talkStateRes);
+        if (user.getTexture() != null) {
+            uvh.mUserAvatar.setImageBitmap(user.getTexture());
+        } else {
+            uvh.mUserAvatar.setImageResource(R.drawable.ic_action_microphone_dark);
+        }
+
+        if (user.getTalkState() == User.TalkState.TALKING) {
+//            talkTrans.startTransition(100);
+            uvh.mUserTalkHighlight.setBackgroundResource(R.drawable.outline_circle_talking_on);
+        } else {
+//            talkTrans.reverseTransition(100);
+            uvh.mUserTalkHighlight.setBackgroundResource(R.drawable.outline_circle_talking_off);
+        }
 
         // Pad the view depending on channel's nested level.
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
@@ -249,7 +235,8 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
     private static class UserViewHolder {
         public LinearLayout mUserHolder;
         public TextView mUserName;
-        public ImageView mUserTalkState;
+        public ImageView mUserAvatar;
+        public View mUserTalkHighlight;
     }
 
     private static class ChannelViewHolder {

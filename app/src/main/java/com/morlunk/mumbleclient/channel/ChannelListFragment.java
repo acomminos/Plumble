@@ -69,7 +69,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
         @Override
         public void onUserJoinedChannel(User user, Channel newChannel, Channel oldChannel) throws RemoteException {
-            updateChannelList();
+            mChannelListAdapter.notifyDataSetChanged();
             if(getService().getSession() == user.getSession()) {
                 scrollToChannel(newChannel.getId());
             }
@@ -77,37 +77,37 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
         @Override
 		public void onChannelAdded(Channel channel) throws RemoteException {
-			updateChannelList();
+			mChannelListAdapter.notifyDataSetChanged();
 		}
 
 		@Override
 		public void onChannelRemoved(Channel channel) throws RemoteException {
-			updateChannelList();
+			mChannelListAdapter.notifyDataSetChanged();
 		}
 
         @Override
         public void onChannelStateUpdated(Channel channel) throws RemoteException {
-            mChannelListAdapter.notifyDataSetChanged();
+            mChannelView.invalidateViews();
         }
 
         @Override
         public void onUserConnected(User user) throws RemoteException {
-            updateChannelList();
+            mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
         public void onUserRemoved(User user, String reason) throws RemoteException {
-            updateChannelList();
+            mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
         public void onUserStateUpdated(User user) throws RemoteException {
-            mChannelListAdapter.notifyDataSetChanged();
+            mChannelView.invalidateViews();
         }
 
         @Override
         public void onUserTalkStateUpdated(User user) throws RemoteException {
-            mChannelListAdapter.notifyDataSetChanged();
+            mChannelView.invalidateViews();
         }
 	};
 
@@ -183,7 +183,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
             if(mChannelListAdapter == null)
                 setupChannelList();
             else
-                updateChannelList();
+                mChannelListAdapter.notifyDataSetChanged();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -315,12 +315,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
     private void setupChannelList() throws RemoteException {
         mChannelListAdapter = new ChannelListAdapter(getActivity(), getService(), mDatabaseProvider.getDatabase(), isShowingPinnedChannels());
         mChannelView.setAdapter(mChannelListAdapter);
-		updateChannelList();
-	}
-
-	public void updateChannelList() throws RemoteException {
-		mChannelListAdapter.updateChannelList();
-		mChannelListAdapter.notifyDataSetChanged();
+        mChannelListAdapter.notifyDataSetChanged();
 	}
 
 	/**

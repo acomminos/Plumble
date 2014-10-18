@@ -41,7 +41,7 @@
         android:layout_height="50dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
-        android:background="?attr/secondaryBackground">
+        android:background="?attr/colorPrimary">
 
         <Button
             android:id="@+id/pushtotalk"
