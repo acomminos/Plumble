@@ -37,8 +37,10 @@ import com.morlunk.jumble.net.Permissions;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.channel.ChatTargetProvider;
 import com.morlunk.mumbleclient.channel.comment.UserCommentFragment;
+import com.morlunk.mumbleclient.util.ModelUtils;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -256,7 +258,7 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
     private void showChannelMoveDialog() throws RemoteException {
         AlertDialog.Builder adb = new AlertDialog.Builder(mContext);
         adb.setTitle(R.string.user_menu_move);
-        final List<Channel> channels = mService.getChannelList();
+        final List<Channel> channels = ModelUtils.getChannelList(mService.getRootChannel(), mService);
         final CharSequence[] channelNames = new CharSequence[channels.size()];
         for (int i = 0; i < channels.size(); i++) {
             channelNames[i] = channels.get(i).getName();

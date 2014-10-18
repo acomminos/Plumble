@@ -87,7 +87,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
         @Override
         public void onChannelStateUpdated(Channel channel) throws RemoteException {
-            updateChannel(channel);
+            mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
@@ -97,17 +97,17 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
         @Override
         public void onUserRemoved(User user, String reason) throws RemoteException {
-            removeUser(user);
+            updateChannelList();
         }
 
         @Override
         public void onUserStateUpdated(User user) throws RemoteException {
-            updateUser(user);
+            mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
         public void onUserTalkStateUpdated(User user) throws RemoteException {
-            updateUserTalking(user);
+            mChannelListAdapter.notifyDataSetChanged();
         }
 	};
 
@@ -313,7 +313,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
     }
 
     private void setupChannelList() throws RemoteException {
-        mChannelListAdapter = new ChannelListAdapter(getActivity(), mChannelView, getService(), mDatabaseProvider.getDatabase(), isShowingPinnedChannels());
+        mChannelListAdapter = new ChannelListAdapter(getActivity(), getService(), mDatabaseProvider.getDatabase(), isShowingPinnedChannels());
         mChannelView.setAdapter(mChannelListAdapter);
 		updateChannelList();
 	}
@@ -321,33 +321,6 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 	public void updateChannelList() throws RemoteException {
 		mChannelListAdapter.updateChannelList();
 		mChannelListAdapter.notifyDataSetChanged();
-	}
-
-	public void updateUser(User user) throws RemoteException {
-		mChannelListAdapter.refreshUser(user);
-	}
-
-	public void updateChannel(Channel channel) throws RemoteException {
-		if(channel.getDescription() != null || channel.getDescriptionHash() != null) {
-//          TODO reimplement comment caching
-//			mChannelListAdapter.commentsSeen.put(channel, mChannelListAdapter.database.isCommentSeen(
-//				channel.getName(),
-//				channel.getDescriptionHash() != null ? new String(channel.getDescriptionHash()) : channel.getDescription()));
-		}
-		updateChannelList();
-	}
-
-	public void updateUserTalking(User user) {
-		mChannelListAdapter.refreshTalkingState(user);
-	}
-
-	/**
-	 * Removes the user from the channel list.
-	 *
-	 * @param user
-	 */
-	public void removeUser(User user) {
-        mChannelListAdapter.notifyDataSetChanged();
 	}
 
 	/**
@@ -363,18 +336,6 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 	public void scrollToUser(int userId) {
 		int userPosition = mChannelListAdapter.getVisibleFlatChildPosition(userId);
 		mChannelView.smoothScrollToPosition(userPosition);
-	}
-
-    public void setChatTarget(User chatTarget) {
-		User oldTarget = chatTarget;
-		if (mChannelListAdapter != null) {
-            try {
-                if (oldTarget != null) mChannelListAdapter.refreshUser(oldTarget);
-                mChannelListAdapter.refreshUser(chatTarget);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-		}
 	}
 
     private boolean isShowingPinnedChannels() {
@@ -428,7 +389,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
     @Override
     public void onLocalUserStateUpdated(final User user) {
         try {
-            updateUser(user);
+            mChannelListAdapter.notifyDataSetChanged();
 
             // Add or remove registered user from local mute history
             final PlumbleDatabase database = mDatabaseProvider.getDatabase();

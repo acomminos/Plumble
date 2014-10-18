@@ -37,6 +37,7 @@ import com.morlunk.mumbleclient.Constants;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.service.PlumbleService;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -124,29 +125,89 @@ public class ChannelSearchProvider extends ContentProvider {
         List<Channel> channels;
         List<User> users;
         try {
-            channels = mService.getChannelList();
-            users = mService.getUserList();
+            channels = channelSearch(mService.getRootChannel(), query);
+            users = userSearch(mService.getRootChannel(), query);
         } catch (RemoteException e) {
             e.printStackTrace();
-            return null;
+            return cursor;
         }
 
         for(int x=0;x<channels.size();x++) {
 			Channel channel = channels.get(x);
-			String channelNameLower = channel.getName().toLowerCase(Locale.getDefault());
-			if(channelNameLower.contains(query))
-				cursor.addRow(new Object[] { x, INTENT_DATA_CHANNEL, channel.getName(), R.drawable.ic_action_channels, getContext().getString(R.string.search_channel_users, channel.getSubchannelUserCount()), channel.getId() });
+            cursor.addRow(new Object[] { x, INTENT_DATA_CHANNEL, channel.getName(), R.drawable.ic_action_channels, getContext().getString(R.string.search_channel_users, channel.getSubchannelUserCount()), channel.getId() });
 		}
 
 		for(int x=0;x<users.size();x++) {
 			User user = users.get(x);
-			String userNameLower = user.getName().toLowerCase(Locale.getDefault());
-			if(userNameLower.contains(query))
-				cursor.addRow(new Object[] { x, INTENT_DATA_USER, user.getName(), R.drawable.ic_action_user_dark, getContext().getString(R.string.user), user.getSession() });
+            cursor.addRow(new Object[] { x, INTENT_DATA_USER, user.getName(), R.drawable.ic_action_user_dark, getContext().getString(R.string.user), user.getSession() });
 		}
 		
 		return cursor;
 	}
+
+    /**
+     * Recursively searches the channel tree for a user with a name containing the given string,
+     * ignoring case.
+     * @param root The channel to recursively search for users within.
+     * @param str The string to match against the user's name. Case insensitive.
+     * @return A list of users whose names contain str.
+     */
+    private List<User> userSearch(Channel root, String str) throws RemoteException {
+        List<User> list = new LinkedList<User>();
+        userSearch(root, str, list);
+        return list;
+    }
+
+    /**
+     * @see #userSearch(Channel,String)
+     */
+    private void userSearch(Channel root, String str, List<User> users) throws RemoteException {
+        if (root == null) {
+            return;
+        }
+        for (int uid : root.getUsers()) {
+            User user = mService.getUser(uid);
+            if (user != null && user.getName() != null
+                    && user.getName().toLowerCase().contains(str.toLowerCase())) {
+                users.add(user);
+            }
+        }
+        for (int cid : root.getSubchannels()) {
+            Channel channel = mService.getChannel(cid);
+            userSearch(channel, str, users);
+        }
+    }
+
+    /**
+     * Recursively searches the channel tree for a channel with a name containing the given string,
+     * ignoring case.
+     * @param root The channel to recursively search for subchannels within.
+     * @param str The string to match against the channel's name. Case insensitive.
+     * @return A list of channels whose names contain str.
+     */
+    private List<Channel> channelSearch(Channel root, String str) throws RemoteException {
+        List<Channel> list = new LinkedList<Channel>();
+        channelSearch(root, str, list);
+        return list;
+    }
+
+    /**
+     * @see #channelSearch(Channel,String)
+     */
+    private void channelSearch(Channel root, String str, List<Channel> channels) throws RemoteException {
+        if (root == null) {
+            return;
+        }
+
+        if (root.getName().toLowerCase().contains(str.toLowerCase())) {
+            channels.add(root);
+        }
+
+        for (int cid : root.getSubchannels()) {
+            Channel channel = mService.getChannel(cid);
+            channelSearch(channel, str, channels);
+        }
+    }
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,

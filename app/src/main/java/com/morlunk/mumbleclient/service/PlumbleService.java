@@ -108,6 +108,13 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         }
 
         @Override
+        public void onUserConnected(User user) throws RemoteException {
+            // Immediately request avatar upon connection.
+            // FIXME: do we need to refresh avatar when hash changes?
+            getBinder().requestAvatar(user.getSession());
+        }
+
+        @Override
         public void onUserStateUpdated(User user) throws RemoteException {
             if(user.getSession() == mBinder.getSession()) {
                 mSettings.setMutedAndDeafened(user.isSelfMuted(), user.isSelfDeafened()); // Update settings mute/deafen state

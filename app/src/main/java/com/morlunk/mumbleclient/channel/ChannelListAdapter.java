@@ -17,18 +17,16 @@
 
 package com.morlunk.mumbleclient.channel;
 
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.RemoteException;
 import android.util.DisplayMetrics;
-import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
@@ -37,7 +35,6 @@ import com.morlunk.jumble.model.User;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.view.PlumbleNestedAdapter;
-import com.morlunk.mumbleclient.view.PlumbleNestedListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,20 +44,15 @@ import java.util.List;
  */
 public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
     private IJumbleService mService;
-    private PlumbleNestedListView mListView;
     private PlumbleDatabase mDatabase;
-
-    private SparseArray<Channel> mChannels = new SparseArray<Channel>();
-    private SparseArray<User> mUsers = new SparseArray<User>();
     private List<Integer> mRootChannels = new ArrayList<Integer>();
 
     private boolean mShowPinnedOnly;
 
-    public ChannelListAdapter(Context context, PlumbleNestedListView listView, IJumbleService service, PlumbleDatabase database, boolean showPinnedOnly) {
+    public ChannelListAdapter(Context context, IJumbleService service, PlumbleDatabase database, boolean showPinnedOnly) {
         super(context);
         mService = service;
         mDatabase = database;
-        mListView = listView;
         mShowPinnedOnly = showPinnedOnly;
     }
 
@@ -70,11 +62,6 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
     public void updateChannelList() throws RemoteException {
         if(!mService.isConnected()) return;
 
-        mChannels.clear();
-        mUsers.clear();
-
-        List<Channel> channels = mService.getChannelList();
-        List<User> users = mService.getUserList();
         mRootChannels = new ArrayList<Integer>();
 
         if(mShowPinnedOnly) {
@@ -82,107 +69,80 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
         } else {
             mRootChannels.add(0);
         }
-
-        for(Channel channel : channels)
-            mChannels.put(channel.getId(), channel);
-        for(User user : users)
-            mUsers.put(user.getSession(), user);
-    }
-
-    public void refreshUser(User user) throws RemoteException {
-        int position = getVisibleFlatChildPosition(user.getSession());
-        if(position < 0)
-            return;
-
-        View userView = mListView.getChildAt(position - mListView.getFirstVisiblePosition());
-
-        // Update comment state TODO reimplement
-//        if (user.getComment() != null
-//                || user.getCommentHash() != null
-//                && !service.isConnectedServerPublic()) {
-//            commentsSeen.put(user, database.isCommentSeen(
-//                    user.name,
-//                    user.commentHash != null ? user.commentHash
-//                            .toStringUtf8() : user.comment));
-//        }
-
-        if (userView != null && userView.isShown() && userView.getTag() != null && userView.getTag().equals(user))
-            refreshElements(userView, user);
-    }
-
-    public void refreshTalkingState(User user) {
-        int position = getVisibleFlatChildPosition(user.getSession());
-        if(position < 0)
-            return;
-
-        View userView = mListView.getChildAt(position - mListView.getFirstVisiblePosition());
-
-        if (userView != null && userView.isShown() && userView.getTag() != null && userView.getTag().equals(user))
-            refreshTalkingState(userView, user);
-
-    }
-
-    private void refreshElements(final View view, final User user) {
-        TextView name = (TextView) view.findViewById(R.id.user_row_name);
-
-        name.setText(user.getName());
-        try {
-            name.setTypeface(null, user.getSession() == mService.getSession() ? Typeface.BOLD : Typeface.NORMAL);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        refreshTalkingState(view, user);
-    }
-
-    private void refreshTalkingState(final View view, final User user) {
-        final ImageView state = (ImageView) view.findViewById(R.id.user_row_state);
-
-        if (user.isSelfDeafened())
-            state.setImageResource(R.drawable.ic_deafened);
-        else if (user.isSelfMuted())
-            state.setImageResource(R.drawable.ic_muted);
-        else if (user.isDeafened())
-            state.setImageResource(R.drawable.ic_server_deafened);
-        else if (user.isMuted())
-            state.setImageResource(R.drawable.ic_server_muted);
-        else if (user.isSuppressed())
-            state.setImageResource(R.drawable.ic_suppressed);
-        else if (user.isLocalMuted())
-            state.setImageResource(R.drawable.ic_muted_local);
-        else
-            if (user.getTalkState() == User.TalkState.TALKING)
-                state.setImageResource(R.drawable.ic_talking_on);
-            else
-                state.setImageResource(R.drawable.ic_talking_off);
     }
 
     @Override
     public User getChild(int groupId, int childPosition) {
-        Channel channel = mChannels.get(groupId);
-        int session = channel.getUsers().get(childPosition);
-        return mUsers.get(session);
+        try {
+            Channel channel = mService.getChannel(groupId);
+            if (channel == null) {
+                return null;
+            }
+            int session = channel.getUsers().get(childPosition);
+            return mService.getUser(session);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public View getChildView(int groupId, int childPosition, int depth, View v, ViewGroup arg4) {
+        UserViewHolder uvh;
         if (v == null) {
             final LayoutInflater inflater = (LayoutInflater) getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(R.layout.channel_user_row, arg4, false);
+
+            uvh = new UserViewHolder();
+            uvh.mUserHolder = (LinearLayout) v.findViewById(R.id.user_row_title);
+            uvh.mUserTalkState = (ImageView) v.findViewById(R.id.user_row_state);
+            uvh.mUserName = (TextView) v.findViewById(R.id.user_row_name);
+            v.setTag(uvh);
+        } else {
+            uvh = (UserViewHolder) v.getTag();
         }
 
         final User user = getChild(groupId, childPosition);
 
-        if(user != null)
-            refreshElements(v, user);
-        v.setTag(user);
+        uvh.mUserName.setText(user.getName());
+        try {
+            uvh.mUserName.setTypeface(null, user.getSession() == mService.getSession() ? Typeface.BOLD : Typeface.NORMAL);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+//        if (Build.VERSION.SDK_INT >= 21) {
+//            uvh.mUserAvatar.setClipToOutline(true);
+//        }
+//        uvh.mUserAvatar.setImageBitmap(user.getTexture());
+
+        int talkStateRes;
+        if (user.isSelfDeafened())
+            talkStateRes = R.drawable.ic_deafened;
+        else if (user.isSelfMuted())
+            talkStateRes = R.drawable.ic_muted;
+        else if (user.isDeafened())
+            talkStateRes = R.drawable.ic_server_deafened;
+        else if (user.isMuted())
+            talkStateRes = R.drawable.ic_server_muted;
+        else if (user.isSuppressed())
+            talkStateRes = R.drawable.ic_suppressed;
+        else if (user.isLocalMuted())
+            talkStateRes = R.drawable.ic_muted_local;
+        else if (user.getTalkState() == User.TalkState.TALKING)
+            talkStateRes = R.drawable.ic_talking_on;
+        else
+            talkStateRes = R.drawable.ic_talking_off;
+        uvh.mUserTalkState.setImageResource(talkStateRes);
 
         // Pad the view depending on channel's nested level.
-        final View titleView = v.findViewById(R.id.user_row_title);
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
         float margin = (depth + 1) * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25, metrics);
-        titleView.setPadding((int) margin, titleView.getPaddingTop(), titleView.getPaddingRight(), titleView.getPaddingBottom());
+        uvh.mUserHolder.setPadding((int) margin,
+                uvh.mUserHolder.getPaddingTop(),
+                uvh.mUserHolder.getPaddingRight(),
+                uvh.mUserHolder.getPaddingBottom());
 
         return v;
     }
@@ -194,86 +154,108 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
 
     @Override
     public int getGroupCount(int parentId) {
-        Channel parent = mChannels.get(parentId);
+        Channel parent = getGroup(parentId);
         return parent.getSubchannels().size();
     }
 
     @Override
     public int getChildCount(int arg0) {
-        Channel channel = mChannels.get(arg0);
+        Channel channel = getGroup(arg0);
         return channel.getUsers().size();
     }
 
     @Override
     public Channel getGroup(int arg0) {
-        return mChannels.get(arg0);
+        try {
+            return mService.getChannel(arg0);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public View getGroupView(final int groupId, int depth, View convertView, ViewGroup parent) {
         View v = convertView;
+        ChannelViewHolder cvh;
         if (v == null) {
             final LayoutInflater inflater = (LayoutInflater) getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(R.layout.channel_row, parent, false);
+            cvh = new ChannelViewHolder();
+            cvh.mChannelHolder = (LinearLayout) v.findViewById(R.id.channel_row_title);
+            cvh.mChannelExpandToggle = (ImageView) v.findViewById(R.id.channel_row_expand);
+            cvh.mChannelName = (TextView) v.findViewById(R.id.channel_row_name);
+            cvh.mChannelUserCount = (TextView) v.findViewById(R.id.channel_row_count);
+            v.setTag(cvh);
+        } else {
+            cvh = (ChannelViewHolder) v.getTag();
         }
 
-        final Channel channel = mChannels.get(groupId);
+        final Channel channel = getGroup(groupId);
 
         boolean expandUsable = channel.getSubchannels().size() > 0 ||
                                channel.getSubchannelUserCount() > 0;
-        ImageView expandView = (ImageView) v.findViewById(R.id.channel_row_expand);
-        expandView.setImageResource((isGroupExpanded(groupId) || !expandUsable) ? R.drawable.ic_action_expanded : R.drawable.ic_action_collapsed);
-        expandView.setOnClickListener(new View.OnClickListener() {
+        cvh.mChannelExpandToggle.setImageResource((isGroupExpanded(groupId) || !expandUsable) ? R.drawable.ic_action_expanded : R.drawable.ic_action_collapsed);
+        cvh.mChannelExpandToggle.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                if(isGroupExpanded(groupId)) collapseGroup(groupId);
+                if (isGroupExpanded(groupId)) collapseGroup(groupId);
                 else expandGroup(groupId);
                 notifyVisibleSetChanged();
             }
         });
         // Dim channel expand toggle when no subchannels exist
-        expandView.setEnabled(expandUsable);
-        expandView.setVisibility(expandUsable ? View.VISIBLE : View.INVISIBLE);
+        cvh.mChannelExpandToggle.setEnabled(expandUsable);
+        cvh.mChannelExpandToggle.setVisibility(expandUsable ? View.VISIBLE : View.INVISIBLE);
 
-        TextView nameView = (TextView) v
-                .findViewById(R.id.channel_row_name);
-        TextView countView = (TextView) v.findViewById(R.id.channel_row_count);
-
-        nameView.setText(channel.getName());
+        cvh.mChannelName.setText(channel.getName());
 
         int userCount = channel.getSubchannelUserCount();
-        countView.setText(String.format("%d", userCount));
-        countView.setTextColor(getContext().getResources().getColor(userCount > 0 ? R.color.holo_blue_light : android.R.color.darker_gray));
-
-        View channelTitle = v.findViewById(R.id.channel_row_title);
+        cvh.mChannelUserCount.setText(String.format("%d", userCount));
+        cvh.mChannelUserCount.setTextColor(getContext().getResources().getColor(userCount > 0 ? R.color.holo_blue_light : android.R.color.darker_gray));
 
         // Pad the view depending on channel's nested level.
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
         float margin = depth * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25, metrics);
-        channelTitle.setPadding((int) margin, channelTitle.getPaddingTop(), channelTitle.getPaddingRight(),
-                channelTitle.getPaddingBottom());
+        cvh.mChannelHolder.setPadding((int) margin,
+                cvh.mChannelHolder.getPaddingTop(),
+                cvh.mChannelHolder.getPaddingRight(),
+                cvh.mChannelHolder.getPaddingBottom());
 
         return v;
     }
 
     @Override
     public int getGroupId(int parentId, int groupPosition) {
-        Channel parent = mChannels.get(parentId);
-        Channel channel = mChannels.get(parent.getSubchannels().get(groupPosition));
+        Channel parent = getGroup(parentId);
+        Channel channel = getGroup(parent.getSubchannels().get(groupPosition));
         return channel.getId();
     }
 
     @Override
     public int getChildId(int groupId, int childPosition) {
-        Channel channel = mChannels.get(groupId);
+        Channel channel = getGroup(groupId);
         return channel.getUsers().get(childPosition);
     }
 
     @Override
     public boolean isGroupExpandedByDefault(int groupId) {
         // Return true if there are channels in the chain with more than 0 users.
-        return mChannels.get(groupId).getSubchannelUserCount() > 0;
+        return getGroup(groupId).getSubchannelUserCount() > 0;
+    }
+
+    private static class UserViewHolder {
+        public LinearLayout mUserHolder;
+        public TextView mUserName;
+        public ImageView mUserTalkState;
+    }
+
+    private static class ChannelViewHolder {
+        public LinearLayout mChannelHolder;
+        public ImageView mChannelExpandToggle;
+        public TextView mChannelName;
+        public TextView mChannelUserCount;
     }
 }
