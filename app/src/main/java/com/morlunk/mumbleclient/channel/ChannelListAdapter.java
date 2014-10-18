@@ -114,13 +114,17 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
             uvh.mUserAvatar.setImageResource(R.drawable.ic_action_microphone_dark);
         }
 
-        if (user.getTalkState() == User.TalkState.TALKING) {
-//            talkTrans.startTransition(100);
-            uvh.mUserTalkHighlight.setBackgroundResource(R.drawable.outline_circle_talking_on);
+        int talkResource;
+        if (user.isSelfDeafened() || user.isDeafened()) {
+            talkResource = R.drawable.outline_circle_deafened;
+        } else if (user.isSelfMuted() || user.isMuted() || user.isSuppressed()) {
+            talkResource = R.drawable.outline_circle_muted;
+        } else if (user.getTalkState() == User.TalkState.TALKING) {
+            talkResource = R.drawable.outline_circle_talking_on;
         } else {
-//            talkTrans.reverseTransition(100);
-            uvh.mUserTalkHighlight.setBackgroundResource(R.drawable.outline_circle_talking_off);
+            talkResource = R.drawable.outline_circle_talking_off;
         }
+        uvh.mUserTalkHighlight.setBackgroundResource(talkResource);
 
         // Pad the view depending on channel's nested level.
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
@@ -200,7 +204,6 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
 
         int userCount = channel.getSubchannelUserCount();
         cvh.mChannelUserCount.setText(String.format("%d", userCount));
-        cvh.mChannelUserCount.setTextColor(getContext().getResources().getColor(userCount > 0 ? R.color.holo_blue_light : android.R.color.darker_gray));
 
         // Pad the view depending on channel's nested level.
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();

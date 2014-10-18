@@ -29,7 +29,7 @@
         android:layout_width="48dp"
         android:layout_height="match_parent"
         android:src="@drawable/ic_action_collapsed"
-        android:tint="?android:attr/textColorPrimary"
+        android:tint="?attr/colorAccent"
         android:padding="12dp" />
 
     <TextView
