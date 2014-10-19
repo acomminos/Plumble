@@ -43,6 +43,7 @@ import java.util.List;
  * Created by andrew on 31/07/13.
  */
 public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
+
     private IJumbleService mService;
     private PlumbleDatabase mDatabase;
     private List<Integer> mRootChannels = new ArrayList<Integer>();
@@ -109,18 +110,28 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
         }
 
         int talkResource;
-        if (user.isSelfDeafened() || user.isDeafened()) {
+        if (user.isSelfDeafened()) {
             talkResource = R.drawable.outline_circle_deafened;
-        } else if (user.isSelfMuted() || user.isMuted() || user.isSuppressed()) {
+        } else if (user.isDeafened()) {
+            talkResource = R.drawable.outline_circle_server_deafened;
+        } else if (user.isSelfMuted()) {
             talkResource = R.drawable.outline_circle_muted;
-        } else if (user.getTalkState() == User.TalkState.TALKING) {
+        } else if (user.isMuted()) {
+            talkResource = R.drawable.outline_circle_server_muted;
+        } else if (user.isSuppressed()) {
+            talkResource = R.drawable.outline_circle_suppressed;
+        } else if (user.getTalkState() == User.TalkState.TALKING ||
+                user.getTalkState() == User.TalkState.SHOUTING ||
+                user.getTalkState() == User.TalkState.WHISPERING) {
+            // TODO: add whisper and shouting resources
             talkResource = R.drawable.outline_circle_talking_on;
         } else {
             talkResource = R.drawable.outline_circle_talking_off;
         }
+        // TODO: crossfade in
         uvh.mUserTalkHighlight.setBackgroundResource(talkResource);
 
-        // Pad the view depending on channel's nested level.
+        // Pad the view depending on channel's nested level.ed
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
         float margin = (depth + 1) * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25, metrics);
         uvh.mUserHolder.setPadding((int) margin,

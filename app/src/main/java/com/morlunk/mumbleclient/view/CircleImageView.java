@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.Region;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
@@ -30,6 +31,7 @@ public class CircleImageView extends ImageView {
     @Override
     public void draw(Canvas canvas) {
         // Clip the canvas to an oval
+        // TODO: antialias/dither result
         Path path = new Path();
         path.addOval(new RectF(0, 0, canvas.getWidth(), canvas.getHeight()), Path.Direction.CW);
         canvas.clipPath(path);

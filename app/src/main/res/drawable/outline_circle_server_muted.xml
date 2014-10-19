@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- An overlay over a user's avatar to indicate that they're deafened. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/ripple_talk_state_server_muted" />
+
+            <size
+                android:width="48dp"
+                android:height="48dp" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/ic_action_microphone_muted" />
+</layer-list>
