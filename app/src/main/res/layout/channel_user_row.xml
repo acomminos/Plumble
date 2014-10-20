@@ -28,13 +28,13 @@
         android:layout_width="32dp"
         android:layout_height="32dp">
 
-        <com.morlunk.mumbleclient.view.CircleImageView
-            android:id="@+id/user_row_avatar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_action_microphone_dark"
-            android:layout_margin="2dp"
-            android:scaleType="centerCrop"/>
+        <!--<com.morlunk.mumbleclient.view.CircleImageView-->
+            <!--android:id="@+id/user_row_avatar"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:src="@drawable/ic_action_microphone_dark"-->
+            <!--android:layout_margin="2dp"-->
+            <!--android:scaleType="centerCrop"/>-->
 
         <ImageView
             android:id="@+id/user_row_talk_highlight"

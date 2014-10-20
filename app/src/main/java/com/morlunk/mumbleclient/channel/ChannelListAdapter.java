@@ -96,7 +96,7 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
 
             uvh = new UserViewHolder();
             uvh.mUserHolder = (LinearLayout) v.findViewById(R.id.user_row_title);
-            uvh.mUserAvatar = (ImageView) v.findViewById(R.id.user_row_avatar);
+//            uvh.mUserAvatar = (ImageView) v.findViewById(R.id.user_row_avatar);
             uvh.mUserTalkHighlight = (ImageView) v.findViewById(R.id.user_row_talk_highlight);
             uvh.mUserTalkHighlight.setTag(R.drawable.outline_circle_talking_off);
             uvh.mUserName = (TextView) v.findViewById(R.id.user_row_name);
@@ -114,11 +114,11 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
             e.printStackTrace();
         }
 
-        if (user.getTexture() != null) {
-            uvh.mUserAvatar.setImageBitmap(user.getTexture());
-        } else {
-            uvh.mUserAvatar.setImageResource(R.drawable.ic_action_microphone_dark);
-        }
+//        if (user.getTexture() != null) {
+//            uvh.mUserAvatar.setImageBitmap(user.getTexture());
+//        } else {
+//            uvh.mUserAvatar.setImageResource(R.drawable.ic_action_microphone_dark);
+//        }
 
         int talkResource = getTalkStateDrawable(user);
         uvh.mUserTalkHighlight.setImageResource(talkResource);
@@ -300,7 +300,7 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
     private static class UserViewHolder {
         public LinearLayout mUserHolder;
         public TextView mUserName;
-        public ImageView mUserAvatar;
+//        public ImageView mUserAvatar;
         public ImageView mUserTalkHighlight;
     }
 
