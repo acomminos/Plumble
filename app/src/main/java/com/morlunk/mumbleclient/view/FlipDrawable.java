@@ -49,6 +49,11 @@ public class FlipDrawable extends LayerDrawable implements ValueAnimator.Animato
 
     }
 
+    @Override
+    public Drawable getCurrent() {
+        return mRotate > 90 ? mTo : mFrom;
+    }
+
     /**
      * Starts the flip animation.
      * @param duration The duration in ms for the flip to occur.

@@ -57,10 +57,10 @@
     <color name="solarized_base3">#fdf6e3</color>
 
     <!-- Ripple talk states -->
-    <color name="ripple_talk_state_on">#FFFF0000</color>
+    <color name="ripple_talk_state_on">@color/holo_red_dark</color>
     <color name="ripple_talk_state_off">#FFFFFFFF</color>
     <color name="ripple_talk_state_disabled">#FF666666</color>
-    <color name="ripple_talk_state_suppressed">#FF30B43F</color>
-    <color name="ripple_talk_state_server_muted">#FF65A1FE</color>
-    <color name="ripple_talk_state_server_deafened">#65A1FE</color>
+    <color name="ripple_talk_state_suppressed">@color/holo_green_dark</color>
+    <color name="ripple_talk_state_server_muted">@color/holo_blue_dark</color>
+    <color name="ripple_talk_state_server_deafened">@color/holo_blue_dark</color>
 </resources>

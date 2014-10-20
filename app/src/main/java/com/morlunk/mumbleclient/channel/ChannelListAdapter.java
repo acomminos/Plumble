@@ -19,7 +19,9 @@ package com.morlunk.mumbleclient.channel;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
@@ -38,6 +40,7 @@ import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.User;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
+import com.morlunk.mumbleclient.view.CircleDrawable;
 import com.morlunk.mumbleclient.view.FlipDrawable;
 import com.morlunk.mumbleclient.view.PlumbleNestedAdapter;
 import com.morlunk.mumbleclient.view.PlumbleNestedListView;
@@ -96,9 +99,7 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
 
             uvh = new UserViewHolder();
             uvh.mUserHolder = (LinearLayout) v.findViewById(R.id.user_row_title);
-//            uvh.mUserAvatar = (ImageView) v.findViewById(R.id.user_row_avatar);
             uvh.mUserTalkHighlight = (ImageView) v.findViewById(R.id.user_row_talk_highlight);
-            uvh.mUserTalkHighlight.setTag(R.drawable.outline_circle_talking_off);
             uvh.mUserName = (TextView) v.findViewById(R.id.user_row_name);
             v.setTag(uvh);
         } else {
@@ -114,15 +115,7 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
             e.printStackTrace();
         }
 
-//        if (user.getTexture() != null) {
-//            uvh.mUserAvatar.setImageBitmap(user.getTexture());
-//        } else {
-//            uvh.mUserAvatar.setImageResource(R.drawable.ic_action_microphone_dark);
-//        }
-
-        int talkResource = getTalkStateDrawable(user);
-        uvh.mUserTalkHighlight.setImageResource(talkResource);
-        uvh.mUserTalkHighlight.setTag(talkResource);
+        uvh.mUserTalkHighlight.setImageDrawable(getTalkStateDrawable(user));
 
         // Pad the view depending on channel's nested level.ed
         DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
@@ -158,45 +151,52 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
         }
 
         UserViewHolder uvh = (UserViewHolder) v.getTag();
-        int talkResource = getTalkStateDrawable(user);
-        int lastResource = (Integer) uvh.mUserTalkHighlight.getTag();
-        Drawable to = getContext().getResources().getDrawable(talkResource);
-        if (lastResource != talkResource) {
+
+        if (uvh.mUserTalkHighlight.getDrawable() == null) {
+            return;
+        }
+
+        Drawable newState = getTalkStateDrawable(user);
+        Drawable oldState = uvh.mUserTalkHighlight.getDrawable().getCurrent();
+
+        if (!newState.getConstantState().equals(oldState.getConstantState())) {
             if (Build.VERSION.SDK_INT >= 12) {
                 // "Flip" in new talking state.
-                Drawable from = getContext().getResources().getDrawable(lastResource);
-                FlipDrawable drawable = new FlipDrawable(from, to);
+                FlipDrawable drawable = new FlipDrawable(oldState, newState);
                 uvh.mUserTalkHighlight.setImageDrawable(drawable);
                 drawable.start(FLIP_DURATION);
             } else {
                 // If we're on a platform without ValueAnimator, simply set the state image.
-                uvh.mUserTalkHighlight.setImageDrawable(to);
+                uvh.mUserTalkHighlight.setImageDrawable(newState);
             }
-            uvh.mUserTalkHighlight.setTag(talkResource);
         }
     }
 
-    private int getTalkStateDrawable(User user) {
-        int talkResource;
+    private Drawable getTalkStateDrawable(User user) {
+        Resources resources = getContext().getResources();
         if (user.isSelfDeafened()) {
-            talkResource = R.drawable.outline_circle_deafened;
+            return resources.getDrawable(R.drawable.outline_circle_deafened);
         } else if (user.isDeafened()) {
-            talkResource = R.drawable.outline_circle_server_deafened;
+            return resources.getDrawable(R.drawable.outline_circle_server_deafened);
         } else if (user.isSelfMuted()) {
-            talkResource = R.drawable.outline_circle_muted;
+            return resources.getDrawable(R.drawable.outline_circle_muted);
         } else if (user.isMuted()) {
-            talkResource = R.drawable.outline_circle_server_muted;
+            return resources.getDrawable(R.drawable.outline_circle_server_muted);
         } else if (user.isSuppressed()) {
-            talkResource = R.drawable.outline_circle_suppressed;
+            return resources.getDrawable(R.drawable.outline_circle_suppressed);
         } else if (user.getTalkState() == User.TalkState.TALKING ||
                 user.getTalkState() == User.TalkState.SHOUTING ||
                 user.getTalkState() == User.TalkState.WHISPERING) {
             // TODO: add whisper and shouting resources
-            talkResource = R.drawable.outline_circle_talking_on;
+            return resources.getDrawable(R.drawable.outline_circle_talking_on);
         } else {
-            talkResource = R.drawable.outline_circle_talking_off;
+            // Passive drawables
+//            if (user.getTexture() != null) {
+//                return new CircleDrawable(getContext().getResources(), user.getTexture());
+//            } else {
+                return resources.getDrawable(R.drawable.outline_circle_talking_off);
+//            }
         }
-        return talkResource;
     }
 
     @Override
