@@ -17,8 +17,12 @@
 
 package com.morlunk.mumbleclient.channel;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.RemoteException;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -34,6 +38,7 @@ import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.User;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
+import com.morlunk.mumbleclient.view.FlipDrawable;
 import com.morlunk.mumbleclient.view.PlumbleNestedAdapter;
 
 import java.util.ArrayList;
@@ -43,6 +48,10 @@ import java.util.List;
  * Created by andrew on 31/07/13.
  */
 public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
+    /**
+     * Time (in ms) to run the flip animation for.
+     */
+    private static final long FLIP_DURATION = 350;
 
     private IJumbleService mService;
     private PlumbleDatabase mDatabase;
@@ -87,7 +96,8 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
             uvh = new UserViewHolder();
             uvh.mUserHolder = (LinearLayout) v.findViewById(R.id.user_row_title);
             uvh.mUserAvatar = (ImageView) v.findViewById(R.id.user_row_avatar);
-            uvh.mUserTalkHighlight = v.findViewById(R.id.user_row_talk_highlight);
+            uvh.mUserTalkHighlight = (ImageView) v.findViewById(R.id.user_row_talk_highlight);
+            uvh.mUserTalkHighlight.setTag(R.drawable.outline_circle_talking_off);
             uvh.mUserName = (TextView) v.findViewById(R.id.user_row_name);
             v.setTag(uvh);
         } else {
@@ -109,6 +119,38 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
             uvh.mUserAvatar.setImageResource(R.drawable.ic_action_microphone_dark);
         }
 
+        int talkResource = getTalkStateDrawable(user);
+        int lastResource = (Integer) uvh.mUserTalkHighlight.getTag();
+        Drawable to = getContext().getResources().getDrawable(talkResource);
+        if (Build.VERSION.SDK_INT >= 12 &&
+                user.getSession() == uvh.mSession &&
+                lastResource != talkResource) {
+            // "Flip" in new talking state.
+            Drawable from = getContext().getResources().getDrawable(lastResource);
+            FlipDrawable drawable = new FlipDrawable(from, to);
+            uvh.mUserTalkHighlight.setImageDrawable(drawable);
+            drawable.start(FLIP_DURATION);
+        } else {
+            // If this is a newly scrolled in view (or we're on a platform without ValeuAnimator),
+            // simply set the state image.
+            uvh.mUserTalkHighlight.setImageDrawable(to);
+        }
+        uvh.mUserTalkHighlight.setTag(talkResource);
+
+        // Pad the view depending on channel's nested level.ed
+        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
+        float margin = (depth + 1) * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25, metrics);
+        uvh.mUserHolder.setPadding((int) margin,
+                uvh.mUserHolder.getPaddingTop(),
+                uvh.mUserHolder.getPaddingRight(),
+                uvh.mUserHolder.getPaddingBottom());
+
+        uvh.mSession = user.getSession();
+
+        return v;
+    }
+
+    private int getTalkStateDrawable(User user) {
         int talkResource;
         if (user.isSelfDeafened()) {
             talkResource = R.drawable.outline_circle_deafened;
@@ -128,18 +170,7 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
         } else {
             talkResource = R.drawable.outline_circle_talking_off;
         }
-        // TODO: crossfade in
-        uvh.mUserTalkHighlight.setBackgroundResource(talkResource);
-
-        // Pad the view depending on channel's nested level.ed
-        DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
-        float margin = (depth + 1) * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25, metrics);
-        uvh.mUserHolder.setPadding((int) margin,
-                uvh.mUserHolder.getPaddingTop(),
-                uvh.mUserHolder.getPaddingRight(),
-                uvh.mUserHolder.getPaddingBottom());
-
-        return v;
+        return talkResource;
     }
 
     @Override
@@ -241,10 +272,12 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
     }
 
     private static class UserViewHolder {
+        /** User session is stored to determine if a view is being reused. */
+        public int mSession;
         public LinearLayout mUserHolder;
         public TextView mUserName;
         public ImageView mUserAvatar;
-        public View mUserTalkHighlight;
+        public ImageView mUserTalkHighlight;
     }
 
     private static class ChannelViewHolder {

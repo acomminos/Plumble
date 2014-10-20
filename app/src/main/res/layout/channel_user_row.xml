@@ -34,14 +34,13 @@
             android:layout_height="match_parent"
             android:src="@drawable/ic_action_microphone_dark"
             android:layout_margin="2dp"
-            android:background="@drawable/outline_circle"
             android:scaleType="centerCrop"/>
 
-        <View
+        <ImageView
             android:id="@+id/user_row_talk_highlight"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/outline_circle_talking_off"/>
+            android:src="@drawable/outline_circle_talking_off"/>
     </FrameLayout>
 
     <TextView
