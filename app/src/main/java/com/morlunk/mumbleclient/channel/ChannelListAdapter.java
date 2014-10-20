@@ -40,6 +40,7 @@ import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.view.FlipDrawable;
 import com.morlunk.mumbleclient.view.PlumbleNestedAdapter;
+import com.morlunk.mumbleclient.view.PlumbleNestedListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,21 +121,7 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
         }
 
         int talkResource = getTalkStateDrawable(user);
-        int lastResource = (Integer) uvh.mUserTalkHighlight.getTag();
-        Drawable to = getContext().getResources().getDrawable(talkResource);
-        if (Build.VERSION.SDK_INT >= 12 &&
-                user.getSession() == uvh.mSession &&
-                lastResource != talkResource) {
-            // "Flip" in new talking state.
-            Drawable from = getContext().getResources().getDrawable(lastResource);
-            FlipDrawable drawable = new FlipDrawable(from, to);
-            uvh.mUserTalkHighlight.setImageDrawable(drawable);
-            drawable.start(FLIP_DURATION);
-        } else {
-            // If this is a newly scrolled in view (or we're on a platform without ValeuAnimator),
-            // simply set the state image.
-            uvh.mUserTalkHighlight.setImageDrawable(to);
-        }
+        uvh.mUserTalkHighlight.setImageResource(talkResource);
         uvh.mUserTalkHighlight.setTag(talkResource);
 
         // Pad the view depending on channel's nested level.ed
@@ -145,9 +132,48 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
                 uvh.mUserHolder.getPaddingRight(),
                 uvh.mUserHolder.getPaddingBottom());
 
-        uvh.mSession = user.getSession();
-
         return v;
+    }
+
+    /**
+     * Looks for the user's entry in the list and updates it with a fancy animation.
+     * @param user The user to update state of.
+     * @param listView The list view containing the entries.
+     */
+    public void animateUserStateChange(User user, PlumbleNestedListView listView) {
+        int position = getVisibleFlatChildPosition(user.getSession());
+        if (position < 0) {
+            return;
+        }
+
+        if (listView.getFirstVisiblePosition() > position ||
+                listView.getLastVisiblePosition() < position) {
+            return; // Ignore animating views out of sight
+        }
+
+        View v = listView.getChildAt(position - listView.getFirstVisiblePosition());
+
+        if (v == null || v.getTag() == null || !(v.getTag() instanceof UserViewHolder)) {
+            return;
+        }
+
+        UserViewHolder uvh = (UserViewHolder) v.getTag();
+        int talkResource = getTalkStateDrawable(user);
+        int lastResource = (Integer) uvh.mUserTalkHighlight.getTag();
+        Drawable to = getContext().getResources().getDrawable(talkResource);
+        if (lastResource != talkResource) {
+            if (Build.VERSION.SDK_INT >= 12) {
+                // "Flip" in new talking state.
+                Drawable from = getContext().getResources().getDrawable(lastResource);
+                FlipDrawable drawable = new FlipDrawable(from, to);
+                uvh.mUserTalkHighlight.setImageDrawable(drawable);
+                drawable.start(FLIP_DURATION);
+            } else {
+                // If we're on a platform without ValueAnimator, simply set the state image.
+                uvh.mUserTalkHighlight.setImageDrawable(to);
+            }
+            uvh.mUserTalkHighlight.setTag(talkResource);
+        }
     }
 
     private int getTalkStateDrawable(User user) {
@@ -272,8 +298,6 @@ public class ChannelListAdapter extends PlumbleNestedAdapter<Channel, User> {
     }
 
     private static class UserViewHolder {
-        /** User session is stored to determine if a view is being reused. */
-        public int mSession;
         public LinearLayout mUserHolder;
         public TextView mUserName;
         public ImageView mUserAvatar;

@@ -102,12 +102,12 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
         @Override
         public void onUserStateUpdated(User user) throws RemoteException {
-            mChannelView.invalidateViews();
+            mChannelListAdapter.animateUserStateChange(user, mChannelView);
         }
 
         @Override
         public void onUserTalkStateUpdated(User user) throws RemoteException {
-            mChannelView.invalidateViews();
+            mChannelListAdapter.animateUserStateChange(user, mChannelView);
         }
 	};
 
