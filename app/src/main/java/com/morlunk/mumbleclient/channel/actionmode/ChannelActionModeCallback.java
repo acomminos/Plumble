@@ -38,7 +38,6 @@ import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.channel.ChannelEditFragment;
 import com.morlunk.mumbleclient.channel.ChatTargetProvider;
 import com.morlunk.mumbleclient.channel.comment.ChannelDescriptionFragment;
-import com.morlunk.mumbleclient.db.DatabaseProvider;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
 
 /**

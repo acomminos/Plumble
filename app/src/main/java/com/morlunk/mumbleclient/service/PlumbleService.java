@@ -27,7 +27,6 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
-import android.support.v4.app.NotificationCompat;
 
 import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.JumbleService;
@@ -36,7 +35,6 @@ import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
-import com.morlunk.mumbleclient.app.PlumbleActivity;
 import com.morlunk.mumbleclient.service.ipc.TalkBroadcastReceiver;
 
 /**

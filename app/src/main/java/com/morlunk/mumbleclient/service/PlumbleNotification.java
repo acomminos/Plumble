@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.app.NotificationCompat;
 
-import com.morlunk.jumble.model.Message;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.app.DrawerAdapter;
 import com.morlunk.mumbleclient.app.PlumbleActivity;

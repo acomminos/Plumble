@@ -18,7 +18,6 @@
 package com.morlunk.mumbleclient.servers;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.os.Build;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;

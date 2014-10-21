@@ -18,22 +18,21 @@
 package com.morlunk.mumbleclient.channel;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.CursorWrapper;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,7 +40,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
@@ -55,11 +53,8 @@ import com.morlunk.mumbleclient.channel.actionmode.UserActionModeCallback;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
-import com.morlunk.mumbleclient.view.PlumbleNestedListView;
-import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedChildClickListener;
-import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedGroupClickListener;
 
-public class ChannelListFragment extends JumbleServiceFragment implements OnNestedChildClickListener, OnNestedGroupClickListener, UserActionModeCallback.LocalUserUpdateListener {
+public class ChannelListFragment extends JumbleServiceFragment implements UserActionModeCallback.LocalUserUpdateListener, OnChannelClickListener, OnUserClickListener {
 
 	private IJumbleObserver mServiceObserver = new JumbleObserver() {
         @Override
@@ -69,6 +64,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
         @Override
         public void onUserJoinedChannel(User user, Channel newChannel, Channel oldChannel) throws RemoteException {
+            mChannelListAdapter.updateChannels();
             mChannelListAdapter.notifyDataSetChanged();
             if(getService().getSession() == user.getSession()) {
                 scrollToChannel(newChannel.getId());
@@ -77,37 +73,42 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
         @Override
 		public void onChannelAdded(Channel channel) throws RemoteException {
+            mChannelListAdapter.updateChannels();
 			mChannelListAdapter.notifyDataSetChanged();
 		}
 
 		@Override
 		public void onChannelRemoved(Channel channel) throws RemoteException {
+            mChannelListAdapter.updateChannels();
 			mChannelListAdapter.notifyDataSetChanged();
 		}
 
         @Override
         public void onChannelStateUpdated(Channel channel) throws RemoteException {
-            mChannelView.invalidateViews();
+            mChannelListAdapter.updateChannels();
+            mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
         public void onUserConnected(User user) throws RemoteException {
+            mChannelListAdapter.updateChannels();
             mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
         public void onUserRemoved(User user, String reason) throws RemoteException {
+            mChannelListAdapter.updateChannels();
             mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
         public void onUserStateUpdated(User user) throws RemoteException {
-            mChannelListAdapter.animateUserStateChange(user, mChannelView);
+            mChannelListAdapter.animateUserStateUpdate(user, mChannelView);
         }
 
         @Override
         public void onUserTalkStateUpdated(User user) throws RemoteException {
-            mChannelListAdapter.animateUserStateChange(user, mChannelView);
+            mChannelListAdapter.animateUserStateUpdate(user, mChannelView);
         }
 	};
 
@@ -119,7 +120,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         }
     };
 
-	private PlumbleNestedListView mChannelView;
+	private RecyclerView mChannelView;
 	private ChannelListAdapter mChannelListAdapter;
     private ChatTargetProvider mTargetProvider;
     private DatabaseProvider mDatabaseProvider;
@@ -150,11 +151,8 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_channel_list, container, false);
-
-        // Get the UI views
-        mChannelView = (PlumbleNestedListView) view.findViewById(R.id.channelUsers);
-        mChannelView.setOnChildClickListener(this);
-        mChannelView.setOnGroupClickListener(this);
+        mChannelView = (RecyclerView) view.findViewById(R.id.channelUsers);
+        mChannelView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         return view;
     }
@@ -314,6 +312,8 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 
     private void setupChannelList() throws RemoteException {
         mChannelListAdapter = new ChannelListAdapter(getActivity(), getService(), mDatabaseProvider.getDatabase(), isShowingPinnedChannels());
+        mChannelListAdapter.setOnChannelClickListener(this);
+        mChannelListAdapter.setOnUserClickListener(this);
         mChannelView.setAdapter(mChannelListAdapter);
         mChannelListAdapter.notifyDataSetChanged();
 	}
@@ -322,63 +322,19 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 	 * Scrolls to the passed channel.
 	 */
 	public void scrollToChannel(int channelId) {
-		int channelPosition = mChannelListAdapter.getVisibleFlatGroupPosition(channelId);
+		int channelPosition = mChannelListAdapter.getChannelPosition(channelId);
         mChannelView.smoothScrollToPosition(channelPosition);
     }
 	/**
 	 * Scrolls to the passed user.
 	 */
 	public void scrollToUser(int userId) {
-		int userPosition = mChannelListAdapter.getVisibleFlatChildPosition(userId);
+		int userPosition = mChannelListAdapter.getUserPosition(userId);
 		mChannelView.smoothScrollToPosition(userPosition);
 	}
 
     private boolean isShowingPinnedChannels() {
         return getArguments().getBoolean("pinned");
-    }
-
-	@Override
-	public void onNestedChildClick(AdapterView<?> parent, View view, int groupId, int childPosition) {
-        User user = mChannelListAdapter.getChild(groupId, childPosition);
-        if (user == null) return;
-        if (mTargetProvider.getChatTarget() != null &&
-                user.equals(mTargetProvider.getChatTarget().getUser()) &&
-                mActionMode != null) {
-            // Dismiss action mode if double pressed. FIXME: use list view selection instead?
-            mActionMode.finish();
-        } else {
-            ActionMode.Callback cb = new UserActionModeCallback(getActivity(), getService(), user, mTargetProvider, getChildFragmentManager(), this) {
-                @Override
-                public void onDestroyActionMode(ActionMode actionMode) {
-                    super.onDestroyActionMode(actionMode);
-                    mActionMode = null;
-                }
-            };
-            mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
-        }
-	}
-
-	@Override
-	public void onNestedGroupClick(AdapterView<?> parent, View view, int groupId) {
-        Channel channel = mChannelListAdapter.getGroup(groupId);
-        if (channel == null) return;
-        if (mTargetProvider.getChatTarget() != null &&
-                channel.equals(mTargetProvider.getChatTarget().getChannel()) &&
-                mActionMode != null) {
-            // Dismiss action mode if double pressed. FIXME: use list view selection instead?
-            mActionMode.finish();
-        } else {
-            ActionMode.Callback cb = new ChannelActionModeCallback(getActivity(),
-                    getService(), channel, mTargetProvider, mDatabaseProvider.getDatabase(),
-                    getChildFragmentManager()) {
-                @Override
-                public void onDestroyActionMode(ActionMode actionMode) {
-                    super.onDestroyActionMode(actionMode);
-                    mActionMode = null;
-                }
-            };
-            mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
-        }
     }
 
     @Override
@@ -409,6 +365,46 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
             }
         } catch (RemoteException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onChannelClick(Channel channel) {
+        if (mTargetProvider.getChatTarget() != null &&
+                channel.equals(mTargetProvider.getChatTarget().getChannel()) &&
+                mActionMode != null) {
+            // Dismiss action mode if double pressed. FIXME: use list view selection instead?
+            mActionMode.finish();
+        } else {
+            ActionMode.Callback cb = new ChannelActionModeCallback(getActivity(),
+                    getService(), channel, mTargetProvider, mDatabaseProvider.getDatabase(),
+                    getChildFragmentManager()) {
+                @Override
+                public void onDestroyActionMode(ActionMode actionMode) {
+                    super.onDestroyActionMode(actionMode);
+                    mActionMode = null;
+                }
+            };
+            mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
+        }
+    }
+
+    @Override
+    public void onUserClick(User user) {
+        if (mTargetProvider.getChatTarget() != null &&
+                user.equals(mTargetProvider.getChatTarget().getUser()) &&
+                mActionMode != null) {
+            // Dismiss action mode if double pressed. FIXME: use list view selection instead?
+            mActionMode.finish();
+        } else {
+            ActionMode.Callback cb = new UserActionModeCallback(getActivity(), getService(), user, mTargetProvider, getChildFragmentManager(), this) {
+                @Override
+                public void onDestroyActionMode(ActionMode actionMode) {
+                    super.onDestroyActionMode(actionMode);
+                    mActionMode = null;
+                }
+            };
+            mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
         }
     }
 }

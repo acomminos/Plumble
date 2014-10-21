@@ -23,7 +23,6 @@ import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
 
-import com.morlunk.jumble.*;
 import com.morlunk.jumble.Constants;
 
 import java.io.FileInputStream;

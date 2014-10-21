@@ -33,16 +33,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
 
 import com.morlunk.jumble.model.Server;
 import com.morlunk.mumbleclient.BuildConfig;
 import com.morlunk.mumbleclient.R;
-import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
-import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.db.PublicServer;
 
 import java.util.List;

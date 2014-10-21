@@ -19,7 +19,6 @@ package com.morlunk.mumbleclient.channel.actionmode;
 
 import android.support.v7.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import com.morlunk.mumbleclient.channel.ChatTargetProvider;
 

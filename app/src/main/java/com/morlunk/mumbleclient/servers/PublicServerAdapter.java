@@ -17,26 +17,19 @@
 
 package com.morlunk.mumbleclient.servers;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.morlunk.jumble.model.Server;
 import com.morlunk.mumbleclient.R;
-import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.db.PublicServer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
 * Created by andrew on 07/05/14.

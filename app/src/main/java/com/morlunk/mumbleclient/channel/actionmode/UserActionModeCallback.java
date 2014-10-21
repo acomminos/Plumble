@@ -39,8 +39,6 @@ import com.morlunk.mumbleclient.channel.ChatTargetProvider;
 import com.morlunk.mumbleclient.channel.comment.UserCommentFragment;
 import com.morlunk.mumbleclient.util.ModelUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
