@@ -22,7 +22,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="8dp"
-    android:background="?attr/selectableItemBackgroundBorderless">
+    android:background="?attr/selectableItemBackground">
 
     <FrameLayout
         android:layout_width="32dp"
