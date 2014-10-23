@@ -21,11 +21,12 @@
     android:id="@+id/channel_row_title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="?attr/selectableItemBackgroundBorderless">
 
     <ImageView
         android:id="@+id/channel_row_expand"
-        style="@style/Plumble.BorderlessButton"
+        android:background="?attr/selectableItemBackground"
         android:layout_width="48dp"
         android:layout_height="match_parent"
         android:src="@drawable/ic_action_collapsed"

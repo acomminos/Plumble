@@ -51,7 +51,7 @@
             android:textColor="?android:attr/textColorPrimaryInverse"
             android:textStyle="bold"
             android:textSize="12sp"
-            style="@style/Plumble.BorderlessButton"/>
+            android:background="?attr/selectableItemBackground"/>
     </LinearLayout>
 
 </LinearLayout>

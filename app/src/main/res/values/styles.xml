@@ -16,11 +16,7 @@
   -->
 
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android" tools:ignore="NewApi">
-    <style name="Plumble.BorderlessButton" parent="@android:style/Widget">
-        <item name="android:background">@drawable/selectable_background</item>
-    </style>
-
-    <style name="Plumble.HorizontalProgressBar" parent="@android:style/Widget.ProgressBar.Horizontal"></style>
+    <style name="Plumble.HorizontalProgressBar" parent="@android:style/Widget.ProgressBar.Horizontal" />
     
     <style name="Theme.Plumble" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:textColorPrimary">#000</item>

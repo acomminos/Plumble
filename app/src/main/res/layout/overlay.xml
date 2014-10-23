@@ -59,7 +59,7 @@
                 android:padding="11dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_action_microphone_dark"
-                style="@style/Plumble.BorderlessButton"/>
+                android:background="?attr/selectableItemBackground"/>
 
             <View
                 android:layout_width="1dp"
@@ -73,7 +73,7 @@
                 android:id="@+id/overlay_close"
                 android:src="@drawable/ic_action_delete_light"
                 android:scaleType="fitCenter"
-                style="@style/Plumble.BorderlessButton"/>
+                android:background="?attr/selectableItemBackground"/>
 
         </LinearLayout>
 
@@ -106,5 +106,5 @@
         android:padding="8dp"
         android:layout_gravity="right|bottom"
         android:src="@drawable/ic_action_drag_handle"
-        style="@style/Plumble.BorderlessButton"/>
+        android:background="?attr/selectableItemBackground"/>
 </FrameLayout>

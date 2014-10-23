@@ -72,7 +72,7 @@
                 android:textSize="12sp"
                 android:textColor="#858585"
                 android:textStyle="bold"
-                style="@style/Plumble.BorderlessButton"/>
+                android:background="?attr/selectableItemBackground"/>
         </LinearLayout>
     </LinearLayout>
 

@@ -69,13 +69,13 @@
 
 		<ImageButton
 		    android:id="@+id/chatTextSend"
-            style="@style/Plumble.BorderlessButton"
 		    android:layout_width="48dp"
 		    android:layout_height="match_parent"
 		    android:src="@drawable/ic_action_send"
             android:tint="?android:attr/textColorPrimary"
 		    android:enabled="false"
-            android:layout_gravity="bottom"/>
+            android:layout_gravity="bottom"
+            android:background="?attr/selectableItemBackground"/>
 
 	</LinearLayout>
 </LinearLayout>
