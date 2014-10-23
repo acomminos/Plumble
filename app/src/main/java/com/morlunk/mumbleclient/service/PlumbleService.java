@@ -236,6 +236,10 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
 
+        // Manually set theme to style overlay views
+        // XML <application> theme does NOT do this!
+        setTheme(R.style.Theme_Plumble);
+
         // Instantiate overlay view
         mChannelOverlay = new PlumbleOverlay(this);
         mHotCorner = new PlumbleHotCorner(this, mSettings.getHotCornerGravity(), mHotCornerListener);
