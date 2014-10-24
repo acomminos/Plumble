@@ -17,9 +17,7 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:ignore="NewApi">
-    <style name="Plumble.HorizontalProgressBar" parent="@android:style/Widget.ProgressBar.Horizontal" />
     
     <style name="Theme.Plumble" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:textColorPrimary">#000</item>
