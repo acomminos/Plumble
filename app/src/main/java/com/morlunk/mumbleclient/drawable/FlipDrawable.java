@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.morlunk.mumbleclient.view;
+package com.morlunk.mumbleclient.drawable;
 
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;

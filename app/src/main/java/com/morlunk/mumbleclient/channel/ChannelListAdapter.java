@@ -38,14 +38,13 @@ import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.User;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
-import com.morlunk.mumbleclient.view.FlipDrawable;
+import com.morlunk.mumbleclient.drawable.CircleDrawable;
+import com.morlunk.mumbleclient.drawable.FlipDrawable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by andrew on 31/07/13.
@@ -265,11 +264,11 @@ public class ChannelListAdapter extends RecyclerView.Adapter {
             return resources.getDrawable(R.drawable.outline_circle_talking_on);
         } else {
             // Passive drawables
-//            if (user.getTexture() != null) {
-//                return new CircleDrawable(getContext().getResources(), user.getTexture());
-//            } else {
-            return resources.getDrawable(R.drawable.outline_circle_talking_off);
-//            }
+            if (user.getTexture() != null) {
+                return new CircleDrawable(mContext.getResources(), user.getTexture());
+            } else {
+                return resources.getDrawable(R.drawable.outline_circle_talking_off);
+            }
         }
     }
 
