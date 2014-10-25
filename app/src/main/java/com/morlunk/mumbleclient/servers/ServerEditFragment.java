@@ -125,6 +125,9 @@ public class ServerEditFragment extends DialogFragment {
             mNameEdit.setVisibility(View.GONE);
         }
 
+        // Fixes issues with text colour on light themes with pre-honeycomb devices.
+        adb.setInverseBackgroundForced(true);
+
         adb.setView(view);
 
         return adb.create();

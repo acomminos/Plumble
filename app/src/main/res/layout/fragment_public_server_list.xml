@@ -34,7 +34,8 @@
 		android:padding="10dp"
 		android:stretchMode="columnWidth"
         android:clipToPadding="false"
-		android:fastScrollEnabled="true"/>
+		android:fastScrollEnabled="true"
+        android:listSelector="@android:color/transparent"/>
 	
 	<ProgressBar 
 	    android:id="@+id/serverProgress"

@@ -35,6 +35,7 @@
 		android:stretchMode="columnWidth"
         android:clipToPadding="false"
 		android:fastScrollEnabled="true"
+        android:listSelector="@android:color/transparent"
         android:layout_above="@+id/donate_box" />
 
     <TextView
