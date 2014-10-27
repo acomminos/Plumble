@@ -20,6 +20,9 @@ package com.morlunk.mumbleclient.channel.actionmode;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
@@ -39,6 +42,7 @@ import com.morlunk.mumbleclient.channel.ChannelEditFragment;
 import com.morlunk.mumbleclient.channel.ChatTargetProvider;
 import com.morlunk.mumbleclient.channel.comment.ChannelDescriptionFragment;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
+import com.morlunk.mumbleclient.util.TintedMenuInflater;
 
 /**
  * Contextual action mode for channels.
@@ -70,7 +74,7 @@ public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
     @Override
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
         super.onCreateActionMode(actionMode, menu);
-        MenuInflater inflater = actionMode.getMenuInflater();
+        TintedMenuInflater inflater = new TintedMenuInflater(mContext, actionMode.getMenuInflater());
         inflater.inflate(R.menu.context_channel, menu);
 
         actionMode.setTitle(mChannel.getName());
@@ -108,6 +112,7 @@ public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+
         return false;
     }
 

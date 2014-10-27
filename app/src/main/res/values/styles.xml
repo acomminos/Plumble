@@ -25,6 +25,9 @@
         <item name="android:textColorPrimaryInverse">#FFF</item>
         <item name="android:textColorSecondaryInverse">#AAA</item>
 
+        <item name="android:actionBarStyle">@style/PlumbleDarkActionBar</item>
+        <item name="actionBarStyle">@style/PlumbleDarkActionBar</item>
+
         <item name="colorPrimary">#454D5E</item>
         <item name="colorPrimaryDark">#2F3440</item>
         <item name="colorAccent">#454D5E</item>
@@ -43,7 +46,19 @@
         <item name="android:windowBackground">@android:color/black</item>
         <item name="android:colorBackground">@android:color/black</item>
 
+        <item name="android:actionBarStyle">@style/PlumbleDarkActionBar</item>
+        <item name="actionBarStyle">@style/PlumbleDarkActionBar</item>
+
         <item name="cardStyle">@style/Theme.Plumble.Dark.CardView</item>
+    </style>
+
+    <style name="PlumbleDarkActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="android:titleTextStyle">@style/PlumbleDarkActionBarText</item>
+        <item name="titleTextStyle">@style/PlumbleDarkActionBarText</item>
+    </style>
+
+    <style name="PlumbleDarkActionBarText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">#FFFFFF</item>
     </style>
 
     <style name="Theme.Plumble.Dark.CardView" parent="CardView">

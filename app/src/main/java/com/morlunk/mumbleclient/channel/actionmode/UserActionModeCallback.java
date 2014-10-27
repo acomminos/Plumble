@@ -38,6 +38,7 @@ import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.channel.ChatTargetProvider;
 import com.morlunk.mumbleclient.channel.comment.UserCommentFragment;
 import com.morlunk.mumbleclient.util.ModelUtils;
+import com.morlunk.mumbleclient.util.TintedMenuInflater;
 
 import java.util.List;
 
@@ -71,7 +72,7 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
     @Override
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
         super.onCreateActionMode(actionMode, menu);
-        MenuInflater inflater = actionMode.getMenuInflater();
+        TintedMenuInflater inflater = new TintedMenuInflater(mContext, actionMode.getMenuInflater());
         inflater.inflate(R.menu.context_user, menu);
 
         actionMode.setTitle(mUser.getName());
