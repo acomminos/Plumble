@@ -28,5 +28,5 @@
                 android:height="48dp" />
         </shape>
     </item>
-    <item android:drawable="@drawable/ic_action_microphone_dark" />
+    <item android:drawable="@drawable/ic_talking_off" />
 </layer-list>
