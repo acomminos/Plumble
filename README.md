@@ -7,7 +7,7 @@ Plumble is a robust GPLv3 Mumble client for Android that uses the [Jumble](https
   <img alt="Get it on Google Play" src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
 </a>
 <a href="https://f-droid.org/repository/browse/?fdid=com.morlunk.mumbleclient">
-  <img alt="Get it on F-Droid" src="https://fsfe.org/campaigns/android/f-droid.png" width="45" />
+  <img alt="Get it on F-Droid" src="https://f-droid.org/wiki/images/c/c4/F-Droid-button_available-on.png" height="45" />
 </a>
 
 Building on GNU/Linux
