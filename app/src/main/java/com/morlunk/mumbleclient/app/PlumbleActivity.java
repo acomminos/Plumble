@@ -41,6 +41,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -86,7 +87,10 @@ import java.util.List;
 
 import info.guardianproject.onionkit.ui.OrbotHelper;
 
-public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener, FavouriteServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider, SharedPreferences.OnSharedPreferenceChangeListener, DrawerAdapter.DrawerDataProvider, ServerEditFragment.ServerEditListener {
+public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener,
+        FavouriteServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider,
+        SharedPreferences.OnSharedPreferenceChangeListener, DrawerAdapter.DrawerDataProvider,
+        ServerEditFragment.ServerEditListener {
     /**
      * If specified, the provided integer drawer fragment ID is shown when the activity is created.
      */
@@ -254,10 +258,12 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mSettings = Settings.getInstance(this);
-        setTheme(mSettings.getTheme()); // Set custom theme
+        setTheme(mSettings.getTheme());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setStayAwake(mSettings.shouldStayAwake());
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
@@ -650,6 +656,14 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         alertBuilder.show();
     }
 
+    private void setStayAwake(boolean stayAwake) {
+        if (stayAwake) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+    }
+
     @Override
     public void serverInfoUpdated() {
         loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
@@ -690,6 +704,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 finish();
                 startActivity(intent);
             }
+        } else if (Settings.PREF_STAY_AWAKE.equals(key)) {
+            setStayAwake(mSettings.shouldStayAwake());
         }
     }
 

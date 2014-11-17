@@ -121,4 +121,6 @@
     <string name="preprocessor_enabled_sum">Enable the Speex preprocessor for ambient noise suppression and volume normalization.</string>
     <string name="audio_per_packet">Audio per packet</string>
     <string name="audio_per_packet_sum">The length of audio per voice packet.</string>
+    <string name="stay_awake">Stay Awake</string>
+    <string name="stay_awake_sum">When Plumble is open, the screen will not be turned off.</string>
 </resources>

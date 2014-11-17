@@ -23,6 +23,13 @@
         android:key="chatNotify"
         android:summary="@string/chatNotificationsSum"
         android:title="@string/chatNotifications" />
+
+    <CheckBoxPreference
+        android:key="stay_awake"
+        android:defaultValue="false"
+        android:title="@string/stay_awake"
+        android:summary="@string/stay_awake_sum" />
+
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="useTts"

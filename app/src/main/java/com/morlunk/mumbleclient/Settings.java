@@ -128,8 +128,11 @@ public class Settings {
     public static final String PREF_PTT_SOUND = "ptt_sound";
     public static final boolean DEFAULT_PTT_SOUND = false;
 
-    private static final String PREF_PREPROCESSOR_ENABLED = "preprocessor_enabled";
-    private static final boolean DEFAULT_PREPROCESSOR_ENABLED = true;
+    public static final String PREF_PREPROCESSOR_ENABLED = "preprocessor_enabled";
+    public static final boolean DEFAULT_PREPROCESSOR_ENABLED = true;
+
+    public static final String PREF_STAY_AWAKE = "stay_awake";
+    public static final boolean DEFAULT_STAY_AWAKE = false;
 
     static {
         ARRAY_INPUT_METHODS = new HashSet<String>();
@@ -362,5 +365,9 @@ public class Settings {
 
     public boolean isPreprocessorEnabled() {
         return preferences.getBoolean(PREF_PREPROCESSOR_ENABLED, DEFAULT_PREPROCESSOR_ENABLED);
+    }
+
+    public boolean shouldStayAwake() {
+        return preferences.getBoolean(PREF_STAY_AWAKE, DEFAULT_STAY_AWAKE);
     }
 }
