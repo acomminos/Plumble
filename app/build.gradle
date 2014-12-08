@@ -28,7 +28,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.+'
+        classpath 'com.android.tools.build:gradle:1.0.0'
     }
 }
 apply plugin: 'com.android.application'
@@ -49,16 +49,12 @@ dependencies {
 
 
 // Keep my credentials private :^)
-signingFile = file 'signing.gradle';
-if(signingFile.exists()) apply from: 'signing.gradle'
+def signingFile = file 'signing.gradle';
+if (signingFile.exists()) apply from: 'signing.gradle'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21"
-
-    // Fixes crash with support lib and gradle 0.9.1, see:
-    // https://stackoverflow.com/questions/22509850/actionbaractivity-closes-after-pressing-hardware-menu-button-without-stack-trac
-    aaptOptions.useAaptPngCruncher = true
+    buildToolsVersion "21.1.1"
 
     defaultConfig {
         minSdkVersion 9
@@ -66,7 +62,6 @@ android {
         applicationId "com.morlunk.mumbleclient"
         versionCode 72
         versionName "3.2.0"
-        testPackageName "com.morlunk.mumbleclient.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         buildConfigField "boolean", "DONATE_NAG", "false"
     }
@@ -84,8 +79,8 @@ android {
 
         jenkins {
             // Abuse Jenkins environment variables. Neat.
-            env = System.getenv()
-            if(env.containsKey("BUILD_NUMBER") && env.containsKey("BUILD_DISPLAY_NAME")) {
+            def env = System.getenv()
+            if (env.containsKey("BUILD_NUMBER") && env.containsKey("BUILD_DISPLAY_NAME")) {
                 versionCode Integer.parseInt(env.get("BUILD_NUMBER"))
                 versionName env.get("BUILD_DISPLAY_NAME")
             } else {

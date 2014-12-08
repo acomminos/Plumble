@@ -286,6 +286,20 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             public void onDrawerOpened(View drawerView) {
                 supportInvalidateOptionsMenu();
             }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                if (newState == DrawerLayout.STATE_DRAGGING) {
+                    try {
+                        // Workaround PTT staying on when the drawer is opened.
+                        if (getService().isConnected() && getService().isTalking()) {
+                            getService().setTalkingState(false);
+                        }
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
