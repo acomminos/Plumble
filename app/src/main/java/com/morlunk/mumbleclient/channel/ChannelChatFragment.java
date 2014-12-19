@@ -254,9 +254,15 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
 	public void updateChatTargetText(ChatTargetProvider.ChatTarget target) throws RemoteException {
         if(getService() == null) return;
 
-        if(target == null) mChatTextEdit.setHint(getString(R.string.messageToChannel, getService().getSessionChannel().getName()));
-        else if(target.getUser() != null) mChatTextEdit.setHint(getString(R.string.messageToUser, target.getUser().getName()));
-        else if(target.getChannel() != null) mChatTextEdit.setHint(getString(R.string.messageToChannel, target.getChannel().getName()));
+        String hint = null;
+        if(target == null && getService().getSessionChannel() != null) {
+            hint = getString(R.string.messageToChannel, getService().getSessionChannel().getName());
+        } else if(target != null && target.getUser() != null) {
+            hint = getString(R.string.messageToUser, target.getUser().getName());
+        } else if(target != null && target.getChannel() != null) {
+            hint = getString(R.string.messageToChannel, target.getChannel().getName());
+        }
+        mChatTextEdit.setHint(hint);
         mChatTextEdit.requestLayout(); // Needed to update bounds after hint change.
 	}
 
