@@ -107,9 +107,11 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
 
         @Override
         public void onUserConnected(User user) throws RemoteException {
-            // Immediately request avatar upon connection.
-            // FIXME: we need to refresh avatar when hash changes
-            getBinder().requestAvatar(user.getSession());
+            if (user.getTextureHash() != null &&
+                    user.getTexture() == null) {
+                // Request avatar data if available.
+                getBinder().requestAvatar(user.getSession());
+            }
         }
 
         @Override
@@ -126,6 +128,12 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
                         contentText = getString(R.string.connected);
                     mNotification.setCustomContentText(contentText);
                 }
+            }
+
+            if (user.getTextureHash() != null &&
+                    user.getTexture() == null) {
+                // Update avatar data if available.
+                getBinder().requestAvatar(user.getSession());
             }
         }
 
