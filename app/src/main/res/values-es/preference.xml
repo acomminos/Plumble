@@ -90,7 +90,7 @@
   <string name="clearServerCertificatesSum">Eliminar los certificados de todos los servidores permitidos de la base de datos de confianza de Plumble.</string>
   <string name="version">Versión</string>
   <string name="halfDuplex">Modo Semi-dúplex</string>
-  <string name="halfDuplexSum">Silencia el audio del dispositivo cuando se activa Presionar-para-hablar, eliminando el eco para los otros usuarios del canal.</string>
+  <string name="halfDuplexSum">Silencia el audio del dispositivo cuando se activa Presionar-para-hablar, evitando que se produzca eco para los otros usuarios.</string>
   <string name="handsetMode">Modo teléfono</string>
   <string name="handsetModeSum">Utiliza el altavoz frontal y el sensor de proximidad para simular una llamada de teléfono.</string>
   <string name="pttSound">Sonido al Presionar-para-hablar</string>
@@ -99,4 +99,6 @@
   <string name="preprocessor_enabled_sum">Activar el preprocesador Speex para la supresión del ruido de ambiente y la normalización del volumen.</string>
   <string name="audio_per_packet">Audio por paquete</string>
   <string name="audio_per_packet_sum">La cantidad de audio por paquete de voz.</string>
+  <string name="stay_awake">Mantener pantalla encendida</string>
+  <string name="stay_awake_sum">La pantalla no se apagará mientras Plumble esté abierto.</string>
 </resources>

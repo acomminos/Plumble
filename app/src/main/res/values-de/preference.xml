@@ -3,6 +3,20 @@
   <string name="inputMethodVoice">Sprachaktivierung</string>
   <string name="inputMethodPtt">Push-To-Talk</string>
   <string name="inputMethodContinuous">Kontinuierlich</string>
+  <!--Theme names-->
+  <string name="theme_light">Hell</string>
+  <string name="theme_dark">Dunkel</string>
+  <string name="theme_solarized_light">Solarized Light</string>
+  <string name="theme_solarized_dark">Solarized Dark</string>
+  <!--Call modes-->
+  <string name="call_mode_speakerphone">Lautsprecher</string>
+  <string name="call_mode_voice_call">Telefongespräch</string>
+  <!--Hot corner-->
+  <string name="hot_corner_none">Keine</string>
+  <string name="hot_corner_top_left">Oben links</string>
+  <string name="hot_corner_bottom_left">Unten links</string>
+  <string name="hot_corner_top_right">Oben rechts</string>
+  <string name="hot_corner_bottom_right">Unten rechts</string>
   <!--About-->
   <string name="about">Über</string>
   <string name="aboutSum">Rechtliches und Danksagungen</string>
@@ -82,6 +96,9 @@
   <string name="pttSound">Push-To-Talk Sound</string>
   <string name="pttSoundSum">Spiele einen Sound ab, wenn der Push-To-Talk Knopf gedrückt wird.</string>
   <string name="preprocessor_enabled">Aktiviere Eingabe-Präprozessor</string>
+  <string name="preprocessor_enabled_sum">Aktiviere den Speex-Präprozessor für Umgebungs- und Rasch-Unterdrückung und Lautstärkennormalisieriung.</string>
   <string name="audio_per_packet">Audio pro Paket</string>
   <string name="audio_per_packet_sum">Die Länge des Audios pro Sprachpaket.</string>
+  <string name="stay_awake">Wach beleiben</string>
+  <string name="stay_awake_sum">Wenn Plumble auf ist, wird der Bildschirm nicht ausgeschaltet.</string>
 </resources>

@@ -3,6 +3,20 @@
   <string name="inputMethodVoice">Stem Activiteit</string>
   <string name="inputMethodPtt">Push to Talk</string>
   <string name="inputMethodContinuous">Doorlopend</string>
+  <!--Theme names-->
+  <string name="theme_light">Licht</string>
+  <string name="theme_dark">Donker</string>
+  <string name="theme_solarized_light">Solarized Licht</string>
+  <string name="theme_solarized_dark">Solarized Donker</string>
+  <!--Call modes-->
+  <string name="call_mode_speakerphone">Luidspreker</string>
+  <string name="call_mode_voice_call">Stem Oproep</string>
+  <!--Hot corner-->
+  <string name="hot_corner_none">Geen</string>
+  <string name="hot_corner_top_left">Top Links</string>
+  <string name="hot_corner_bottom_left">Bodem Links</string>
+  <string name="hot_corner_top_right">Top Rechts</string>
+  <string name="hot_corner_bottom_right">Bodem Rechts</string>
   <!--About-->
   <string name="about">Over</string>
   <string name="aboutSum">Legaal en dankbetuigingen</string>
@@ -81,4 +95,8 @@
   <string name="handsetModeSum">Gebruikt frontale luidspreker en nabijheidssensor om een normaal telefoongesprek na te bootsen.</string>
   <string name="pttSound">Push to Talk Geluid</string>
   <string name="pttSoundSum">Speelt geluidseffect wanneer Push to Talk knop ingedrukt wordt.</string>
+  <string name="preprocessor_enabled">Activeer Invoer Preprocessor</string>
+  <string name="preprocessor_enabled_sum">Activeer de Speex preprocessor om omgevingsgeluid te dempen en volume te normaliseren.</string>
+  <string name="audio_per_packet">Audio per packet</string>
+  <string name="audio_per_packet_sum">De lengte van audio per voice packet.</string>
 </resources>

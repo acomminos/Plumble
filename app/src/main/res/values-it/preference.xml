@@ -1,5 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--Theme names-->
+  <!--Call modes-->
+  <!--Hot corner-->
   <!--About-->
   <string name="about">Info su</string>
   <string name="acknowledgementsSum">Guarda chi ha contribuito a Plumble</string>

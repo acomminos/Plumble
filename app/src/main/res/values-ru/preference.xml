@@ -1,5 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <string name="inputMethodVoice">Голосовая активность</string>
+  <string name="inputMethodPtt">Нажми чтобы говорить</string>
+  <string name="inputMethodContinuous">Непрерывно</string>
+  <!--Theme names-->
+  <string name="theme_light">Светлый</string>
+  <string name="theme_dark">Темный</string>
+  <string name="theme_solarized_light">Солнечно светлый</string>
+  <string name="theme_solarized_dark">Солнечно темный</string>
+  <!--Call modes-->
+  <string name="call_mode_speakerphone">Динамик</string>
+  <string name="call_mode_voice_call">Голосовой вызов</string>
+  <!--Hot corner-->
+  <string name="hot_corner_none">Ничего</string>
+  <string name="hot_corner_top_left">Слева вверху</string>
+  <string name="hot_corner_bottom_left">Слева внизу</string>
+  <string name="hot_corner_top_right">Справа вверху</string>
+  <string name="hot_corner_bottom_right">Справа снизу</string>
   <!--About-->
   <string name="about">О программе</string>
   <string name="aboutSum">Юридическая информация и благодарности</string>
@@ -36,6 +53,7 @@
   <string name="audio">Звук</string>
   <string name="audioSum">Отрегулируйте настройки звука</string>
   <string name="audioSampleRate">Качество входного сигнала</string>
+  <string name="audioSampleRateSum">Предпочитаемая частота дискретизации. Не все значения поддерживаются на всех устройствах.</string>
   <string name="noCert">Нет сертификата</string>
   <string name="chatNotifications">Уведомления чата</string>
   <string name="chatNotificationsSum">Показывать уведомления когда пользователь пишет в чат.</string>
@@ -46,6 +64,8 @@
   <string name="certificateGenerateSum">Создать новый само-заверенный Plumble сертификат. Рекомендуется для начинающих.</string>
   <string name="pttSettings">Настройки кнопки</string>
   <string name="pttSettingsSum">Настройки кнопки активации голосом (если включено).</string>
+  <string name="voiceActivitySettings">Настройки голосовой активности</string>
+  <string name="voiceActivitySettingsSum">Настроить голосовую активность (если она включена).</string>
   <string name="audioOutput">Вывод звука</string>
   <string name="disableOpus">Отключить Opus кодек</string>
   <string name="disableOpusSum">Отключить Opus кодек для Mumble 1.2.4 серверов.</string>
@@ -68,4 +88,8 @@
   <string name="clearServerCertificates">Очистить серверные сертификаты.</string>
   <string name="clearServerCertificatesSum">Очистить все разрешенные серверные сертификаты из доверенной базы данных Plumble.</string>
   <string name="version">Версия</string>
+  <string name="halfDuplex">Полудуплекс</string>
+  <string name="halfDuplexSum">Приглушать звук, когда активирована кнопка вызова, удалить аудио метку для пользователей канала</string>
+  <string name="handsetMode">Режим \"В наушниках\"</string>
+  <string name="handsetModeSum">Использовать передний динамик и датчик близости для симуляции традиционного телефонного вызова.</string>
 </resources>

@@ -3,6 +3,20 @@
   <string name="inputMethodVoice">Activité vocale</string>
   <string name="inputMethodPtt">Appuyer pour parler</string>
   <string name="inputMethodContinuous">Continu</string>
+  <!--Theme names-->
+  <string name="theme_light">Clair</string>
+  <string name="theme_dark">Sombre</string>
+  <string name="theme_solarized_light">Solaire</string>
+  <string name="theme_solarized_dark">Lunaire</string>
+  <!--Call modes-->
+  <string name="call_mode_speakerphone">Haut-parleur</string>
+  <string name="call_mode_voice_call">Appel vocal</string>
+  <!--Hot corner-->
+  <string name="hot_corner_none">Aucun</string>
+  <string name="hot_corner_top_left">En haut à gauche</string>
+  <string name="hot_corner_bottom_left">En bas à gauche</string>
+  <string name="hot_corner_top_right">En haut à droite</string>
+  <string name="hot_corner_bottom_right">En bas à droite</string>
   <!--About-->
   <string name="about">À propos</string>
   <string name="aboutSum">Mentions et remerciements</string>
@@ -69,7 +83,7 @@
   <string name="inputQuality">Qualité d\'entrée</string>
   <string name="inputQualitySum">La qualité d\'entrée en bps.</string>
   <string name="pressKey">Appuyer sur une touche physique à lier à \"Appuyer pour parler\"</string>
-  <string name="pressKeyInfo">Note : à cause de limitations de Android, l\'app doit être ouverte pour utiliser la touche pour \"Appuyer pour parler\"</string>
+  <string name="pressKeyInfo">Note : à cause de limitations d\'Android, l\'app doit être ouverte pour utiliser la touche pour \"Appuyer pour parler\"</string>
   <string name="loadImagesSum">S\'il faut charger les images externes dans le chat.</string>
   <string name="loadImages">Charger des images externes</string>
   <string name="clearServerCertificates">Supprimer les certificats de serveur</string>
@@ -82,8 +96,9 @@
   <string name="pttSound">Son \'Appuyer pour parler\'</string>
   <string name="pttSoundSum">Joue un son quand le bouton \'Appuyer pour parler\' est appuyé.</string>
   <string name="preprocessor_enabled">Activer le préprocesseur d\'entrée</string>
-  <string name="preprocessor_enabled_sum">Activer le préprocesseur Speex pour la réduction de bruit indésirable.</string>
-  <string name="audio_per_packet"> 
-Trames audio par paquet</string>
+  <string name="preprocessor_enabled_sum">Active le codec Speex pour la suppression de bruit ambiante et la normalisation du volume.</string>
+  <string name="audio_per_packet"> Trames audio par paquet</string>
   <string name="audio_per_packet_sum">Durée de la trame audio par paquet.</string>
+  <string name="stay_awake">Rester activé</string>
+  <string name="stay_awake_sum">L\'écran ne s\'éteindra pas tant que Plumble sera ouvert</string>
 </resources>

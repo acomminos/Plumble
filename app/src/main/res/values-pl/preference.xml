@@ -1,5 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <!--Theme names-->
+  <!--Call modes-->
+  <!--Hot corner-->
   <!--About-->
   <string name="authentication">Uwierzytelnianie</string>
   <string name="certificateFile">Plik certyfikatu</string>
@@ -24,6 +27,7 @@
   <string name="forceTcp">Wymuś TCP</string>
   <string name="forceTcpSum">Definiuje czy wymuszać połączenie TCP (wyłącza UDP).</string>
   <string name="audioSampleRate">Jakość dźwięku</string>
+  <string name="audioSampleRateSum">Bitrate dźwięku, którego będzie używał Plumble (w kbit/s)</string>
   <string name="noCert">Brak certyfikatu</string>
   <string name="chatNotifications">Powiadomienia czatu</string>
   <string name="chatNotificationsSum">Wyświetlaj powiadomienia, gdy ktoś napisze wiadomość.</string>
@@ -42,4 +46,6 @@
   <string name="useTtsSum">Aktywuje Tekst-Na-Mowę dla przychdzących wiadomości.</string>
   <string name="togglePtt">Przycisk aktywacji jako przełącznik</string>
   <string name="togglePttSum">Naciśnięcie przycisku aktywacji powoduje ciągłe nadawanie do czasu ponownego jego naciśnięcia.</string>
+  <string name="pressKey">Naciśnij sprzętowy przycisk by go wybrać.</string>
+  <string name="pressKeyInfo">Uwaga: Ze względu na ograniczenia w systemie Android aplikacja musi być otwarta, aby można było używać sprzętowego przycisku.</string>
 </resources>
