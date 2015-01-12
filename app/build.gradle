@@ -32,9 +32,7 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
-apply file: '../libraries/Leeroy-Gradle/leeroy.gradle'
-
-setupLeeroy("../libraries/Leeroy-Gradle", ".*\\.apk")
+apply from: '../libraries/Leeroy-Gradle/leeroy.gradle'
 
 repositories {
     mavenCentral()
@@ -59,6 +57,10 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.1.1"
 
+    flavorDimensions "flavor"
+
+    setupLeeroy("../libraries/Leeroy-Gradle", ".*\\.apk")
+
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 21
@@ -72,15 +74,18 @@ android {
     productFlavors {
 
         official {
+            flavorDimension "flavor"
             applicationId "com.morlunk.mumbleclient"
         }
 
         free {
+            flavorDimension "flavor"
             applicationId "com.morlunk.mumbleclient.free"
             buildConfigField "boolean", "DONATE_NAG", "true"
         }
 
         jenkins {
+            flavorDimension "flavor"
             // Abuse Jenkins environment variables. Neat.
             def env = System.getenv()
             if (env.containsKey("BUILD_NUMBER") && env.containsKey("BUILD_DISPLAY_NAME")) {
