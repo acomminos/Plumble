@@ -4,3 +4,6 @@
 [submodule "libraries/NetCipher"]
 	path = libraries/NetCipher
 	url = https://github.com/Morlunk/OnionKit.git
+[submodule "libraries/Leeroy-Gradle"]
+	path = libraries/Leeroy-Gradle
+	url = https://github.com/Morlunk/Leeroy-Gradle.git

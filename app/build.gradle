@@ -32,6 +32,9 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
+apply file: '../libraries/Leeroy-Gradle/leeroy.gradle'
+
+setupLeeroy("../libraries/Leeroy-Gradle", ".*\\.apk")
 
 repositories {
     mavenCentral()
