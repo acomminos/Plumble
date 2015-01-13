@@ -19,6 +19,7 @@ package com.morlunk.mumbleclient.channel;
 
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
@@ -113,32 +114,59 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                try {
-                    boolean oldState = getService().isTalking();
-                    boolean newState;
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        newState = !mTogglePTT || !oldState;
-                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        /* Hold PTT pressed by given delay in ms*/
-                        Thread.sleep(Settings.getInstance(getActivity()).getPttDelay());
-                        newState = mTogglePTT && oldState;
-                    } else {
-                        return true;
-                    }
-
-                    if (newState != oldState) {
-                        getService().setTalkingState(newState);
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                handlePttTouchEvent(event);
                 return true;
             }
         });
         configureInput();
         return view;
+    }
+
+    protected void handlePttTouchEvent(final MotionEvent event) {
+
+        AsyncTask aTask = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    /* Hold PTT pressed by given delay in ms.
+                     * Only blocks this separate thread and not the UI thread
+                     * */
+                    try {
+                        Thread.sleep(Settings.getInstance(getActivity()).getPttDelay());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+
+                try {
+                    boolean oldState = getService().isTalking();
+                    boolean newState;
+
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        newState = !mTogglePTT || !oldState;
+                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        newState = mTogglePTT && oldState;
+                    } else {
+                        return;
+                    }
+
+                    if (newState != oldState) {
+                        getService().setTalkingState(newState);
+                    }
+
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        aTask.execute();
     }
 
     @Override
