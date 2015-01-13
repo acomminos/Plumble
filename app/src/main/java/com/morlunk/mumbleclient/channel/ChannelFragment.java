@@ -119,6 +119,8 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
                     if (event.getAction() == MotionEvent.ACTION_DOWN) {
                         newState = !mTogglePTT || !oldState;
                     } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                        /* Hold PTT pressed by given delay in ms*/
+                        Thread.sleep(Settings.getInstance(getActivity()).getPttDelay());
                         newState = mTogglePTT && oldState;
                     } else {
                         return true;
@@ -128,6 +130,8 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
                         getService().setTalkingState(newState);
                     }
                 } catch (RemoteException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 return true;
@@ -218,7 +222,8 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(Settings.PREF_INPUT_METHOD.equals(key) ||
                 Settings.PREF_PUSH_BUTTON_HIDE_KEY.equals(key) ||
-                Settings.PREF_PTT_TOGGLE.equals(key))
+                Settings.PREF_PTT_TOGGLE.equals(key) ||
+                Settings.PREF_PTT_DELAY.equals(key))
             configureInput();
     }
 
