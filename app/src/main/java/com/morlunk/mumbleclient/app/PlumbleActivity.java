@@ -287,7 +287,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 super.onDrawerStateChanged(newState);
 
                 try {
-                    if (getService().isConnected() && getService().isTalking()) {
+                    if (getService().isConnected() && getService().isTalking() &&
+                            !mSettings.isPushToTalkToggle()) {
                         getService().setTalkingState(false);
                     }
                 } catch (RemoteException e) {
