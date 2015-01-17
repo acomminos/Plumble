@@ -679,6 +679,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             mConnectingDialog.show();
         }
 
+        // FIXME: show error dialog on disconnect when auto-reconnect disabled
         if (service.isReconnecting()) {
             AlertDialog.Builder ab = new AlertDialog.Builder(PlumbleActivity.this);
             ab.setTitle(R.string.connectionRefused);

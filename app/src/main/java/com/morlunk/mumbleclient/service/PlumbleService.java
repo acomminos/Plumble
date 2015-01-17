@@ -32,6 +32,7 @@ import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Message;
 import com.morlunk.jumble.model.User;
+import com.morlunk.jumble.net.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
@@ -124,10 +125,9 @@ public class PlumbleService extends JumbleService implements
 
         @Override
         public void onConnectionError(String message, boolean reconnecting) throws RemoteException {
-            if(reconnecting) {
-                mReconnectNotification =
-                        PlumbleReconnectNotification.show(PlumbleService.this, PlumbleService.this);
-            }
+            mReconnectNotification =
+                    PlumbleReconnectNotification.show(PlumbleService.this, message,
+                            reconnecting, PlumbleService.this);
         }
 
         @Override
@@ -424,7 +424,12 @@ public class PlumbleService extends JumbleService implements
     }
 
     @Override
-    public void onCancelReconnect() {
+    public void reconnect() {
+        connect();
+    }
+
+    @Override
+    public void cancelReconnect() {
         try {
             mBinder.cancelReconnect();
         } catch (RemoteException e) {

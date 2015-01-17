@@ -28,10 +28,13 @@ import android.support.v4.app.NotificationManagerCompat;
 import com.morlunk.mumbleclient.R;
 
 /**
+ * A notification indicating auto-reconnect is in progress, or if auto-reconnect is disabled,
+ * a prompt to reconnect with the error message.
  * Created by andrew on 17/01/15.
  */
 public class PlumbleReconnectNotification {
     private static final int NOTIFICATION_ID = 2;
+    private static final String BROADCAST_RECONNECT = "b_reconnect";
     private static final String BROADCAST_CANCEL_RECONNECT = "b_cancel_reconnect";
 
     private Context mContext;
@@ -40,15 +43,20 @@ public class PlumbleReconnectNotification {
     private BroadcastReceiver mNotificationReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (BROADCAST_CANCEL_RECONNECT.equals(intent.getAction())) {
-                mListener.onCancelReconnect();
+            if (BROADCAST_RECONNECT.equals(intent.getAction())) {
+                mListener.reconnect();
+            } else if (BROADCAST_CANCEL_RECONNECT.equals(intent.getAction())) {
+                mListener.cancelReconnect();
             }
         }
     };
 
-    public static PlumbleReconnectNotification show(Context context, OnActionListener listener) {
+    public static PlumbleReconnectNotification show(Context context,
+                                                    String error,
+                                                    boolean autoReconnect,
+                                                    OnActionListener listener) {
         PlumbleReconnectNotification notification = new PlumbleReconnectNotification(context, listener);
-        notification.show();
+        notification.show(error, autoReconnect);
         return notification;
     }
 
@@ -57,8 +65,9 @@ public class PlumbleReconnectNotification {
         mListener = listener;
     }
 
-    public void show() {
+    public void show(String error, boolean autoReconnect) {
         IntentFilter filter = new IntentFilter();
+        filter.addAction(BROADCAST_RECONNECT);
         filter.addAction(BROADCAST_CANCEL_RECONNECT);
         try {
             mContext.registerReceiver(mNotificationReceiver, filter);
@@ -68,16 +77,25 @@ public class PlumbleReconnectNotification {
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
         builder.setSmallIcon(R.drawable.ic_stat_notify);
-        Intent cancelIntent = new Intent(BROADCAST_CANCEL_RECONNECT);
+        builder.setPriority(NotificationCompat.PRIORITY_MAX);
+        builder.setDefaults(NotificationCompat.DEFAULT_VIBRATE | NotificationCompat.DEFAULT_LIGHTS);
         builder.setContentTitle(mContext.getString(R.string.plumbleDisconnected));
-        String tickerMessage = mContext.getString(R.string.reconnecting,
-                PlumbleService.RECONNECT_DELAY/1000);
-        builder.setTicker(tickerMessage);
-        builder.setContentText(tickerMessage);
-        builder.addAction(R.drawable.ic_action_delete_dark,
-                mContext.getString(R.string.cancel_reconnect),
-                PendingIntent.getBroadcast(mContext, 2,
-                        cancelIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+        builder.setContentText(error);
+        builder.setTicker(mContext.getString(R.string.plumbleDisconnected));
+
+        if (autoReconnect) {
+            Intent cancelIntent = new Intent(BROADCAST_CANCEL_RECONNECT);
+            builder.addAction(R.drawable.ic_action_delete_dark,
+                    mContext.getString(R.string.cancel_reconnect),
+                    PendingIntent.getBroadcast(mContext, 2,
+                            cancelIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+        } else {
+            Intent reconnectIntent = new Intent(BROADCAST_RECONNECT);
+            builder.addAction(R.drawable.ic_action_move,
+                    mContext.getString(R.string.reconnect),
+                    PendingIntent.getBroadcast(mContext, 2,
+                            reconnectIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+        }
 
         NotificationManagerCompat nmc = NotificationManagerCompat.from(mContext);
         nmc.notify(NOTIFICATION_ID, builder.build());
@@ -95,6 +113,7 @@ public class PlumbleReconnectNotification {
     }
 
     public interface OnActionListener {
-        public void onCancelReconnect();
+        public void reconnect();
+        public void cancelReconnect();
     }
 }
