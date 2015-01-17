@@ -158,6 +158,11 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         }
 
         @Override
+        public void onConnecting() throws RemoteException {
+            updateConnectionState(getService());
+        }
+
+        @Override
         public void onDisconnected() throws RemoteException {
             // Re-show server list if we're showing a fragment that depends on the service.
             if(getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof JumbleServiceFragment) {
@@ -289,21 +294,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         Drawable logo = getResources().getDrawable(R.drawable.ic_home);
         logo.setColorFilter(iconColor, PorterDuff.Mode.MULTIPLY);
         getSupportActionBar().setLogo(logo);
-
-        mConnectingDialog = new ProgressDialog(this);
-        mConnectingDialog.setIndeterminate(true);
-        mConnectingDialog.setCancelable(true);
-        mConnectingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                try {
-                    mService.disconnect();
-                    Toast.makeText(PlumbleActivity.this, R.string.cancelled, Toast.LENGTH_SHORT).show();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
 
         AlertDialog.Builder dadb = new AlertDialog.Builder(this);
         dadb.setMessage(R.string.disconnectSure);
@@ -615,9 +605,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             }
         }
 
-        mConnectingDialog.setMessage(getString(R.string.connecting_to_server, server.getHost(), server.getPort()));
-        mConnectingDialog.show();
-
         ServerConnectTask connectTask = new ServerConnectTask(this, mDatabase);
         connectTask.execute(server);
     }
@@ -672,6 +659,21 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
         if (service.isConnecting()) {
             Server server = service.getConnectedServer();
+            mConnectingDialog = new ProgressDialog(this);
+            mConnectingDialog.setIndeterminate(true);
+            mConnectingDialog.setCancelable(true);
+            mConnectingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    try {
+                        mService.disconnect();
+                        Toast.makeText(PlumbleActivity.this, R.string.cancelled,
+                                Toast.LENGTH_SHORT).show();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
             mConnectingDialog.setMessage(getString(R.string.connecting_to_server, server.getHost(),
                     server.getPort()));
             mConnectingDialog.show();

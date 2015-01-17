@@ -41,7 +41,10 @@ import com.morlunk.mumbleclient.service.ipc.TalkBroadcastReceiver;
  * An extension of the Jumble service with some added Plumble-exclusive non-standard Mumble features.
  * Created by andrew on 28/07/13.
  */
-public class PlumbleService extends JumbleService implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class PlumbleService extends JumbleService implements
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        PlumbleNotification.OnActionListener,
+        PlumbleReconnectNotification.OnActionListener {
     /** Undocumented constant that permits a proximity-sensing wake lock. */
     public static final int PROXIMITY_SCREEN_OFF_WAKE_LOCK = 32;
     public static final int TTS_THRESHOLD = 250; // Maximum number of characters to read
@@ -50,6 +53,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     private PlumbleBinder mBinder = new PlumbleBinder();
     private Settings mSettings;
     private PlumbleNotification mNotification;
+    private PlumbleReconnectNotification mReconnectNotification;
     /** Channel view overlay. */
     private PlumbleOverlay mChannelOverlay;
     /** Proximity lock for handset mode. */
@@ -95,13 +99,42 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     private JumbleObserver mObserver = new JumbleObserver() {
 
         @Override
+        public void onConnecting() throws RemoteException {
+            // Remove old notification left from reconnect,
+            if (mReconnectNotification != null) {
+                mReconnectNotification.hide();
+                mReconnectNotification = null;
+            }
+
+            mNotification = PlumbleNotification.showForeground(PlumbleService.this,
+                    getString(R.string.plumbleConnecting),
+                    getString(R.string.connecting),
+                    PlumbleService.this);
+        }
+
+        @Override
+        public void onConnected() throws RemoteException {
+            if (mNotification != null) {
+                mNotification.setCustomTicker(getString(R.string.plumbleConnected));
+                mNotification.setCustomContentText(getString(R.string.connected));
+                mNotification.setActionsShown(true);
+                mNotification.show();
+            }
+        }
+
+        @Override
         public void onConnectionError(String message, boolean reconnecting) throws RemoteException {
             if(reconnecting) {
-                String tickerMessage = getString(R.string.reconnecting, RECONNECT_DELAY/1000);
-                if (mNotification != null) {
-                    mNotification.setCustomContentText(tickerMessage);
-                    mNotification.setReconnecting(true);
-                }
+                mReconnectNotification =
+                        PlumbleReconnectNotification.show(PlumbleService.this, PlumbleService.this);
+            }
+        }
+
+        @Override
+        public void onDisconnected() throws RemoteException {
+            if (mNotification != null) {
+                mNotification.hide();
+                mNotification = null;
             }
         }
 
@@ -127,6 +160,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
                     else
                         contentText = getString(R.string.connected);
                     mNotification.setCustomContentText(contentText);
+                    mNotification.show();
                 }
             }
 
@@ -149,6 +183,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
 
                 if(mSettings.isChatNotifyEnabled() && mNotification != null) {
                     mNotification.addMessage(formattedMessage);
+                    mNotification.show();
                 }
 
                 // Read if TTS is enabled, the message is less than threshold, is a text message, and not deafened
@@ -168,6 +203,7 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
             if(mSettings.isChatNotifyEnabled() &&
                     mNotification != null) {
                 mNotification.setCustomTicker(reason);
+                mNotification.show();
             }
         }
 
@@ -180,51 +216,6 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
                     mPTTSoundEnabled) {
                 AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
                 audioManager.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, -1);
-            }
-        }
-    };
-    private PlumbleNotification.OnActionListener mNotificationActionListener = new PlumbleNotification.OnActionListener() {
-        @Override
-        public void onMuteToggled() {
-            try {
-                User user = mBinder.getSessionUser();
-                if (isConnected() && user != null) {
-                    boolean muted = !user.isSelfMuted();
-                    boolean deafened = user.isSelfDeafened() && muted;
-                    mBinder.setSelfMuteDeafState(muted, deafened);
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onDeafenToggled() {
-            try {
-                User user = mBinder.getSessionUser();
-                if (isConnected() && user != null) {
-                    mBinder.setSelfMuteDeafState(!user.isSelfDeafened(), !user.isSelfDeafened());
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onOverlayToggled() {
-            if (!mChannelOverlay.isShown()) {
-                mChannelOverlay.show();
-            } else {
-                mChannelOverlay.hide();
-            }
-        }
-
-        @Override
-        public void onReconnectCanceled() {
-            try {
-                mBinder.cancelReconnect();
-            } catch (RemoteException e) {
-                e.printStackTrace();
             }
         }
     };
@@ -297,14 +288,6 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
     public void onConnectionSynchronized() {
         super.onConnectionSynchronized();
 
-        // Remove old notification left from reconnect,
-        if (mNotification != null) {
-            mNotification.hide();
-            mNotification = null;
-        }
-
-        mNotification = PlumbleNotification.showForeground(this, mNotificationActionListener);
-
         registerReceiver(mTalkReceiver, new IntentFilter(TalkBroadcastReceiver.BROADCAST_TALK));
 
         if (mSettings.isHotCornerEnabled()) {
@@ -331,16 +314,6 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         mHotCorner.setShown(false);
 
         setProximitySensorOn(false);
-
-        try {
-            if(!getBinder().isReconnecting() && mNotification != null) {
-                mNotification.hide();
-                mNotification = null;
-//                stopSelf(); // Stop manual control of the service's lifecycle.
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -415,6 +388,50 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         return mBinder;
     }
 
+    @Override
+    public void onMuteToggled() {
+        try {
+            User user = mBinder.getSessionUser();
+            if (isConnected() && user != null) {
+                boolean muted = !user.isSelfMuted();
+                boolean deafened = user.isSelfDeafened() && muted;
+                mBinder.setSelfMuteDeafState(muted, deafened);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDeafenToggled() {
+        try {
+            User user = mBinder.getSessionUser();
+            if (isConnected() && user != null) {
+                mBinder.setSelfMuteDeafState(!user.isSelfDeafened(), !user.isSelfDeafened());
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onOverlayToggled() {
+        if (!mChannelOverlay.isShown()) {
+            mChannelOverlay.show();
+        } else {
+            mChannelOverlay.hide();
+        }
+    }
+
+    @Override
+    public void onCancelReconnect() {
+        try {
+            mBinder.cancelReconnect();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * An extension of JumbleBinder to add Plumble-specific functionality.
      */
@@ -432,13 +449,16 @@ public class PlumbleService extends JumbleService implements SharedPreferences.O
         }
 
         public void clearChatNotifications() throws RemoteException {
-            if (mNotification != null) mNotification.clearMessages();
+            if (mNotification != null) {
+                mNotification.clearMessages();
+                mNotification.show();
+            }
         }
 
         public void cancelReconnect() throws RemoteException {
-            if (mNotification != null) {
-                mNotification.hide();
-                mNotification = null;
+            if (mReconnectNotification != null) {
+                mReconnectNotification.hide();
+                mReconnectNotification = null;
             }
             super.cancelReconnect();
         }
