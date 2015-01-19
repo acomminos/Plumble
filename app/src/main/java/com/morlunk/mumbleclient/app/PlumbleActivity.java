@@ -696,9 +696,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     AlertDialog.Builder ab = new AlertDialog.Builder(PlumbleActivity.this);
                     ab.setTitle(R.string.connectionRefused);
                     if (mService.isReconnecting()) {
-                        ab.setMessage(error.getMessage() + "\n" +
-                                getString(R.string.reconnecting, PlumbleService.RECONNECT_DELAY / 1000));
-                        ab.setPositiveButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        ab.setMessage(getString(R.string.attempting_reconnect, error.getMessage()));
+                        ab.setPositiveButton(R.string.cancel_reconnect, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (getService() != null) {

@@ -97,6 +97,7 @@ public class PlumbleReconnectNotification {
                     mContext.getString(R.string.cancel_reconnect),
                     PendingIntent.getBroadcast(mContext, 2,
                             cancelIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+            builder.setOngoing(true);
         } else {
             Intent reconnectIntent = new Intent(BROADCAST_RECONNECT);
             builder.addAction(R.drawable.ic_action_move,
