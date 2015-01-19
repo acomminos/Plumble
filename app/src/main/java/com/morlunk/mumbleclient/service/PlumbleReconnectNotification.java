@@ -34,6 +34,7 @@ import com.morlunk.mumbleclient.R;
  */
 public class PlumbleReconnectNotification {
     private static final int NOTIFICATION_ID = 2;
+    private static final String BROADCAST_DISMISS = "b_dismiss";
     private static final String BROADCAST_RECONNECT = "b_reconnect";
     private static final String BROADCAST_CANCEL_RECONNECT = "b_cancel_reconnect";
 
@@ -43,7 +44,9 @@ public class PlumbleReconnectNotification {
     private BroadcastReceiver mNotificationReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (BROADCAST_RECONNECT.equals(intent.getAction())) {
+            if (BROADCAST_DISMISS.equals(intent.getAction())) {
+                mListener.onReconnectNotificationDismissed();
+            } else if (BROADCAST_RECONNECT.equals(intent.getAction())) {
                 mListener.reconnect();
             } else if (BROADCAST_CANCEL_RECONNECT.equals(intent.getAction())) {
                 mListener.cancelReconnect();
@@ -67,6 +70,7 @@ public class PlumbleReconnectNotification {
 
     public void show(String error, boolean autoReconnect) {
         IntentFilter filter = new IntentFilter();
+        filter.addAction(BROADCAST_DISMISS);
         filter.addAction(BROADCAST_RECONNECT);
         filter.addAction(BROADCAST_CANCEL_RECONNECT);
         try {
@@ -82,6 +86,10 @@ public class PlumbleReconnectNotification {
         builder.setContentTitle(mContext.getString(R.string.plumbleDisconnected));
         builder.setContentText(error);
         builder.setTicker(mContext.getString(R.string.plumbleDisconnected));
+
+        Intent dismissIntent = new Intent(BROADCAST_DISMISS);
+        builder.setDeleteIntent(PendingIntent.getBroadcast(mContext, 2, dismissIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT));
 
         if (autoReconnect) {
             Intent cancelIntent = new Intent(BROADCAST_CANCEL_RECONNECT);
@@ -113,6 +121,7 @@ public class PlumbleReconnectNotification {
     }
 
     public interface OnActionListener {
+        public void onReconnectNotificationDismissed();
         public void reconnect();
         public void cancelReconnect();
     }

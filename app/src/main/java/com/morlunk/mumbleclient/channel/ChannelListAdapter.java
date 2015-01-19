@@ -334,6 +334,17 @@ public class ChannelListAdapter extends RecyclerView.Adapter {
         }
     }
 
+    /**
+     * Changes the service backing the adapter. Updates the list as well.
+     * @param service The new service to retrieve channels from.
+     * @throws RemoteException
+     */
+    public void setService(IJumbleService service) throws RemoteException {
+        mService = service;
+        updateChannels();
+        notifyDataSetChanged();
+    }
+
     private static class UserViewHolder extends RecyclerView.ViewHolder {
         public LinearLayout mUserHolder;
         public TextView mUserName;

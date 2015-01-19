@@ -32,7 +32,7 @@ import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Message;
 import com.morlunk.jumble.model.User;
-import com.morlunk.jumble.net.JumbleException;
+import com.morlunk.jumble.util.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
@@ -61,6 +61,16 @@ public class PlumbleService extends JumbleService implements
     private PowerManager.WakeLock mProximityLock;
     /** Play sound when push to talk key is pressed */
     private boolean mPTTSoundEnabled;
+    /**
+     * True if the Plumble app is in the foreground. If so, hides several notifications in
+     * favour of an in-app dialog.
+     */
+    private boolean mApplicationShown;
+    /**
+     * True if an error causing disconnection has been dismissed by the user.
+     * This should serve as a hint not to bother the user.
+     */
+    private boolean mErrorShown;
 
     private TextToSpeech mTTS;
     private TextToSpeech.OnInitListener mTTSInitListener = new TextToSpeech.OnInitListener() {
@@ -111,6 +121,7 @@ public class PlumbleService extends JumbleService implements
                     getString(R.string.plumbleConnecting),
                     getString(R.string.connecting),
                     PlumbleService.this);
+            mErrorShown = false;
         }
 
         @Override
@@ -124,17 +135,16 @@ public class PlumbleService extends JumbleService implements
         }
 
         @Override
-        public void onConnectionError(String message, boolean reconnecting) throws RemoteException {
-            mReconnectNotification =
-                    PlumbleReconnectNotification.show(PlumbleService.this, message,
-                            reconnecting, PlumbleService.this);
-        }
-
-        @Override
-        public void onDisconnected() throws RemoteException {
+        public void onDisconnected(JumbleException e) throws RemoteException {
             if (mNotification != null) {
                 mNotification.hide();
                 mNotification = null;
+            }
+            if (e != null) {
+                mReconnectNotification =
+                        PlumbleReconnectNotification.show(PlumbleService.this, e.getMessage(),
+                                getBinder().isReconnecting(),
+                                PlumbleService.this);
             }
         }
 
@@ -252,7 +262,15 @@ public class PlumbleService extends JumbleService implements
 
     @Override
     public void onDestroy() {
-        stopForeground(true);
+        if (mNotification != null) {
+            mNotification.hide();
+            mNotification = null;
+        }
+        if (mReconnectNotification != null) {
+            mReconnectNotification.hide();
+            mReconnectNotification = null;
+        }
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.unregisterOnSharedPreferenceChangeListener(this);
         try {
@@ -300,12 +318,12 @@ public class PlumbleService extends JumbleService implements
     }
 
     @Override
-    public void onConnectionDisconnected() {
-        super.onConnectionDisconnected();
+    public void onConnectionDisconnected(JumbleException e) {
+        super.onConnectionDisconnected(e);
         try {
             unregisterReceiver(mTalkReceiver);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+        } catch (IllegalArgumentException iae) {
+            iae.printStackTrace();
         }
 
         // Remove overlay if present.
@@ -424,6 +442,11 @@ public class PlumbleService extends JumbleService implements
     }
 
     @Override
+    public void onReconnectNotificationDismissed() {
+        mErrorShown = true;
+    }
+
+    @Override
     public void reconnect() {
         connect();
     }
@@ -460,11 +483,24 @@ public class PlumbleService extends JumbleService implements
             }
         }
 
+        public void setApplicationShown(boolean shown) {
+            mApplicationShown = shown;
+        }
+
+        public void markErrorShown() {
+            mErrorShown = true;
+        }
+
+        public boolean isErrorShown() {
+            return mErrorShown;
+        }
+
         public void cancelReconnect() throws RemoteException {
             if (mReconnectNotification != null) {
                 mReconnectNotification.hide();
                 mReconnectNotification = null;
             }
+
             super.cancelReconnect();
         }
     }
