@@ -65,6 +65,9 @@ public class Settings {
     public static final String PREF_PTT_TOGGLE = "togglePtt";
     public static final Boolean DEFAULT_PTT_TOGGLE = false;
 
+    public static final String PREF_PTT_DELAY = "pttDelay";
+    public static final Integer DEFAULT_PTT_DELAY = 350;
+
     public static final String PREF_INPUT_RATE = "input_quality";
     public static final String DEFAULT_RATE = "48000";
 
@@ -284,6 +287,10 @@ public class Settings {
 
     public boolean isPushToTalkToggle() {
         return preferences.getBoolean(PREF_PTT_TOGGLE, DEFAULT_PTT_TOGGLE);
+    }
+
+    public int getPttDelay() {
+        return preferences.getInt(PREF_PTT_DELAY, DEFAULT_PTT_DELAY);
     }
 
     public boolean isPushToTalkButtonShown() {

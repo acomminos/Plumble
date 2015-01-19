@@ -76,6 +76,8 @@
   <string name="useTtsSum">Aktiviert Text-Zu-Sprache für eingehende Nachrichten.</string>
   <string name="togglePtt">Push-To-Talk Taste feststellen</string>
   <string name="togglePttSum">Die Sprachübertragung wird beim Drücken der Push-To-Talk Taste dauerhaft aktiviert/deaktiviert.</string>
+  <string name="pttDelay">PTT Halteverzögerung</string>
+  <string name="pttDelaySum">PTT-Taste wird für die angegebene Zeit in Millisekunden gedrückt gehalten. Vermeidet Abschneiden der Sprache bei zu frühem Loslassen.</string>
   <string name="autoReconnect">Automatisch Wiederverbinden</string>
   <string name="autoReconnectSum">Nach einem Verbindungsbbruch automatisch wiederzuverbinden.</string>
   <string name="useTor">Über Tor verbinden</string>
