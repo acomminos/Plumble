@@ -20,7 +20,9 @@ package com.morlunk.mumbleclient.util;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.View;
 
 import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
@@ -48,7 +50,7 @@ public abstract class JumbleServiceFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mServiceProvider.addServiceFragment(this);
         if(mServiceProvider.getService() != null && !mBound)

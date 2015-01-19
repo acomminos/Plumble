@@ -27,6 +27,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.JumbleService;
+import com.morlunk.jumble.net.JumbleConnection;
 import com.morlunk.jumble.net.JumbleUDPMessageType;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
@@ -73,7 +75,8 @@ public class ServerInfoFragment extends JumbleServiceFragment {
      * Updates the info from the service.
      */
     public void updateData() throws RemoteException {
-        if(getService() == null || !getService().isConnected())
+        if(getService() == null
+                || getService().getConnectionState() != JumbleService.STATE_CONNECTED)
             return;
 
         mProtocolView.setText(getString(R.string.server_info_protocol, getService().getServerRelease()));
