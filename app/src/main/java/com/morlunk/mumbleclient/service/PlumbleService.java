@@ -32,6 +32,7 @@ import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Message;
 import com.morlunk.jumble.model.User;
+import com.morlunk.jumble.util.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
@@ -60,6 +61,11 @@ public class PlumbleService extends JumbleService implements
     private PowerManager.WakeLock mProximityLock;
     /** Play sound when push to talk key is pressed */
     private boolean mPTTSoundEnabled;
+    /**
+     * True if an error causing disconnection has been dismissed by the user.
+     * This should serve as a hint not to bother the user.
+     */
+    private boolean mErrorShown;
 
     private TextToSpeech mTTS;
     private TextToSpeech.OnInitListener mTTSInitListener = new TextToSpeech.OnInitListener() {
@@ -110,6 +116,7 @@ public class PlumbleService extends JumbleService implements
                     getString(R.string.plumbleConnecting),
                     getString(R.string.connecting),
                     PlumbleService.this);
+            mErrorShown = false;
         }
 
         @Override
@@ -123,18 +130,16 @@ public class PlumbleService extends JumbleService implements
         }
 
         @Override
-        public void onConnectionError(String message, boolean reconnecting) throws RemoteException {
-            if(reconnecting) {
-                mReconnectNotification =
-                        PlumbleReconnectNotification.show(PlumbleService.this, PlumbleService.this);
-            }
-        }
-
-        @Override
-        public void onDisconnected() throws RemoteException {
+        public void onDisconnected(JumbleException e) throws RemoteException {
             if (mNotification != null) {
                 mNotification.hide();
                 mNotification = null;
+            }
+            if (e != null) {
+                mReconnectNotification =
+                        PlumbleReconnectNotification.show(PlumbleService.this, e.getMessage(),
+                                getBinder().isReconnecting(),
+                                PlumbleService.this);
             }
         }
 
@@ -252,7 +257,15 @@ public class PlumbleService extends JumbleService implements
 
     @Override
     public void onDestroy() {
-        stopForeground(true);
+        if (mNotification != null) {
+            mNotification.hide();
+            mNotification = null;
+        }
+        if (mReconnectNotification != null) {
+            mReconnectNotification.hide();
+            mReconnectNotification = null;
+        }
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.unregisterOnSharedPreferenceChangeListener(this);
         try {
@@ -300,12 +313,11 @@ public class PlumbleService extends JumbleService implements
     }
 
     @Override
-    public void onConnectionDisconnected() {
-        super.onConnectionDisconnected();
+    public void onConnectionDisconnected(JumbleException e) {
+        super.onConnectionDisconnected(e);
         try {
             unregisterReceiver(mTalkReceiver);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+        } catch (IllegalArgumentException iae) {
         }
 
         // Remove overlay if present.
@@ -317,53 +329,69 @@ public class PlumbleService extends JumbleService implements
     }
 
     /**
-     * Called when the user makes a change to their preferences. Should update all preferences relevant to the service.
+     * Called when the user makes a change to their preferences.
+     * Should update all preferences relevant to the service.
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (!isConnected()) return; // These properties should all be set on connect regardless.
-
-        if (Settings.PREF_INPUT_METHOD.equals(key)) {
-            /* Convert input method defined in settings to an integer format used by Jumble. */
-            int inputMethod = mSettings.getJumbleInputMethod();
-            try {
-                getBinder().setTransmitMode(inputMethod);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            mChannelOverlay.setPushToTalkShown(inputMethod == Constants.TRANSMIT_PUSH_TO_TALK);
-        } else if (Settings.PREF_HANDSET_MODE.equals(key)) {
-            setProximitySensorOn(mSettings.isHandsetMode());
-        } else if (Settings.PREF_THRESHOLD.equals(key)) {
-            try {
-                getBinder().setVADThreshold(mSettings.getDetectionThreshold());
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        } else if (Settings.PREF_HOT_CORNER_KEY.equals(key)) {
-            mHotCorner.setGravity(mSettings.getHotCornerGravity());
-            mHotCorner.setShown(mSettings.isHotCornerEnabled());
-        } else if (Settings.PREF_USE_TTS.equals(key)) {
-            if (mTTS == null && mSettings.isTextToSpeechEnabled())
-                mTTS = new TextToSpeech(this, mTTSInitListener);
-            else if (mTTS != null && !mSettings.isTextToSpeechEnabled()) {
-                mTTS.shutdown();
-                mTTS = null;
-            }
-        } else if (Settings.PREF_AMPLITUDE_BOOST.equals(key)) {
-            try {
-                getBinder().setAmplitudeBoost(mSettings.getAmplitudeBoostMultiplier());
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        } else if (Settings.PREF_HALF_DUPLEX.equals(key)) {
-            try {
-                getBinder().setHalfDuplex(mSettings.isHalfDuplex());
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        } else if (Settings.PREF_PTT_SOUND.equals(key)) {
-            mPTTSoundEnabled = mSettings.isPttSoundEnabled();
+        switch (key) {
+            case Settings.PREF_INPUT_METHOD:
+                /* Convert input method defined in settings to an integer format used by Jumble. */
+                int inputMethod = mSettings.getJumbleInputMethod();
+                try {
+                    if (isConnected()) {
+                        getBinder().setTransmitMode(inputMethod);
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                mChannelOverlay.setPushToTalkShown(inputMethod == Constants.TRANSMIT_PUSH_TO_TALK);
+                break;
+            case Settings.PREF_HANDSET_MODE:
+                setProximitySensorOn(isConnected() && mSettings.isHandsetMode());
+                break;
+            case Settings.PREF_THRESHOLD:
+                try {
+                    if (isConnected()) {
+                        getBinder().setVADThreshold(mSettings.getDetectionThreshold());
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case Settings.PREF_HOT_CORNER_KEY:
+                mHotCorner.setGravity(mSettings.getHotCornerGravity());
+                mHotCorner.setShown(isConnected() && mSettings.isHotCornerEnabled());
+                break;
+            case Settings.PREF_USE_TTS:
+                if (mTTS == null && mSettings.isTextToSpeechEnabled())
+                    mTTS = new TextToSpeech(this, mTTSInitListener);
+                else if (mTTS != null && !mSettings.isTextToSpeechEnabled()) {
+                    mTTS.shutdown();
+                    mTTS = null;
+                }
+                break;
+            case Settings.PREF_AMPLITUDE_BOOST:
+                try {
+                    if (isConnected()) {
+                        getBinder().setAmplitudeBoost(mSettings.getAmplitudeBoostMultiplier());
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case Settings.PREF_HALF_DUPLEX:
+                try {
+                    if (isConnected()) {
+                        getBinder().setHalfDuplex(mSettings.isHalfDuplex());
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case Settings.PREF_PTT_SOUND:
+                mPTTSoundEnabled = mSettings.isPttSoundEnabled();
+                break;
         }
     }
 
@@ -424,7 +452,17 @@ public class PlumbleService extends JumbleService implements
     }
 
     @Override
-    public void onCancelReconnect() {
+    public void onReconnectNotificationDismissed() {
+        mErrorShown = true;
+    }
+
+    @Override
+    public void reconnect() {
+        connect();
+    }
+
+    @Override
+    public void cancelReconnect() {
         try {
             mBinder.cancelReconnect();
         } catch (RemoteException e) {
@@ -455,11 +493,20 @@ public class PlumbleService extends JumbleService implements
             }
         }
 
+        public void markErrorShown() {
+            mErrorShown = true;
+        }
+
+        public boolean isErrorShown() {
+            return mErrorShown;
+        }
+
         public void cancelReconnect() throws RemoteException {
             if (mReconnectNotification != null) {
                 mReconnectNotification.hide();
                 mReconnectNotification = null;
             }
+
             super.cancelReconnect();
         }
     }

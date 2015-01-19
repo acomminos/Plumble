@@ -43,9 +43,11 @@ import android.view.ViewGroup;
 
 import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.model.User;
+import com.morlunk.jumble.util.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.channel.actionmode.ChannelActionModeCallback;
@@ -58,7 +60,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
 
 	private IJumbleObserver mServiceObserver = new JumbleObserver() {
         @Override
-        public void onDisconnected() throws RemoteException {
+        public void onDisconnected(JumbleException e) throws RemoteException {
             mChannelView.setAdapter(null);
         }
 
@@ -178,10 +180,11 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
     @Override
     public void onServiceBound(IJumbleService service) {
         try {
-            if(mChannelListAdapter == null)
+            if (mChannelListAdapter == null) {
                 setupChannelList();
-            else
-                mChannelListAdapter.notifyDataSetChanged();
+            } else {
+                mChannelListAdapter.setService(service);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -195,7 +198,9 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
         MenuItem deafenItem = menu.findItem(R.id.menu_deafen_button);
 
         try {
-            if(getService() != null && getService().isConnected() && getService().getSessionUser() != null) {
+            if(getService() != null
+                    && getService().getConnectionState() == JumbleService.STATE_CONNECTED
+                    && getService().getSessionUser() != null) {
                 // Color the action bar icons to the primary text color of the theme, TODO move this elsewhere
                 int foregroundColor = getActivity().getTheme().obtainStyledAttributes(new int[]{android.R.attr.textColorPrimaryInverse}).getColor(0, -1);
 
