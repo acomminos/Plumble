@@ -205,12 +205,12 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     public void onClick(DialogInterface dialog, int which) {
                         // Try to add to trust store
                         try {
-                            String alias = lastServer.getHost(); // FIXME unreliable
+                            String alias = lastServer.getHost();
                             KeyStore trustStore = PlumbleTrustStore.getTrustStore(PlumbleActivity.this);
                             trustStore.setCertificateEntry(alias, x509);
                             PlumbleTrustStore.saveTrustStore(PlumbleActivity.this, trustStore);
                             Toast.makeText(PlumbleActivity.this, R.string.trust_added, Toast.LENGTH_LONG).show();
-                            connectToServer(lastServer); // FIXME unreliable
+                            connectToServer(lastServer);
                         } catch (Exception e) {
                             e.printStackTrace();
                             Toast.makeText(PlumbleActivity.this, R.string.trust_add_failed, Toast.LENGTH_LONG).show();
