@@ -48,6 +48,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.jumble.util.MumbleURLParser;
@@ -133,6 +134,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                         !mService.isConnected()) {
                     loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
                 }
+                updateConnectionState(getService());
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -152,8 +154,12 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             mDrawerAdapter.notifyDataSetChanged();
             supportInvalidateOptionsMenu();
 
-            mConnectingDialog.dismiss();
-            if(mErrorDialog != null) mErrorDialog.dismiss();
+            updateConnectionState(getService());
+        }
+
+        @Override
+        public void onConnecting() throws RemoteException {
+            updateConnectionState(getService());
         }
 
         @Override
@@ -165,36 +171,12 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             mDrawerAdapter.notifyDataSetChanged();
             supportInvalidateOptionsMenu();
 
-            mConnectingDialog.dismiss();
+            updateConnectionState(getService());
         }
 
         @Override
         public void onConnectionError(String message, boolean reconnecting) throws RemoteException {
-            if(mErrorDialog != null) mErrorDialog.dismiss();
-            mConnectingDialog.dismiss();
-
-            AlertDialog.Builder ab = new AlertDialog.Builder(PlumbleActivity.this);
-            ab.setTitle(R.string.connectionRefused);
-            if(!reconnecting) {
-                ab.setMessage(message);
-                ab.setPositiveButton(android.R.string.ok, null);
-            } else {
-                ab.setTitle(R.string.connectionRefused);
-                ab.setMessage(message+"\n"+getString(R.string.reconnecting, PlumbleService.RECONNECT_DELAY/1000));
-                ab.setPositiveButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if(getService() != null) {
-                            try {
-                                getService().cancelReconnect();
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-            }
-            mErrorDialog = ab.show();
+            updateConnectionState(getService());
         }
 
         @Override
@@ -287,8 +269,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 super.onDrawerStateChanged(newState);
 
                 try {
-                    if (getService().isConnected() && getService().isTalking() &&
-                            !mSettings.isPushToTalkToggle()) {
+                    // Prevent push to talk from getting stuck on when the drawer is opened.
+                    if (getService() != null && getService().isConnected()
+                            && getService().isTalking() && !mSettings.isPushToTalkToggle()) {
                         getService().setTalkingState(false);
                     }
                 } catch (RemoteException e) {
@@ -311,21 +294,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         Drawable logo = getResources().getDrawable(R.drawable.ic_home);
         logo.setColorFilter(iconColor, PorterDuff.Mode.MULTIPLY);
         getSupportActionBar().setLogo(logo);
-
-        mConnectingDialog = new ProgressDialog(this);
-        mConnectingDialog.setIndeterminate(true);
-        mConnectingDialog.setCancelable(true);
-        mConnectingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                try {
-                    mService.disconnect();
-                    Toast.makeText(PlumbleActivity.this, R.string.cancelled, Toast.LENGTH_SHORT).show();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
 
         AlertDialog.Builder dadb = new AlertDialog.Builder(this);
         dadb.setMessage(R.string.disconnectSure);
@@ -383,7 +351,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     protected void onResume() {
         super.onResume();
         Intent connectIntent = new Intent(this, PlumbleService.class);
-        bindService(connectIntent, mConnection, BIND_AUTO_CREATE);
+        bindService(connectIntent, mConnection, 0);
     }
 
     @Override
@@ -637,9 +605,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             }
         }
 
-        mConnectingDialog.setMessage(getString(R.string.connecting_to_server, server.getHost(), server.getPort()));
-        mConnectingDialog.show();
-
         ServerConnectTask connectTask = new ServerConnectTask(this, mDatabase);
         connectTask.execute(server);
     }
@@ -676,6 +641,63 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+    }
+
+    /**
+     * Updates the activity to represent the connection state of the given service.
+     * Will show reconnecting dialog if reconnecting, dismiss otherwise, etc.
+     * Basically, this service will do catch-up if the activity wasn't bound to receive
+     * connection state updates.
+     * @param service A bound IJumbleService.
+     */
+    private void updateConnectionState(IJumbleService service) throws RemoteException {
+        if (mConnectingDialog != null && mConnectingDialog.isShowing())
+            mConnectingDialog.dismiss();
+        if (mErrorDialog != null && mErrorDialog.isShowing())
+            mErrorDialog.dismiss();
+
+        if (service.isConnecting()) {
+            Server server = service.getConnectedServer();
+            mConnectingDialog = new ProgressDialog(this);
+            mConnectingDialog.setIndeterminate(true);
+            mConnectingDialog.setCancelable(true);
+            mConnectingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    try {
+                        mService.disconnect();
+                        Toast.makeText(PlumbleActivity.this, R.string.cancelled,
+                                Toast.LENGTH_SHORT).show();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            mConnectingDialog.setMessage(getString(R.string.connecting_to_server, server.getHost(),
+                    server.getPort()));
+            mConnectingDialog.show();
+        }
+
+        if (service.isReconnecting()) {
+            AlertDialog.Builder ab = new AlertDialog.Builder(PlumbleActivity.this);
+            ab.setTitle(R.string.connectionRefused);
+            ab.setMessage(service.getDisconnectReason() + "\n" +
+                    getString(R.string.reconnecting, PlumbleService.RECONNECT_DELAY/1000));
+            ab.setPositiveButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(getService() != null) {
+                        try {
+                            getService().cancelReconnect();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+            ab.setCancelable(false);
+            mErrorDialog = ab.show();
         }
     }
 

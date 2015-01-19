@@ -42,14 +42,13 @@ public class PlumbleNotification {
     private static final String BROADCAST_MUTE = "b_mute";
     private static final String BROADCAST_DEAFEN = "b_deafen";
     private static final String BROADCAST_OVERLAY = "b_overlay";
-    private static final String BROADCAST_CANCEL_RECONNECT = "b_cancel_reconnect";
 
     private Service mService;
     private OnActionListener mListener;
     private List<String> mMessages;
     private String mCustomTicker;
     private String mCustomContentText;
-    private boolean mReconnecting;
+    private boolean mActionsShown;
 
     private BroadcastReceiver mNotificationReceiver = new BroadcastReceiver() {
         @Override
@@ -60,8 +59,6 @@ public class PlumbleNotification {
                 mListener.onDeafenToggled();
             } else if (BROADCAST_OVERLAY.equals(intent.getAction())) {
                 mListener.onOverlayToggled();
-            } else if (BROADCAST_CANCEL_RECONNECT.equals(intent.getAction())) {
-                mListener.onReconnectCanceled();
             }
         }
     };
@@ -72,34 +69,33 @@ public class PlumbleNotification {
      * @param listener An listener for notification actions.
      * @return A new PlumbleNotification instance.
      */
-    public static PlumbleNotification showForeground(Service service, OnActionListener listener) {
-        PlumbleNotification notification = new PlumbleNotification(service, listener);
+    public static PlumbleNotification showForeground(Service service, String ticker, String contentText,
+                                                     OnActionListener listener) {
+        PlumbleNotification notification = new PlumbleNotification(service, ticker, contentText, listener);
         notification.show();
         return notification;
     }
 
-    private PlumbleNotification(Service service, OnActionListener listener) {
+    private PlumbleNotification(Service service, String ticker, String contentText,
+                                OnActionListener listener) {
         mService = service;
         mListener = listener;
         mMessages = new ArrayList<String>();
-        mCustomTicker = mService.getString(R.string.plumbleConnected);
-        mCustomContentText = mService.getString(R.string.connected);
-        mReconnecting = false;
+        mCustomTicker = ticker;
+        mCustomContentText = contentText;
+        mActionsShown = false;
     }
 
     public void setCustomTicker(String ticker) {
         mCustomTicker = ticker;
-        createNotification();
     }
 
     public void setCustomContentText(String text) {
         mCustomContentText = text;
-        createNotification();
     }
 
-    public void setReconnecting(boolean reconnecting) {
-        mReconnecting = reconnecting;
-        createNotification();
+    public void setActionsShown(boolean actionsShown) {
+        mActionsShown = actionsShown;
     }
 
     /**
@@ -110,12 +106,10 @@ public class PlumbleNotification {
     public void addMessage(String message) {
         mMessages.add(message);
         mCustomTicker = message;
-        createNotification();
     }
 
     public void clearMessages() {
         mMessages.clear();
-        createNotification();
     }
 
     /**
@@ -128,7 +122,6 @@ public class PlumbleNotification {
         filter.addAction(BROADCAST_DEAFEN);
         filter.addAction(BROADCAST_MUTE);
         filter.addAction(BROADCAST_OVERLAY);
-        filter.addAction(BROADCAST_CANCEL_RECONNECT);
         try {
             mService.registerReceiver(mNotificationReceiver, filter);
         } catch (IllegalArgumentException e) {
@@ -162,7 +155,7 @@ public class PlumbleNotification {
         builder.setPriority(NotificationCompat.PRIORITY_HIGH);
         builder.setOngoing(true);
 
-        if (!mReconnecting) {
+        if (mActionsShown) {
             // Add notification triggers
             Intent muteIntent = new Intent(BROADCAST_MUTE);
             Intent deafenIntent = new Intent(BROADCAST_DEAFEN);
@@ -177,11 +170,6 @@ public class PlumbleNotification {
             builder.addAction(R.drawable.ic_action_channels,
                     mService.getString(R.string.overlay), PendingIntent.getBroadcast(mService, 2,
                             overlayIntent, PendingIntent.FLAG_CANCEL_CURRENT));
-        } else {
-            Intent cancelIntent = new Intent(BROADCAST_CANCEL_RECONNECT);
-            builder.addAction(R.drawable.ic_action_delete_dark,
-                    mService.getString(R.string.cancel_reconnect), PendingIntent.getBroadcast(mService, 2,
-                            cancelIntent, PendingIntent.FLAG_CANCEL_CURRENT));
         }
 
         // Show unread messages
@@ -208,6 +196,5 @@ public class PlumbleNotification {
         public void onMuteToggled();
         public void onDeafenToggled();
         public void onOverlayToggled();
-        public void onReconnectCanceled();
     }
 }
