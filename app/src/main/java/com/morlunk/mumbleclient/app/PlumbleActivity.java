@@ -119,7 +119,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         public void onServiceConnected(ComponentName name, IBinder service) {
             mService = (PlumbleService.PlumbleBinder) service;
             try {
-                mService.setApplicationShown(true);
                 mService.registerObserver(mObserver);
                 mService.clearChatNotifications(); // Clear chat notifications on resume.
             } catch (RemoteException e) {
@@ -365,7 +364,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             try {
                 for(JumbleServiceFragment fragment : mServiceFragments)
                     fragment.setServiceBound(false);
-                mService.setApplicationShown(false);
                 mService.unregisterObserver(mObserver);
             } catch (RemoteException e) {
                 e.printStackTrace();

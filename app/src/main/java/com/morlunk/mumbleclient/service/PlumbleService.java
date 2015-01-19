@@ -62,11 +62,6 @@ public class PlumbleService extends JumbleService implements
     /** Play sound when push to talk key is pressed */
     private boolean mPTTSoundEnabled;
     /**
-     * True if the Plumble app is in the foreground. If so, hides several notifications in
-     * favour of an in-app dialog.
-     */
-    private boolean mApplicationShown;
-    /**
      * True if an error causing disconnection has been dismissed by the user.
      * This should serve as a hint not to bother the user.
      */
@@ -323,7 +318,6 @@ public class PlumbleService extends JumbleService implements
         try {
             unregisterReceiver(mTalkReceiver);
         } catch (IllegalArgumentException iae) {
-            iae.printStackTrace();
         }
 
         // Remove overlay if present.
@@ -335,53 +329,69 @@ public class PlumbleService extends JumbleService implements
     }
 
     /**
-     * Called when the user makes a change to their preferences. Should update all preferences relevant to the service.
+     * Called when the user makes a change to their preferences.
+     * Should update all preferences relevant to the service.
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (!isConnected()) return; // These properties should all be set on connect regardless.
-
-        if (Settings.PREF_INPUT_METHOD.equals(key)) {
-            /* Convert input method defined in settings to an integer format used by Jumble. */
-            int inputMethod = mSettings.getJumbleInputMethod();
-            try {
-                getBinder().setTransmitMode(inputMethod);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            mChannelOverlay.setPushToTalkShown(inputMethod == Constants.TRANSMIT_PUSH_TO_TALK);
-        } else if (Settings.PREF_HANDSET_MODE.equals(key)) {
-            setProximitySensorOn(mSettings.isHandsetMode());
-        } else if (Settings.PREF_THRESHOLD.equals(key)) {
-            try {
-                getBinder().setVADThreshold(mSettings.getDetectionThreshold());
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        } else if (Settings.PREF_HOT_CORNER_KEY.equals(key)) {
-            mHotCorner.setGravity(mSettings.getHotCornerGravity());
-            mHotCorner.setShown(mSettings.isHotCornerEnabled());
-        } else if (Settings.PREF_USE_TTS.equals(key)) {
-            if (mTTS == null && mSettings.isTextToSpeechEnabled())
-                mTTS = new TextToSpeech(this, mTTSInitListener);
-            else if (mTTS != null && !mSettings.isTextToSpeechEnabled()) {
-                mTTS.shutdown();
-                mTTS = null;
-            }
-        } else if (Settings.PREF_AMPLITUDE_BOOST.equals(key)) {
-            try {
-                getBinder().setAmplitudeBoost(mSettings.getAmplitudeBoostMultiplier());
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        } else if (Settings.PREF_HALF_DUPLEX.equals(key)) {
-            try {
-                getBinder().setHalfDuplex(mSettings.isHalfDuplex());
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        } else if (Settings.PREF_PTT_SOUND.equals(key)) {
-            mPTTSoundEnabled = mSettings.isPttSoundEnabled();
+        switch (key) {
+            case Settings.PREF_INPUT_METHOD:
+                /* Convert input method defined in settings to an integer format used by Jumble. */
+                int inputMethod = mSettings.getJumbleInputMethod();
+                try {
+                    if (isConnected()) {
+                        getBinder().setTransmitMode(inputMethod);
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                mChannelOverlay.setPushToTalkShown(inputMethod == Constants.TRANSMIT_PUSH_TO_TALK);
+                break;
+            case Settings.PREF_HANDSET_MODE:
+                setProximitySensorOn(isConnected() && mSettings.isHandsetMode());
+                break;
+            case Settings.PREF_THRESHOLD:
+                try {
+                    if (isConnected()) {
+                        getBinder().setVADThreshold(mSettings.getDetectionThreshold());
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case Settings.PREF_HOT_CORNER_KEY:
+                mHotCorner.setGravity(mSettings.getHotCornerGravity());
+                mHotCorner.setShown(isConnected() && mSettings.isHotCornerEnabled());
+                break;
+            case Settings.PREF_USE_TTS:
+                if (mTTS == null && mSettings.isTextToSpeechEnabled())
+                    mTTS = new TextToSpeech(this, mTTSInitListener);
+                else if (mTTS != null && !mSettings.isTextToSpeechEnabled()) {
+                    mTTS.shutdown();
+                    mTTS = null;
+                }
+                break;
+            case Settings.PREF_AMPLITUDE_BOOST:
+                try {
+                    if (isConnected()) {
+                        getBinder().setAmplitudeBoost(mSettings.getAmplitudeBoostMultiplier());
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case Settings.PREF_HALF_DUPLEX:
+                try {
+                    if (isConnected()) {
+                        getBinder().setHalfDuplex(mSettings.isHalfDuplex());
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case Settings.PREF_PTT_SOUND:
+                mPTTSoundEnabled = mSettings.isPttSoundEnabled();
+                break;
         }
     }
 
@@ -481,10 +491,6 @@ public class PlumbleService extends JumbleService implements
                 mNotification.clearMessages();
                 mNotification.show();
             }
-        }
-
-        public void setApplicationShown(boolean shown) {
-            mApplicationShown = shown;
         }
 
         public void markErrorShown() {
