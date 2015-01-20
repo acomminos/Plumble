@@ -41,9 +41,7 @@
         <!-- Likely supported -->
         <item>48000</item>
         <item>44100</item>
-        <item>22050</item>
         <item>16000</item>
-        <item>11025</item>
         <item>8000</item>
     </string-array>
 
