@@ -204,7 +204,7 @@ public class ServerEditFragment extends DialogFragment {
             }
         }
 
-        mErrorText.setVisibility(mErrorText != null ? View.VISIBLE : View.GONE);
+        mErrorText.setVisibility(error != null ? View.VISIBLE : View.GONE);
         if (error != null) {
             mErrorText.setText(error);
             return false;
