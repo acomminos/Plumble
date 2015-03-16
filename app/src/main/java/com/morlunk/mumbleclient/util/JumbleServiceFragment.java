@@ -68,6 +68,8 @@ public abstract class JumbleServiceFragment extends Fragment {
     /** The definitive place where data from the service will be used to initialize the fragment. Only called once per bind, whether the fragment loads first or the service. */
     public void onServiceBound(IJumbleService service) { }
 
+    public void onServiceUnbound() { }
+
     /** If implemented, will register the returned observer to the service upon binding. */
     public IJumbleObserver getServiceObserver() {
         return null;
@@ -94,6 +96,7 @@ public abstract class JumbleServiceFragment extends Fragment {
             e.printStackTrace();
         }
 
+        onServiceUnbound();
     }
 
     public void setServiceBound(boolean bound) {

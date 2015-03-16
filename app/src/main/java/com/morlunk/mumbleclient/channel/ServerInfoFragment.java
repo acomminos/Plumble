@@ -35,6 +35,7 @@ import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -47,6 +48,7 @@ public class ServerInfoFragment extends JumbleServiceFragment {
 
     private ScheduledExecutorService mExecutorService = Executors.newSingleThreadScheduledExecutor();
     private Handler mHandler = new Handler(Looper.getMainLooper());
+    private ScheduledFuture<?> mPollFuture;
 
     private TextView mProtocolView;
     private TextView mOSVersionView;
@@ -112,14 +114,14 @@ public class ServerInfoFragment extends JumbleServiceFragment {
     @Override
     public void onServiceBound(IJumbleService service) {
         // wow this is ugly
-        mExecutorService.scheduleAtFixedRate(new Runnable() {
+        mPollFuture = mExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            if(!isDetached()) updateData();
+                            if(isVisible()) updateData();
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
@@ -130,8 +132,16 @@ public class ServerInfoFragment extends JumbleServiceFragment {
     }
 
     @Override
+    public void onServiceUnbound() {
+        if (mPollFuture != null) {
+            mPollFuture.cancel(true);
+            mPollFuture = null;
+        }
+    }
+
+    @Override
     public void onDestroy() {
-        mExecutorService.shutdownNow();
         super.onDestroy();
+        mExecutorService.shutdownNow();
     }
 }
