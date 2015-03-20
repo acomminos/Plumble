@@ -3,7 +3,7 @@
   <!--Drawer pane-->
   <string name="drawer_open">ドロワーを開く</string>
   <string name="drawer_close">ドロワーを閉じる</string>
-  <string name="drawer_not_connected">接続されていませｎ</string>
+  <string name="drawer_not_connected">接続されていません</string>
   <string name="drawer_server">サーバー</string>
   <string name="drawer_info">情報</string>
   <string name="drawer_tokens">アクセストークン</string>
@@ -220,4 +220,5 @@
   <string name="invalid_port_range">ポートが正しくありません (0–65535)</string>
   <string name="invalid_username">ユーザー名が</string>
   <string name="cancel_reconnect">再接続をキャンセル</string>
+  <string name="attempting_reconnect">エラー: %s.\n\n再接続の試行中.</string>
 </resources>

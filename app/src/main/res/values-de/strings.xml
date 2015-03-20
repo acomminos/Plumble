@@ -41,9 +41,9 @@
   <string name="comment_view_source">QUELLTEXT ANZEIGEN</string>
   <!--Server Info Fragment-->
   <string name="control_channel">Steuerkanal</string>
-  <string name="tcp_encryption_mode">Verschlüsselt mit 256 bit AES256-SHA</string>
+  <string name="tcp_encryption_mode">Verschlüsselt mit 256 Bit AES256-SHA</string>
   <string name="voice_channel">Sprachkanal</string>
-  <string name="udp_encryption_mode">Verschlüsselt mit 128 bit OCB-AES128</string>
+  <string name="udp_encryption_mode">Verschlüsselt mit 128 Bit OCB-AES128</string>
   <string name="audio_bandwidth">Audiobandbreite</string>
   <string name="server_info_protocol">Protokoll %s.</string>
   <string name="server_info_version">%1$s (%2$s)</string>
@@ -202,7 +202,7 @@
   <string name="first_run_generate_certificate_title">Willkommen in Plumble!</string>
   <string name="first_run_generate_certificate">Es wird sehr empfohlen ein Zertifikat zu generieren. Manche Server setzen ein Zertifikat voraus.</string>
   <string name="generate">Generieren</string>
-  <string name="certificate_not_valid">Zertifikat \'%s\' konnte nicht laden werden!</string>
+  <string name="certificate_not_valid">Zertifikat \'%s\' konnte nicht geladen werden!</string>
   <string name="invalid_password">Ungültiges Passwort.</string>
   <string name="send_message">Nachricht senden.</string>
   <string name="channel_menu_view_description">Beschreibung anzeigen</string>
@@ -215,8 +215,10 @@
   <string name="transmit_mode">Übertragungsmethode</string>
   <string name="current_chat_target">Aktuelles Ziel</string>
   <string name="channel_join">Betreten</string>
+  <string name="certificate_info">Allgemeiner Name:\n%1$s\n\nGültig von:\n%2$s\n\nGültig bis:\n%3$s\n\nDigest (SHA-1):\n%4$s</string>
   <string name="invalid_host">Ungültiger Host</string>
   <string name="invalid_port_range">Ungültiger Port (0-65535)</string>
   <string name="invalid_username">Ungültiger Benutzername</string>
   <string name="cancel_reconnect">Neuverbinden abbrechen</string>
+  <string name="attempting_reconnect">Fehler: %s.\n\n Versuche erneut zu verbinden.</string>
 </resources>

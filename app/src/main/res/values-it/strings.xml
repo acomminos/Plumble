@@ -12,6 +12,7 @@
   <string name="chat_message_to">%1$s → %2$s</string>
   <!--User menu-->
   <string name="user_menu_admin">Admin</string>
+  <string name="user_menu_mute">Muto</string>
   <string name="user_menu_ignore_messages">Ignora messaggi</string>
   <string name="user_menu_change_comment">Cambia commento</string>
   <string name="user_menu_view_comment">Mostra commento</string>
