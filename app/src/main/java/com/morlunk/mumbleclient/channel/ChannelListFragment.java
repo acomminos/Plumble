@@ -50,6 +50,7 @@ import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.channel.actionmode.ChannelActionModeCallback;
 import com.morlunk.mumbleclient.channel.actionmode.UserActionModeCallback;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
@@ -304,11 +305,12 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
                 return false;
             case R.id.menu_bluetooth:
                 item.setChecked(!item.isChecked());
-                try {
-                    getService().setBluetoothEnabled(item.isChecked());
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+//                try {
+                    // FIXME
+//                    getService().setBluetoothEnabled(item.isChecked());
+//                } catch (RemoteException e) {
+//                    e.printStackTrace();
+//                }
                 return true;
         }
 

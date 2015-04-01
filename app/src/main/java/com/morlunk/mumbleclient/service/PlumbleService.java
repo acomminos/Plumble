@@ -17,16 +17,19 @@
 
 package com.morlunk.mumbleclient.service;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
+import android.view.WindowManager;
 
 import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.JumbleService;
@@ -334,30 +337,21 @@ public class PlumbleService extends JumbleService implements
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Bundle changedExtras = new Bundle();
+        boolean requiresReconnect = false;
         switch (key) {
             case Settings.PREF_INPUT_METHOD:
                 /* Convert input method defined in settings to an integer format used by Jumble. */
                 int inputMethod = mSettings.getJumbleInputMethod();
-                try {
-                    if (isConnected()) {
-                        getBinder().setTransmitMode(inputMethod);
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                changedExtras.putInt(JumbleService.EXTRAS_TRANSMIT_MODE, inputMethod);
                 mChannelOverlay.setPushToTalkShown(inputMethod == Constants.TRANSMIT_PUSH_TO_TALK);
                 break;
             case Settings.PREF_HANDSET_MODE:
                 setProximitySensorOn(isConnected() && mSettings.isHandsetMode());
                 break;
             case Settings.PREF_THRESHOLD:
-                try {
-                    if (isConnected()) {
-                        getBinder().setVADThreshold(mSettings.getDetectionThreshold());
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                changedExtras.putFloat(JumbleService.EXTRAS_DETECTION_THRESHOLD,
+                        mSettings.getDetectionThreshold());
                 break;
             case Settings.PREF_HOT_CORNER_KEY:
                 mHotCorner.setGravity(mSettings.getHotCornerGravity());
@@ -372,26 +366,55 @@ public class PlumbleService extends JumbleService implements
                 }
                 break;
             case Settings.PREF_AMPLITUDE_BOOST:
-                try {
-                    if (isConnected()) {
-                        getBinder().setAmplitudeBoost(mSettings.getAmplitudeBoostMultiplier());
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                changedExtras.putFloat(EXTRAS_AMPLITUDE_BOOST,
+                        mSettings.getAmplitudeBoostMultiplier());
                 break;
             case Settings.PREF_HALF_DUPLEX:
-                try {
-                    if (isConnected()) {
-                        getBinder().setHalfDuplex(mSettings.isHalfDuplex());
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                changedExtras.putBoolean(EXTRAS_HALF_DUPLEX, mSettings.isHalfDuplex());
+                break;
+            case Settings.PREF_PREPROCESSOR_ENABLED:
+                changedExtras.putBoolean(EXTRAS_ENABLE_PREPROCESSOR,
+                        mSettings.isPreprocessorEnabled());
                 break;
             case Settings.PREF_PTT_SOUND:
                 mPTTSoundEnabled = mSettings.isPttSoundEnabled();
                 break;
+            case Settings.PREF_INPUT_QUALITY:
+                changedExtras.putInt(EXTRAS_INPUT_QUALITY, mSettings.getInputQuality());
+                break;
+            case Settings.PREF_INPUT_RATE:
+                changedExtras.putInt(EXTRAS_INPUT_RATE, mSettings.getInputSampleRate());
+                break;
+            case Settings.PREF_FRAMES_PER_PACKET:
+                changedExtras.putInt(EXTRAS_FRAMES_PER_PACKET, mSettings.getFramesPerPacket());
+                break;
+            case Settings.PREF_CERT:
+            case Settings.PREF_CERT_PASSWORD:
+            case Settings.PREF_FORCE_TCP:
+            case Settings.PREF_USE_TOR:
+            case Settings.PREF_CHAT_NOTIFY:
+            case Settings.PREF_DISABLE_OPUS:
+                // These are settings we flag as 'requiring reconnect'.
+                requiresReconnect = true;
+                break;
+        }
+        if (changedExtras.size() > 0) {
+            try {
+                // Reconfigure the service appropriately.
+                requiresReconnect |= mBinder.reconfigure(changedExtras);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (requiresReconnect && isConnected()) {
+            AlertDialog ad = new AlertDialog.Builder(this)
+                    .setTitle(R.string.information)
+                    .setMessage(R.string.change_requires_reconnect)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .create();
+            ad.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+            ad.show();
         }
     }
 

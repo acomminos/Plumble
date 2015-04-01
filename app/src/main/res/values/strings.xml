@@ -246,4 +246,5 @@
     <string name="invalid_username">Invalid username</string>
     <string name="cancel_reconnect">Cancel reconnect</string>
     <string name="attempting_reconnect">Error: %s.\n\nAttempting to reconnect.</string>
+    <string name="change_requires_reconnect">A reconnect is required for this change to take effect.</string>
 </resources>
