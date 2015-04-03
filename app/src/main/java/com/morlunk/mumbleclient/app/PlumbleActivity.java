@@ -437,38 +437,26 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        try {
-            if(Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod()) &&
-                    keyCode == mSettings.getPushToTalkKey() &&
-                    mService != null &&
-                    mService.getConnectionState() == JumbleService.STATE_CONNECTED) {
-                if(!mService.isTalking() && !mSettings.isPushToTalkToggle()) {
-                    mService.setTalkingState(true);
-                }
-                return true;
+        if (mService != null && keyCode == mSettings.getPushToTalkKey()) {
+            try {
+                mService.onTalkKeyDown();
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        try {
-            if(Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod()) &&
-                    keyCode == mSettings.getPushToTalkKey() &&
-                    mService != null &&
-                    mService.getConnectionState() == JumbleService.STATE_CONNECTED) {
-                if(!mSettings.isPushToTalkToggle() && mService.isTalking()) {
-                    mService.setTalkingState(false);
-                } else {
-                    mService.setTalkingState(!mService.isTalking());
-                }
-                return true;
+        if (mService != null && keyCode == mSettings.getPushToTalkKey()) {
+            try {
+                mService.onTalkKeyUp();
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            return true;
         }
         return super.onKeyUp(keyCode, event);
     }

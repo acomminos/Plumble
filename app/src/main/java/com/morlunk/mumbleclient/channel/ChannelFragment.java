@@ -61,7 +61,6 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     private ChatTarget mChatTarget;
     /** Chat target listeners, notified when the chat target is changed. */
     private List<OnChatTargetSelectedListener> mChatTargetListeners = new ArrayList<OnChatTargetSelectedListener>();
-    private boolean mTogglePTT;
 
     private JumbleObserver mObserver = new JumbleObserver() {
         @Override
@@ -114,18 +113,13 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 try {
-                    boolean oldState = getService().isTalking();
-                    boolean newState;
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        newState = !mTogglePTT || !oldState;
-                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        newState = mTogglePTT && oldState;
-                    } else {
-                        return true;
-                    }
-
-                    if (newState != oldState) {
-                        getService().setTalkingState(newState);
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            getService().onTalkKeyDown();
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            getService().onTalkKeyUp();
+                            break;
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -211,14 +205,12 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
         Settings settings = Settings.getInstance(getActivity());
         boolean showPttButton = settings.isPushToTalkButtonShown() && settings.getInputMethod().equals(Settings.ARRAY_INPUT_METHOD_PTT);
         mTalkView.setVisibility(showPttButton ? View.VISIBLE : View.GONE);
-        mTogglePTT = settings.isPushToTalkToggle();
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(Settings.PREF_INPUT_METHOD.equals(key) ||
-                Settings.PREF_PUSH_BUTTON_HIDE_KEY.equals(key) ||
-                Settings.PREF_PTT_TOGGLE.equals(key))
+                Settings.PREF_PUSH_BUTTON_HIDE_KEY.equals(key))
             configureInput();
     }
 

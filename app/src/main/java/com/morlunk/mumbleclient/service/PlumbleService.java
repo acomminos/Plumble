@@ -85,7 +85,7 @@ public class PlumbleService extends JumbleService implements
         @Override
         public void onHotCornerDown() {
             try {
-                mBinder.setTalkingState(!mSettings.isPushToTalkToggle() || !mBinder.isTalking());
+                mBinder.onTalkKeyDown();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -93,12 +93,10 @@ public class PlumbleService extends JumbleService implements
 
         @Override
         public void onHotCornerUp() {
-            if(!mSettings.isPushToTalkToggle()) {
-                try {
-                    mBinder.setTalkingState(false);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+            try {
+                mBinder.onTalkKeyUp();
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
         }
     };
@@ -531,6 +529,34 @@ public class PlumbleService extends JumbleService implements
             }
 
             super.cancelReconnect();
+        }
+
+        /**
+         * Called when a user presses a talk key down (i.e. when they want to talk).
+         * Accounts for talk logic if toggle PTT is on.
+         */
+        public void onTalkKeyDown() throws RemoteException {
+            if(isConnected()
+                    && Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod())) {
+                if (!mSettings.isPushToTalkToggle() && !isTalking()) {
+                    setTalkingState(true); // Start talking
+                }
+            }
+        }
+
+        /**
+         * Called when a user releases a talk key (i.e. when they do not want to talk).
+         * Accounts for talk logic if toggle PTT is on.
+         */
+        public void onTalkKeyUp() throws RemoteException {
+            if(isConnected()
+                    && Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod())) {
+                if (mSettings.isPushToTalkToggle()) {
+                    setTalkingState(!isTalking()); // Toggle talk state
+                } else if (isTalking()) {
+                    setTalkingState(false); // Stop talking
+                }
+            }
         }
     }
 }

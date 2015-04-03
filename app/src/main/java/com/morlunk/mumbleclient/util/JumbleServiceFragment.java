@@ -26,6 +26,7 @@ import android.view.View;
 
 import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.mumbleclient.service.PlumbleService;
 
 /**
  * Fragment class intended to make binding the Jumble service to fragments easier.
@@ -106,7 +107,7 @@ public abstract class JumbleServiceFragment extends Fragment {
             onServiceDetached(mServiceProvider.getService());
     }
 
-    public IJumbleService getService() {
+    public PlumbleService.PlumbleBinder getService() {
         return mServiceProvider.getService();
     }
 }
