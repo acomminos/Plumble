@@ -29,6 +29,7 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
+import android.text.TextUtils;
 import android.view.WindowManager;
 
 import com.morlunk.jumble.Constants;
@@ -40,6 +41,8 @@ import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.service.ipc.TalkBroadcastReceiver;
+
+import java.net.URI;
 
 /**
  * An extension of the Jumble service with some added Plumble-exclusive non-standard Mumble features.
@@ -179,8 +182,9 @@ public class PlumbleService extends JumbleService implements
 
         @Override
         public void onMessageLogged(Message message) throws RemoteException {
-            // Strip all HTML tags.
-            String strippedMessage = message.getMessage().replaceAll("<[^>]*>", "");
+            // Split on / strip all HTML tags.
+            String splitMessage[] = message.getMessage().split("<[^>]*>");
+            String strippedMessage = TextUtils.join("", splitMessage);
 
             // Only read text messages. TODO: make this an option.
             if(message.getType() == Message.Type.TEXT_MESSAGE) {
@@ -192,14 +196,36 @@ public class PlumbleService extends JumbleService implements
                     mNotification.show();
                 }
 
+                // get just the domain portion of links
+                StringBuilder shortenedMessageBuilder = new StringBuilder();
+                for(String part : splitMessage) {
+                    // Cheap pre-check
+                    if(part.contains("://")) {
+                        try {
+                            URI maybeURI = URI.create(part);
+                            if(!TextUtils.isEmpty(maybeURI.getHost())) {
+                                shortenedMessageBuilder.append(
+                                    getString(R.string.chat_message_tts_short_link, maybeURI.getHost())
+                                );
+                                continue;
+                            }
+                        } catch (IllegalArgumentException e) {
+                            // not a valid URI
+                        }
+                    }
+                    shortenedMessageBuilder.append(part);
+                }
+                String formattedShortenedMessage = getString(R.string.notification_message,
+                        message.getActorName(), shortenedMessageBuilder.toString());
+
                 // Read if TTS is enabled, the message is less than threshold, is a text message, and not deafened
                 if(mSettings.isTextToSpeechEnabled() &&
                         mTTS != null &&
                         message.getType() == Message.Type.TEXT_MESSAGE &&
-                        strippedMessage.length() <= TTS_THRESHOLD &&
+                        formattedShortenedMessage.length() <= TTS_THRESHOLD &&
                         getBinder().getSessionUser() != null &&
                         !getBinder().getSessionUser().isSelfDeafened()) {
-                    mTTS.speak(formattedMessage, TextToSpeech.QUEUE_ADD, null);
+                    mTTS.speak(formattedShortenedMessage, TextToSpeech.QUEUE_ADD, null);
                 }
             }
         }
