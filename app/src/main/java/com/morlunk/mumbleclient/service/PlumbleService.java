@@ -67,6 +67,8 @@ public class PlumbleService extends JumbleService implements
     private PowerManager.WakeLock mProximityLock;
     /** Play sound when push to talk key is pressed */
     private boolean mPTTSoundEnabled;
+    /** Try to shorten spoken messages when using TTS */
+    private boolean mShortTtsMessagesEnabled;
     /**
      * True if an error causing disconnection has been dismissed by the user.
      * This should serve as a hint not to bother the user.
@@ -196,36 +198,42 @@ public class PlumbleService extends JumbleService implements
                     mNotification.show();
                 }
 
-                // get just the domain portion of links
-                StringBuilder shortenedMessageBuilder = new StringBuilder();
-                for(String part : splitMessage) {
-                    // Cheap pre-check
-                    if(part.contains("://")) {
-                        try {
-                            URI maybeURI = URI.create(part);
-                            if(!TextUtils.isEmpty(maybeURI.getHost())) {
-                                shortenedMessageBuilder.append(
-                                    getString(R.string.chat_message_tts_short_link, maybeURI.getHost())
-                                );
-                                continue;
+                String formattedTtsMessage;
+
+                if(mShortTtsMessagesEnabled) {
+                    // get just the domain portion of links
+                    StringBuilder shortenedMessageBuilder = new StringBuilder();
+                    for (String part : splitMessage) {
+                        // Cheap pre-check
+                        if (part.contains("://")) {
+                            try {
+                                URI maybeURI = URI.create(part);
+                                if (!TextUtils.isEmpty(maybeURI.getHost())) {
+                                    shortenedMessageBuilder.append(
+                                            getString(R.string.chat_message_tts_short_link, maybeURI.getHost())
+                                    );
+                                    continue;
+                                }
+                            } catch (IllegalArgumentException e) {
+                                // not a valid URI
                             }
-                        } catch (IllegalArgumentException e) {
-                            // not a valid URI
                         }
+                        shortenedMessageBuilder.append(part);
                     }
-                    shortenedMessageBuilder.append(part);
+                    formattedTtsMessage = getString(R.string.notification_message,
+                            message.getActorName(), shortenedMessageBuilder.toString());
+                } else {
+                    formattedTtsMessage = formattedMessage;
                 }
-                String formattedShortenedMessage = getString(R.string.notification_message,
-                        message.getActorName(), shortenedMessageBuilder.toString());
 
                 // Read if TTS is enabled, the message is less than threshold, is a text message, and not deafened
                 if(mSettings.isTextToSpeechEnabled() &&
                         mTTS != null &&
                         message.getType() == Message.Type.TEXT_MESSAGE &&
-                        formattedShortenedMessage.length() <= TTS_THRESHOLD &&
+                        formattedTtsMessage.length() <= TTS_THRESHOLD &&
                         getBinder().getSessionUser() != null &&
                         !getBinder().getSessionUser().isSelfDeafened()) {
-                    mTTS.speak(formattedShortenedMessage, TextToSpeech.QUEUE_ADD, null);
+                    mTTS.speak(formattedTtsMessage, TextToSpeech.QUEUE_ADD, null);
                 }
             }
         }
@@ -264,6 +272,7 @@ public class PlumbleService extends JumbleService implements
         // Register for preference changes
         mSettings = Settings.getInstance(this);
         mPTTSoundEnabled = mSettings.isPttSoundEnabled();
+        mShortTtsMessagesEnabled = mSettings.isShortTextToSpeechMessagesEnabled();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
 
@@ -388,6 +397,9 @@ public class PlumbleService extends JumbleService implements
                     mTTS.shutdown();
                     mTTS = null;
                 }
+                break;
+            case Settings.PREF_SHORT_TTS_MESSAGES:
+                mShortTtsMessagesEnabled = mSettings.isShortTextToSpeechMessagesEnabled();
                 break;
             case Settings.PREF_AMPLITUDE_BOOST:
                 changedExtras.putFloat(EXTRAS_AMPLITUDE_BOOST,
