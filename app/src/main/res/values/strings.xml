@@ -35,6 +35,7 @@
     <string name="chat_message_tree">(Tree)</string>
     <string name="chat_message_channel">(Channel)</string>
     <string name="chat_message_to">%1$s → %2$s</string>
+    <string name="chat_message_tts_short_link">(Link to %1$s)</string>
 
     <!-- User menu -->
     <string name="user_menu_admin">Admin</string>

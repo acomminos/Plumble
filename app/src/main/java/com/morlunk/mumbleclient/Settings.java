@@ -80,6 +80,9 @@ public class Settings {
     public static final String PREF_USE_TTS = "useTts";
     public static final Boolean DEFAULT_USE_TTS = true;
 
+    public static final String PREF_SHORT_TTS_MESSAGES = "shortTtsMessages";
+    public static final boolean DEFAULT_SHORT_TTS_MESSAGES = false;
+
     public static final String PREF_AUTO_RECONNECT = "autoReconnect";
     public static final Boolean DEFAULT_AUTO_RECONNECT = true;
 
@@ -296,6 +299,10 @@ public class Settings {
 
     public boolean isTextToSpeechEnabled() {
         return preferences.getBoolean(PREF_USE_TTS, DEFAULT_USE_TTS);
+    }
+
+    public boolean isShortTextToSpeechMessagesEnabled() {
+        return preferences.getBoolean(PREF_SHORT_TTS_MESSAGES, DEFAULT_SHORT_TTS_MESSAGES);
     }
 
     public boolean isAutoReconnectEnabled() {

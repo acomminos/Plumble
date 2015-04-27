@@ -96,6 +96,8 @@
 	<string name="hidePttSum">Hides the push to talk button when in push to talk mode. Useful if you use hot corners or a hardware key exclusively.</string>
     <string name="useTts">Text-to-Speech</string>
     <string name="useTtsSum">Enable Text-to-Speech for incoming messages.</string>
+    <string name="shortTtsMessages">Short Text-to-Speech messages</string>
+    <string name="shortTtsMessagesSum">Shorten Text-to-Speech messages by replacing links with their domain names.</string>
     <string name="togglePtt">Toggle Push to Talk</string>
     <string name="togglePttSum">Toggles push to talk on and off when pressed.</string>
     <string name="autoReconnect">Auto Reconnect</string>
