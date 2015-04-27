@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.TalkState;
 import com.morlunk.jumble.model.User;
 import com.morlunk.mumbleclient.R;
 
@@ -90,7 +91,7 @@ public class ChannelAdapter extends BaseAdapter {
         else if (user.isSuppressed())
             state.setImageResource(R.drawable.ic_suppressed);
         else
-        if (user.getTalkState() == User.TalkState.TALKING)
+        if (user.getTalkState() == TalkState.TALKING)
             state.setImageResource(R.drawable.ic_talking_on);
         else
             state.setImageResource(R.drawable.ic_talking_off);

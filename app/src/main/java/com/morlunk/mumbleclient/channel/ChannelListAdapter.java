@@ -35,6 +35,7 @@ import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.TalkState;
 import com.morlunk.jumble.model.User;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
@@ -257,9 +258,9 @@ public class ChannelListAdapter extends RecyclerView.Adapter {
             return resources.getDrawable(R.drawable.outline_circle_server_muted);
         } else if (user.isSuppressed()) {
             return resources.getDrawable(R.drawable.outline_circle_suppressed);
-        } else if (user.getTalkState() == User.TalkState.TALKING ||
-                user.getTalkState() == User.TalkState.SHOUTING ||
-                user.getTalkState() == User.TalkState.WHISPERING) {
+        } else if (user.getTalkState() == TalkState.TALKING ||
+                user.getTalkState() == TalkState.SHOUTING ||
+                user.getTalkState() == TalkState.WHISPERING) {
             // TODO: add whisper and shouting resources
             return resources.getDrawable(R.drawable.outline_circle_talking_on);
         } else {

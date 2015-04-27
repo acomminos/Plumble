@@ -34,6 +34,7 @@ import android.view.WindowManager;
 import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Message;
+import com.morlunk.jumble.model.TalkState;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
@@ -218,7 +219,7 @@ public class PlumbleService extends JumbleService implements
             if (isConnected() &&
                     mBinder.getSession() == user.getSession() &&
                     mBinder.getTransmitMode() == Constants.TRANSMIT_PUSH_TO_TALK &&
-                    user.getTalkState() == User.TalkState.TALKING &&
+                    user.getTalkState() == TalkState.TALKING &&
                     mPTTSoundEnabled) {
                 AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
                 audioManager.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, -1);
