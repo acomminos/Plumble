@@ -45,31 +45,54 @@ import android.widget.TextView.OnEditorActionListener;
 import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.IChannel;
+import com.morlunk.jumble.model.IMessage;
+import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.Message;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.service.IChatMessage;
+import com.morlunk.mumbleclient.service.PlumbleService;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.util.MumbleImageGetter;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ChannelChatFragment extends JumbleServiceFragment implements ChatTargetProvider.OnChatTargetSelectedListener {
     private static final Pattern LINK_PATTERN = Pattern.compile("(https?://\\S+)");
-    private static final String CHAT_DATE_FORMAT = "%I:%M %p";
 
 	private IJumbleObserver mServiceObserver = new JumbleObserver() {
 
         @Override
-        public void onMessageLogged(Message message) throws RemoteException {
-            addChatMessage(message, true);
+        public void onMessageLogged(IMessage message) throws RemoteException {
+            addChatMessage(new IChatMessage.TextMessage(message), true);
         }
 
         @Override
-        public void onUserJoinedChannel(User user, Channel newChannel, Channel oldChannel) throws RemoteException {
+        public void onLogInfo(String message) throws RemoteException {
+            addChatMessage(new IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.INFO, message), true);
+        }
+
+        @Override
+        public void onLogWarning(String message) throws RemoteException {
+            addChatMessage(new IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.WARNING, message), true);
+        }
+
+        @Override
+        public void onLogError(String message) throws RemoteException {
+            addChatMessage(new IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.ERROR, message), true);
+        }
+
+        @Override
+        public void onUserJoinedChannel(IUser user, IChannel newChannel, IChannel oldChannel) throws RemoteException {
             if (user != null && getService().getSessionUser() != null &&
                     user.equals(getService().getSessionUser()) &&
                     mTargetProvider.getChatTarget() == null) {
@@ -189,7 +212,7 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
      * @param message The message to add.
      * @param scroll Whether to scroll to the bottom after adding the message.
      */
-    public void addChatMessage(Message message, boolean scroll) {
+    public void addChatMessage(IChatMessage message, boolean scroll) {
 		if(mChatAdapter == null) return;
 
         mChatAdapter.add(message);
@@ -215,14 +238,14 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
         String message = mChatTextEdit.getText().toString();
         String formattedMessage = markupOutgoingMessage(message);
         ChatTargetProvider.ChatTarget target = mTargetProvider.getChatTarget();
-        Message responseMessage = null;
+        IMessage responseMessage = null;
         if(target == null)
             responseMessage = getService().sendChannelTextMessage(getService().getSessionChannel().getId(), formattedMessage, false);
         else if(target.getUser() != null)
             responseMessage = getService().sendUserTextMessage(target.getUser().getSession(), formattedMessage);
         else if(target.getChannel() != null)
             responseMessage = getService().sendChannelTextMessage(target.getChannel().getId(), formattedMessage, false);
-        addChatMessage(responseMessage, true);
+        addChatMessage(new IChatMessage.TextMessage(responseMessage), true);
         mChatTextEdit.setText("");
 	}
 
@@ -241,11 +264,7 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
 	
 	public void clear() {
         mChatAdapter.clear();
-        try {
-            getService().clearMessageLog();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        getService().clearMessageLog();
     }
 
 	/**
@@ -269,18 +288,14 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
 
     @Override
     public void onServiceBound(IJumbleService service) {
-        try {
-            mChatAdapter = new ChannelChatAdapter(getActivity(), service, service.getMessageLog());
-            mChatList.setAdapter(mChatAdapter);
-            mChatList.post(new Runnable() {
-                @Override
-                public void run() {
-                    mChatList.setSelection(mChatAdapter.getCount() - 1);
-                }
-            });
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        mChatAdapter = new ChannelChatAdapter(getActivity(), service, getService().getMessageLog());
+        mChatList.setAdapter(mChatAdapter);
+        mChatList.post(new Runnable() {
+            @Override
+            public void run() {
+                mChatList.setSelection(mChatAdapter.getCount() - 1);
+            }
+        });
     }
 
     @Override
@@ -297,15 +312,16 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
         }
     }
 
-    private static class ChannelChatAdapter extends ArrayAdapter<Message> {
+    private static class ChannelChatAdapter extends ArrayAdapter<IChatMessage> {
+        private final MumbleImageGetter mImageGetter;
+        private final IJumbleService mService;
+        private final DateFormat mDateFormat;
 
-        private MumbleImageGetter mImageGetter;
-        private IJumbleService mService;
-
-        public ChannelChatAdapter(Context context, IJumbleService service, List<Message> messages) {
-            super(context, 0, new ArrayList<Message>(messages));
+        public ChannelChatAdapter(Context context, IJumbleService service, List<IChatMessage> messages) {
+            super(context, 0, new ArrayList<>(messages));
             mService = service;
             mImageGetter = new MumbleImageGetter(context);
+            mDateFormat = SimpleDateFormat.getTimeInstance();
         }
 
         @Override
@@ -315,48 +331,60 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
                 v = LayoutInflater.from(getContext()).inflate(R.layout.list_chat_item, parent, false);
             }
 
-            LinearLayout chatBox = (LinearLayout) v.findViewById(R.id.list_chat_item_box);
-            TextView targetText = (TextView) v.findViewById(R.id.list_chat_item_target);
-            TextView messageText = (TextView) v.findViewById(R.id.list_chat_item_text);
+            final LinearLayout chatBox = (LinearLayout) v.findViewById(R.id.list_chat_item_box);
+            final TextView targetText = (TextView) v.findViewById(R.id.list_chat_item_target);
+            final TextView messageText = (TextView) v.findViewById(R.id.list_chat_item_text);
             TextView timeText = (TextView) v.findViewById(R.id.list_chat_item_time);
 
-            Message message = getItem(position);
-            String targetMessage = getContext().getString(R.string.unknown);
-            boolean selfAuthored = false;
-            try {
-                selfAuthored = message.getActor() == mService.getSession();
+            IChatMessage message = getItem(position);
+            message.accept(new IChatMessage.Visitor() {
+                @Override
+                public void visit(IChatMessage.TextMessage message) {
+                    IMessage textMessage = message.getMessage();
+                    String targetMessage = getContext().getString(R.string.unknown);
+                    boolean selfAuthored = false;
+                    try {
+                        selfAuthored = textMessage.getActor() == mService.getSession();
 
-                if (message.getChannels() != null && !message.getChannels().isEmpty()) {
-                    Channel currentChannel = message.getChannels().get(0);
-                    if (currentChannel != null && currentChannel.getName() != null) {
-                        targetMessage = getContext().getString(R.string.chat_message_to, message.getActorName(), currentChannel.getName());
+                        if (textMessage.getTargetChannels() != null && !textMessage.getTargetChannels().isEmpty()) {
+                            IChannel currentChannel = (IChannel) textMessage.getTargetChannels().get(0);
+                            if (currentChannel != null && currentChannel.getName() != null) {
+                                targetMessage = getContext().getString(R.string.chat_message_to, textMessage.getActorName(), currentChannel.getName());
+                            }
+                        } else if (textMessage.getTargetTrees() != null && !textMessage.getTargetTrees().isEmpty()) {
+                            IChannel currentChannel = (IChannel) textMessage.getTargetTrees().get(0);
+                            if (currentChannel != null && currentChannel.getName() != null) {
+                                targetMessage = getContext().getString(R.string.chat_message_to, textMessage.getActorName(), currentChannel.getName());
+                            }
+                        } else if (textMessage.getTargetUsers() != null && !textMessage.getTargetUsers().isEmpty()) {
+                            User user = (User) textMessage.getTargetUsers().get(0);
+                            if (user != null && user.getName() != null) {
+                                targetMessage = getContext().getString(R.string.chat_message_to, textMessage.getActorName(), user.getName());
+                            }
+                        } else {
+                            targetMessage = textMessage.getActorName();
+                        }
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
                     }
-                } else if (message.getTrees() != null && !message.getTrees().isEmpty()) {
-                    Channel currentChannel = message.getTrees().get(0);
-                    if (currentChannel != null && currentChannel.getName() != null) {
-                        targetMessage = getContext().getString(R.string.chat_message_to, message.getActorName(), currentChannel.getName());
-                    }
-                } else if (message.getUsers() != null && !message.getUsers().isEmpty()) {
-                    User user = message.getUsers().get(0);
-                    if (user != null && user.getName() != null) {
-                        targetMessage = getContext().getString(R.string.chat_message_to, message.getActorName(), user.getName());
-                    }
-                } else {
-                    targetMessage = message.getActorName();
+
+                    int gravity = selfAuthored ? Gravity.RIGHT : Gravity.LEFT;
+                    chatBox.setGravity(gravity);
+                    messageText.setGravity(gravity);
+                    targetText.setText(targetMessage);
+                    targetText.setVisibility(View.VISIBLE);
                 }
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
 
-            int gravity = selfAuthored ? Gravity.RIGHT : Gravity.LEFT;
-
-            chatBox.setGravity(gravity);
-            targetText.setVisibility(message.getType() == Message.Type.TEXT_MESSAGE ? View.VISIBLE : View.GONE);
-            targetText.setText(targetMessage);
-            messageText.setText(Html.fromHtml(message.getMessage(), mImageGetter, null));
+                @Override
+                public void visit(IChatMessage.InfoMessage message) {
+                    targetText.setVisibility(View.GONE);
+                    chatBox.setGravity(Gravity.LEFT);
+                    messageText.setGravity(Gravity.LEFT);
+                }
+            });
+            timeText.setText(mDateFormat.format(new Date(message.getReceivedTime())));
+            messageText.setText(Html.fromHtml(message.getBody(), mImageGetter, null));
             messageText.setMovementMethod(LinkMovementMethod.getInstance());
-            messageText.setGravity(gravity);
-            timeText.setText(message.getReceivedTime().format(CHAT_DATE_FORMAT));
 
             return v;
         }

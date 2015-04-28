@@ -29,6 +29,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.IChannel;
+import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
@@ -46,18 +48,19 @@ public class PlumbleOverlay {
 
     private JumbleObserver mObserver = new JumbleObserver() {
         @Override
-        public void onUserTalkStateUpdated(User user) throws RemoteException {
+        public void onUserTalkStateUpdated(IUser user) throws RemoteException {
             mChannelAdapter.notifyDataSetChanged();
         }
 
         @Override
-        public void onUserStateUpdated(User user) throws RemoteException {
-            if(user.getChannelId() == mService.getBinder().getSessionChannel().getId())
+        public void onUserStateUpdated(IUser user) throws RemoteException {
+            if(user.getChannel() != null &&
+                    user.getChannel().equals(mService.getBinder().getSessionChannel()))
                 mChannelAdapter.notifyDataSetChanged();
         }
 
         @Override
-        public void onUserJoinedChannel(User user, Channel newChannel, Channel oldChannel) throws RemoteException {
+        public void onUserJoinedChannel(IUser user, IChannel newChannel, IChannel oldChannel) throws RemoteException {
             if(user.getSession() == mService.getBinder().getSession()) // Session user has changed channels
                 mChannelAdapter.setChannel(mService.getBinder().getSessionChannel());
             else if(newChannel.getId() == mService.getBinder().getSessionChannel().getId() ||
@@ -204,7 +207,7 @@ public class PlumbleOverlay {
             return;
         mShown = true;
         try {
-            mChannelAdapter = new ChannelAdapter(mService, mService.getBinder(), mService.getBinder().getSessionChannel());
+            mChannelAdapter = new ChannelAdapter(mService, mService.getBinder().getSessionChannel());
             mOverlayList.setAdapter(mChannelAdapter);
             mService.getBinder().registerObserver(mObserver);
             WindowManager windowManager = (WindowManager) mService.getSystemService(Context.WINDOW_SERVICE);

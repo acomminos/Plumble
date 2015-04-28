@@ -35,6 +35,8 @@ import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.IChannel;
+import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.TalkState;
 import com.morlunk.jumble.model.User;
 import com.morlunk.mumbleclient.R;
@@ -109,7 +111,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         final Node node = mNodes.get(position);
         if (node.isChannel()) {
-            final Channel channel = node.getChannel();
+            final IChannel channel = node.getChannel();
             ChannelViewHolder cvh = (ChannelViewHolder) viewHolder;
             cvh.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -154,7 +156,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter {
                     cvh.mChannelHolder.getPaddingRight(),
                     cvh.mChannelHolder.getPaddingBottom());
         } else if (node.isUser()) {
-            final User user = node.getUser();
+            final IUser user = node.getUser();
             UserViewHolder uvh = (UserViewHolder) viewHolder;
             uvh.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -213,7 +215,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter {
     public void updateChannels() throws RemoteException {
         mNodes.clear();
         for (int cid : mRootChannels) {
-            Channel channel = mService.getChannel(cid);
+            IChannel channel = mService.getChannel(cid);
             if (channel != null) {
                 constructNodes(null, mService.getChannel(cid), 0, mNodes);
             }
@@ -322,16 +324,14 @@ public class ChannelListAdapter extends RecyclerView.Adapter {
             return; // Skip adding children of contracted/empty channels.
         }
 
-        for (int uid : channel.getUsers()) {
-            User user = mService.getUser(uid);
+        for (User user : channel.getUsers()) {
             if (user == null) {
                 continue;
             }
             nodes.add(new Node(channelNode, depth, user));
         }
-        for (int cid : channel.getSubchannels()) {
-            Channel subchannel = mService.getChannel(cid);
-            constructNodes(channelNode, subchannel, depth + 1, nodes);
+        for (Channel subc : channel.getSubchannels()) {
+            constructNodes(channelNode, subc, depth + 1, nodes);
         }
     }
 
@@ -381,19 +381,19 @@ public class ChannelListAdapter extends RecyclerView.Adapter {
      */
     private static class Node {
         private Node mParent;
-        private Channel mChannel;
-        private User mUser;
+        private IChannel mChannel;
+        private IUser mUser;
         private int mDepth;
         private boolean mExpanded;
 
-        public Node(Node parent, int depth, Channel channel) {
+        public Node(Node parent, int depth, IChannel channel) {
             mParent = parent;
             mChannel = channel;
             mDepth = depth;
             mExpanded = true;
         }
 
-        public Node(Node parent, int depth, User user) {
+        public Node(Node parent, int depth, IUser user) {
             mParent = parent;
             mUser = user;
             mDepth = depth;
@@ -411,15 +411,15 @@ public class ChannelListAdapter extends RecyclerView.Adapter {
             return mParent;
         }
 
-        public Channel getChannel() {
+        public IChannel getChannel() {
             return mChannel;
         }
 
-        public User getUser() {
+        public IUser getUser() {
             return mUser;
         }
 
-        public Long getId() {
+        public Long getId() throws RemoteException {
             // Apply flags to differentiate integer-length identifiers
             if (isChannel()) {
                 return CHANNEL_ID_MASK | mChannel.getId();

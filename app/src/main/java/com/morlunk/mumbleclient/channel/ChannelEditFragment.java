@@ -30,6 +30,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.net.Permissions;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.util.JumbleServiceProvider;
@@ -67,7 +68,7 @@ public class ChannelEditFragment extends DialogFragment {
 
         try {
             // If we can only make temporary channels, remove the option.
-            Channel parentChannel = mServiceProvider.getService().getChannel(getParent());
+            IChannel parentChannel = mServiceProvider.getService().getChannel(getParent());
             int combinedPermissions = mServiceProvider.getService().getPermissions() | parentChannel.getPermissions();
             boolean canMakeChannel = (combinedPermissions & Permissions.MakeChannel) > 0;
             boolean canMakeTempChannel = (combinedPermissions & Permissions.MakeTempChannel) > 0;

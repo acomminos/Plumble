@@ -28,6 +28,8 @@ import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.IChannel;
+import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.TalkState;
 import com.morlunk.jumble.model.User;
 import com.morlunk.mumbleclient.R;
@@ -39,24 +41,27 @@ import com.morlunk.mumbleclient.R;
 public class ChannelAdapter extends BaseAdapter {
 
     private Context mContext;
-    private IJumbleService mService;
-    private Channel mChannel;
+    private IChannel mChannel;
 
-    public ChannelAdapter(Context context, IJumbleService service, Channel channel) {
+    public ChannelAdapter(Context context, IChannel channel) {
         mContext = context;
-        mService = service;
         mChannel = channel;
     }
 
     @Override
     public int getCount() {
-        return mChannel.getUsers().size();
+        try {
+            return mChannel.getUsers().size();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     @Override
     public Object getItem(int position) {
         try {
-            return mService.getUser(mChannel.getUsers().get(position));
+            return mChannel.getUsers().get(position);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -65,7 +70,14 @@ public class ChannelAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return mChannel.getUsers().get(position);
+        try {
+            IUser user = (IUser) mChannel.getUsers().get(position);
+            if (user != null)
+                return user.getUserId();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     @Override
@@ -99,12 +111,12 @@ public class ChannelAdapter extends BaseAdapter {
         return v;
     }
 
-    public void setChannel(Channel channel) {
+    public void setChannel(IChannel channel) {
         mChannel = channel;
         notifyDataSetChanged();
     }
 
-    public Channel getChannel() {
+    public IChannel getChannel() {
         return mChannel;
     }
 }
