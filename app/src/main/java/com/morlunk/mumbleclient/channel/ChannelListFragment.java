@@ -109,6 +109,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
         @Override
         public void onUserStateUpdated(IUser user) throws RemoteException {
             mChannelListAdapter.animateUserStateUpdate(user, mChannelView);
+            getActivity().supportInvalidateOptionsMenu(); // Update self mute/deafen state
         }
 
         @Override
@@ -291,7 +292,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
                 try {
                     IUser self = getService().getSessionUser();
 
-                    boolean deafened = self.isSelfDeafened();
+                    boolean deafened = !self.isSelfDeafened();
                     getService().setSelfMuteDeafState(deafened, deafened);
 
                     getActivity().supportInvalidateOptionsMenu();
