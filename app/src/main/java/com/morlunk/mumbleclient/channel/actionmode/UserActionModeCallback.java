@@ -32,6 +32,8 @@ import android.widget.EditText;
 
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.IChannel;
+import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.net.Permissions;
 import com.morlunk.mumbleclient.R;
@@ -51,13 +53,13 @@ import java.util.List;
 public class UserActionModeCallback extends ChatTargetActionModeCallback {
     private Context mContext;
     private IJumbleService mService;
-    private User mUser;
+    private IUser mUser;
     private FragmentManager mFragmentManager;
     private LocalUserUpdateListener mListener;
 
     public UserActionModeCallback(Context context,
                                   IJumbleService service,
-                                  User user,
+                                  IUser user,
                                   ChatTargetProvider chatTargetProvider,
                                   FragmentManager fragmentManager,
                                   LocalUserUpdateListener listener) {
@@ -75,14 +77,13 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
         TintedMenuInflater inflater = new TintedMenuInflater(mContext, actionMode.getMenuInflater());
         inflater.inflate(R.menu.context_user, menu);
 
-        actionMode.setTitle(mUser.getName());
-        actionMode.setSubtitle(R.string.current_chat_target);
-
         try {
+            actionMode.setTitle(mUser.getName());
+            actionMode.setSubtitle(R.string.current_chat_target);
             // Request permissions update from server, if we don't have channel permissions
-            Channel channel = mService.getChannel(mUser.getChannelId());
+            IChannel channel = mUser.getChannel();
             if(channel != null && channel.getPermissions() == 0)
-                mService.requestPermissions(mUser.getChannelId());
+                mService.requestPermissions(channel.getId());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -96,7 +97,7 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
             // Use permission data to determine the actions available.
             boolean self = mUser.getSession() == mService.getSession();
             int perms = mService.getPermissions();
-            Channel channel = mService.getChannel(mUser.getChannelId());
+            IChannel channel = mUser.getChannel();
             int channelPerms = channel.getId() != 0 ? channel.getPermissions() : perms;
 
             menu.findItem(R.id.context_kick).setVisible(
@@ -116,11 +117,10 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
             menu.findItem(R.id.context_change_comment).setVisible(self);
             menu.findItem(R.id.context_reset_comment).setVisible(
                     !self && mUser.getCommentHash() != null &&
-                            !mUser.getCommentHash().isEmpty() &&
                             (perms & (Permissions.Move | Permissions.Write)) > 0);
             menu.findItem(R.id.context_view_comment).setVisible(
                     (mUser.getComment() != null && !mUser.getComment().isEmpty()) ||
-                            (mUser.getCommentHash() != null && !mUser.getCommentHash().isEmpty()));
+                            (mUser.getCommentHash() != null));
             menu.findItem(R.id.context_register).setVisible(mUser.getUserId() < 0 &&
                     (mUser.getHash() != null && !mUser.getHash().isEmpty()) &&
                     (perms & ((self ? Permissions.SelfRegister : Permissions.Register) | Permissions.Write)) > 0);
@@ -245,7 +245,7 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
         return new ChatTargetProvider.ChatTarget(mUser);
     }
 
-    private void showUserComment(final boolean edit) {
+    private void showUserComment(final boolean edit) throws RemoteException {
         Bundle args = new Bundle();
         args.putInt("session", mUser.getSession());
         args.putString("comment", mUser.getComment());
@@ -257,7 +257,7 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
     private void showChannelMoveDialog() throws RemoteException {
         AlertDialog.Builder adb = new AlertDialog.Builder(mContext);
         adb.setTitle(R.string.user_menu_move);
-        final List<Channel> channels = ModelUtils.getChannelList(mService.getRootChannel(), mService);
+        final List<IChannel> channels = ModelUtils.getChannelList(mService.getRootChannel());
         final CharSequence[] channelNames = new CharSequence[channels.size()];
         for (int i = 0; i < channels.size(); i++) {
             channelNames[i] = channels.get(i).getName();
@@ -265,7 +265,7 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
         adb.setItems(channelNames, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Channel channel = channels.get(which);
+                IChannel channel = channels.get(which);
                 try {
                     mService.moveUserToChannel(mUser.getSession(), channel.getId());
                 } catch (RemoteException e) {
@@ -283,6 +283,6 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
      * i.e. if the user becomes local muted.
      */
     public interface LocalUserUpdateListener {
-        public void onLocalUserStateUpdated(User user);
+        public void onLocalUserStateUpdated(IUser user);
     }
 }

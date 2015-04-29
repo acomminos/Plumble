@@ -34,8 +34,9 @@ import android.view.WindowManager;
 
 import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.JumbleService;
-import com.morlunk.jumble.model.Message;
-import com.morlunk.jumble.model.User;
+import com.morlunk.jumble.model.IMessage;
+import com.morlunk.jumble.model.IUser;
+import com.morlunk.jumble.model.TalkState;
 import com.morlunk.jumble.util.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
@@ -43,6 +44,9 @@ import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.service.ipc.TalkBroadcastReceiver;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * An extension of the Jumble service with some added Plumble-exclusive non-standard Mumble features.
@@ -74,13 +78,14 @@ public class PlumbleService extends JumbleService implements
      * This should serve as a hint not to bother the user.
      */
     private boolean mErrorShown;
+    private List<IChatMessage> mMessageLog;
 
     private TextToSpeech mTTS;
     private TextToSpeech.OnInitListener mTTSInitListener = new TextToSpeech.OnInitListener() {
         @Override
         public void onInit(int status) {
             if(status == TextToSpeech.ERROR)
-                log(Message.Type.WARNING, getString(R.string.tts_failed));
+                logWarning(getString(R.string.tts_failed));
         }
     };
 
@@ -150,7 +155,7 @@ public class PlumbleService extends JumbleService implements
         }
 
         @Override
-        public void onUserConnected(User user) throws RemoteException {
+        public void onUserConnected(IUser user) throws RemoteException {
             if (user.getTextureHash() != null &&
                     user.getTexture() == null) {
                 // Request avatar data if available.
@@ -159,7 +164,7 @@ public class PlumbleService extends JumbleService implements
         }
 
         @Override
-        public void onUserStateUpdated(User user) throws RemoteException {
+        public void onUserStateUpdated(IUser user) throws RemoteException {
             if(user.getSession() == mBinder.getSession()) {
                 mSettings.setMutedAndDeafened(user.isSelfMuted(), user.isSelfDeafened()); // Update settings mute/deafen state
                 if(mNotification != null) {
@@ -183,59 +188,63 @@ public class PlumbleService extends JumbleService implements
         }
 
         @Override
-        public void onMessageLogged(Message message) throws RemoteException {
+        public void onMessageLogged(IMessage message) throws RemoteException {
             // Split on / strip all HTML tags.
             String splitMessage[] = message.getMessage().split("<[^>]*>");
             String strippedMessage = TextUtils.join("", splitMessage);
+            String formattedTtsMessage;
 
-            // Only read text messages. TODO: make this an option.
-            if(message.getType() == Message.Type.TEXT_MESSAGE) {
-                String formattedMessage = getString(R.string.notification_message,
-                        message.getActorName(), strippedMessage);
-
-                if(mSettings.isChatNotifyEnabled() && mNotification != null) {
-                    mNotification.addMessage(formattedMessage);
-                    mNotification.show();
-                }
-
-                String formattedTtsMessage;
-
-                if(mShortTtsMessagesEnabled) {
-                    // get just the domain portion of links
-                    StringBuilder shortenedMessageBuilder = new StringBuilder();
-                    for (String part : splitMessage) {
-                        // Cheap pre-check
-                        if (part.contains("://")) {
-                            try {
-                                URI maybeURI = URI.create(part);
-                                if (!TextUtils.isEmpty(maybeURI.getHost())) {
-                                    shortenedMessageBuilder.append(
-                                            getString(R.string.chat_message_tts_short_link, maybeURI.getHost())
-                                    );
-                                    continue;
-                                }
-                            } catch (IllegalArgumentException e) {
-                                // not a valid URI
+            if(mShortTtsMessagesEnabled) {
+                // get just the domain portion of links
+                StringBuilder shortenedMessageBuilder = new StringBuilder();
+                for (String part : splitMessage) {
+                    // Cheap pre-check
+                    if (part.contains("://")) {
+                        try {
+                            URI maybeURI = URI.create(part);
+                            if (!TextUtils.isEmpty(maybeURI.getHost())) {
+                                shortenedMessageBuilder.append(
+                                        getString(R.string.chat_message_tts_short_link, maybeURI.getHost())
+                                );
+                                continue;
                             }
+                        } catch (IllegalArgumentException e) {
+                            // not a valid URI
                         }
-                        shortenedMessageBuilder.append(part);
                     }
-                    formattedTtsMessage = getString(R.string.notification_message,
-                            message.getActorName(), shortenedMessageBuilder.toString());
-                } else {
-                    formattedTtsMessage = formattedMessage;
+                    shortenedMessageBuilder.append(part);
                 }
-
-                // Read if TTS is enabled, the message is less than threshold, is a text message, and not deafened
-                if(mSettings.isTextToSpeechEnabled() &&
-                        mTTS != null &&
-                        message.getType() == Message.Type.TEXT_MESSAGE &&
-                        formattedTtsMessage.length() <= TTS_THRESHOLD &&
-                        getBinder().getSessionUser() != null &&
-                        !getBinder().getSessionUser().isSelfDeafened()) {
-                    mTTS.speak(formattedTtsMessage, TextToSpeech.QUEUE_ADD, null);
-                }
+                formattedTtsMessage = getString(R.string.notification_message,
+                        message.getActorName(), shortenedMessageBuilder.toString());
+            } else {
+                formattedTtsMessage = strippedMessage;
             }
+
+            // Read if TTS is enabled, the message is less than threshold, is a text message, and not deafened
+            if(mSettings.isTextToSpeechEnabled() &&
+                    mTTS != null &&
+                    formattedTtsMessage.length() <= TTS_THRESHOLD &&
+                    getBinder().getSessionUser() != null &&
+                    !getBinder().getSessionUser().isSelfDeafened()) {
+                mTTS.speak(formattedTtsMessage, TextToSpeech.QUEUE_ADD, null);
+            }
+
+            mMessageLog.add(new IChatMessage.TextMessage(message));
+        }
+
+        @Override
+        public void onLogInfo(String message) throws RemoteException {
+            mMessageLog.add(new IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.INFO, message));
+        }
+
+        @Override
+        public void onLogWarning(String message) throws RemoteException {
+            mMessageLog.add(new IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.WARNING, message));
+        }
+
+        @Override
+        public void onLogError(String message) throws RemoteException {
+            mMessageLog.add(new IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.ERROR, message));
         }
 
         @Override
@@ -248,11 +257,11 @@ public class PlumbleService extends JumbleService implements
         }
 
         @Override
-        public void onUserTalkStateUpdated(User user) throws RemoteException {
+        public void onUserTalkStateUpdated(IUser user) throws RemoteException {
             if (isConnected() &&
                     mBinder.getSession() == user.getSession() &&
                     mBinder.getTransmitMode() == Constants.TRANSMIT_PUSH_TO_TALK &&
-                    user.getTalkState() == User.TalkState.TALKING &&
+                    user.getTalkState() == TalkState.TALKING &&
                     mPTTSoundEnabled) {
                 AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
                 audioManager.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, -1);
@@ -289,6 +298,7 @@ public class PlumbleService extends JumbleService implements
             mTTS = new TextToSpeech(this, mTTSInitListener);
 
         mTalkReceiver = new TalkBroadcastReceiver(getBinder());
+        mMessageLog = new ArrayList<>();
     }
 
     @Override
@@ -316,6 +326,7 @@ public class PlumbleService extends JumbleService implements
             e.printStackTrace();
         }
         if(mTTS != null) mTTS.shutdown();
+        mMessageLog = null;
         super.onDestroy();
     }
 
@@ -362,6 +373,8 @@ public class PlumbleService extends JumbleService implements
         mHotCorner.setShown(false);
 
         setProximitySensorOn(false);
+
+        mMessageLog.clear();
     }
 
     /**
@@ -478,7 +491,7 @@ public class PlumbleService extends JumbleService implements
     @Override
     public void onMuteToggled() {
         try {
-            User user = mBinder.getSessionUser();
+            IUser user = mBinder.getSessionUser();
             if (isConnected() && user != null) {
                 boolean muted = !user.isSelfMuted();
                 boolean deafened = user.isSelfDeafened() && muted;
@@ -492,7 +505,7 @@ public class PlumbleService extends JumbleService implements
     @Override
     public void onDeafenToggled() {
         try {
-            User user = mBinder.getSessionUser();
+            IUser user = mBinder.getSessionUser();
             if (isConnected() && user != null) {
                 mBinder.setSelfMuteDeafState(!user.isSelfDeafened(), !user.isSelfDeafened());
             }
@@ -595,6 +608,14 @@ public class PlumbleService extends JumbleService implements
                     setTalkingState(false); // Stop talking
                 }
             }
+        }
+
+        public List<IChatMessage> getMessageLog() {
+            return Collections.unmodifiableList(mMessageLog);
+        }
+
+        public void clearMessageLog() {
+            mMessageLog.clear();
         }
     }
 }

@@ -21,6 +21,7 @@ import android.os.RemoteException;
 
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.util.JumbleObserver;
 
 /**
@@ -32,7 +33,7 @@ public class ChannelDescriptionFragment extends AbstractCommentFragment {
     public void requestComment(final IJumbleService service) throws RemoteException {
         service.registerObserver(new JumbleObserver() {
             @Override
-            public void onChannelStateUpdated(Channel channel) throws RemoteException {
+            public void onChannelStateUpdated(IChannel channel) throws RemoteException {
                 if(channel.getId() == getChannelId() &&
                         channel.getDescription() != null) {
                     loadComment(channel.getDescription());

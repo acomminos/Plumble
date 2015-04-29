@@ -18,6 +18,8 @@
 package com.morlunk.mumbleclient.channel;
 
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.IChannel;
+import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.User;
 
 public interface ChatTargetProvider {
@@ -26,22 +28,22 @@ public interface ChatTargetProvider {
      * Abstraction for user and channel chat targets.
      */
     public class ChatTarget {
-        private Channel mChannel;
-        private User mUser;
+        private IChannel mChannel;
+        private IUser mUser;
 
-        public ChatTarget(Channel channel) {
+        public ChatTarget(IChannel channel) {
             mChannel = channel;
         }
 
-        public ChatTarget(User user) {
+        public ChatTarget(IUser user) {
             mUser = user;
         }
 
-        public Channel getChannel() {
+        public IChannel getChannel() {
             return mChannel;
         }
 
-        public User getUser() {
+        public IUser getUser() {
             return mUser;
         }
     }

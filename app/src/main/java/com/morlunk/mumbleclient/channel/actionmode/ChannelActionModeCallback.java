@@ -35,6 +35,7 @@ import android.view.MenuItem;
 
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.net.Permissions;
 import com.morlunk.mumbleclient.R;
@@ -53,13 +54,13 @@ import com.morlunk.mumbleclient.util.TintedMenuInflater;
 public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
     private Context mContext;
     private IJumbleService mService;
-    private Channel mChannel;
+    private IChannel mChannel;
     private PlumbleDatabase mDatabase;
     private FragmentManager mFragmentManager;
 
     public ChannelActionModeCallback(Context context,
                                      IJumbleService service,
-                                     Channel channel,
+                                     IChannel channel,
                                      ChatTargetProvider chatTargetProvider,
                                      PlumbleDatabase database,
                                      FragmentManager fragmentManager) {
@@ -77,10 +78,9 @@ public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
         TintedMenuInflater inflater = new TintedMenuInflater(mContext, actionMode.getMenuInflater());
         inflater.inflate(R.menu.context_channel, menu);
 
-        actionMode.setTitle(mChannel.getName());
-        actionMode.setSubtitle(R.string.current_chat_target);
-
         try {
+            actionMode.setTitle(mChannel.getName());
+            actionMode.setSubtitle(R.string.current_chat_target);
             // Request permissions update from server, if we don't have channel permissions
             if(mChannel.getPermissions() == 0)
                 mService.requestPermissions(mChannel.getId());
@@ -92,18 +92,17 @@ public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
 
     @Override
     public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-        int perms = mChannel.getPermissions();
-
-        // This breaks uMurmur ACL. Put in a fix based on server version perhaps?
-        //menu.getMenu().findItem(R.id.menu_channel_add)
-        // .setVisible((permissions & (Permissions.MakeChannel | Permissions.MakeTempChannel)) > 0);
-        menu.findItem(R.id.context_channel_edit).setVisible((perms & Permissions.Write) > 0);
-        menu.findItem(R.id.context_channel_remove).setVisible((perms & Permissions.Write) > 0);
-        menu.findItem(R.id.context_channel_view_description)
-                .setVisible(mChannel.getDescription() != null ||
-                        mChannel.getDescriptionHash() != null);
-
         try {
+            int perms = mChannel.getPermissions();
+
+            // This breaks uMurmur ACL. Put in a fix based on server version perhaps?
+            //menu.getMenu().findItem(R.id.menu_channel_add)
+            // .setVisible((permissions & (Permissions.MakeChannel | Permissions.MakeTempChannel)) > 0);
+            menu.findItem(R.id.context_channel_edit).setVisible((perms & Permissions.Write) > 0);
+            menu.findItem(R.id.context_channel_remove).setVisible((perms & Permissions.Write) > 0);
+            menu.findItem(R.id.context_channel_view_description)
+                    .setVisible(mChannel.getDescription() != null ||
+                            mChannel.getDescriptionHash() != null);
             Server server = mService.getConnectedServer();
             if(server != null) {
                 menu.findItem(R.id.context_channel_pin)
@@ -130,13 +129,17 @@ public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
             case R.id.context_channel_add:
                 adding = true;
             case R.id.context_channel_edit:
-                ChannelEditFragment addFragment = new ChannelEditFragment();
-                Bundle args = new Bundle();
-                if(adding) args.putInt("parent", mChannel.getId());
-                else args.putInt("channel", mChannel.getId());
-                args.putBoolean("adding", adding);
-                addFragment.setArguments(args);
-                addFragment.show(mFragmentManager, "ChannelAdd");
+                try {
+                    ChannelEditFragment addFragment = new ChannelEditFragment();
+                    Bundle args = new Bundle();
+                    if (adding) args.putInt("parent", mChannel.getId());
+                    else args.putInt("channel", mChannel.getId());
+                    args.putBoolean("adding", adding);
+                    addFragment.setArguments(args);
+                    addFragment.show(mFragmentManager, "ChannelAdd");
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
                 break;
             case R.id.context_channel_remove:
                 AlertDialog.Builder adb = new AlertDialog.Builder(mContext);
@@ -156,13 +159,17 @@ public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
                 adb.show();
                 break;
             case R.id.context_channel_view_description:
-                Bundle commentArgs = new Bundle();
-                commentArgs.putInt("channel", mChannel.getId());
-                commentArgs.putString("comment", mChannel.getDescription());
-                commentArgs.putBoolean("editing", false);
-                DialogFragment commentFragment = (DialogFragment) Fragment.instantiate(mContext,
-                        ChannelDescriptionFragment.class.getName(), commentArgs);
-                commentFragment.show(mFragmentManager, ChannelDescriptionFragment.class.getName());
+                try {
+                    Bundle commentArgs = new Bundle();
+                    commentArgs.putInt("channel", mChannel.getId());
+                    commentArgs.putString("comment", mChannel.getDescription());
+                    commentArgs.putBoolean("editing", false);
+                    DialogFragment commentFragment = (DialogFragment) Fragment.instantiate(mContext,
+                            ChannelDescriptionFragment.class.getName(), commentArgs);
+                    commentFragment.show(mFragmentManager, ChannelDescriptionFragment.class.getName());
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
                 break;
             case R.id.context_channel_pin:
                 try {
