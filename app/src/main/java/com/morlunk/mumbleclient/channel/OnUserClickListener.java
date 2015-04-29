@@ -17,11 +17,11 @@
 
 package com.morlunk.mumbleclient.channel;
 
-import com.morlunk.jumble.model.User;
+import com.morlunk.jumble.model.IUser;
 
 /**
  * Created by andrew on 20/10/14.
  */
 public interface OnUserClickListener {
-    public void onUserClick(User user);
+    public void onUserClick(IUser user);
 }

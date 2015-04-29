@@ -45,6 +45,8 @@ import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.IChannel;
+import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.JumbleException;
@@ -66,7 +68,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
         }
 
         @Override
-        public void onUserJoinedChannel(User user, Channel newChannel, Channel oldChannel) throws RemoteException {
+        public void onUserJoinedChannel(IUser user, IChannel newChannel, IChannel oldChannel) throws RemoteException {
             mChannelListAdapter.updateChannels();
             mChannelListAdapter.notifyDataSetChanged();
             if(getService().getSession() == user.getSession()) {
@@ -75,42 +77,42 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
         }
 
         @Override
-		public void onChannelAdded(Channel channel) throws RemoteException {
+		public void onChannelAdded(IChannel channel) throws RemoteException {
             mChannelListAdapter.updateChannels();
 			mChannelListAdapter.notifyDataSetChanged();
 		}
 
 		@Override
-		public void onChannelRemoved(Channel channel) throws RemoteException {
+		public void onChannelRemoved(IChannel channel) throws RemoteException {
             mChannelListAdapter.updateChannels();
 			mChannelListAdapter.notifyDataSetChanged();
 		}
 
         @Override
-        public void onChannelStateUpdated(Channel channel) throws RemoteException {
+        public void onChannelStateUpdated(IChannel channel) throws RemoteException {
             mChannelListAdapter.updateChannels();
             mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
-        public void onUserConnected(User user) throws RemoteException {
+        public void onUserConnected(IUser user) throws RemoteException {
             mChannelListAdapter.updateChannels();
             mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
-        public void onUserRemoved(User user, String reason) throws RemoteException {
+        public void onUserRemoved(IUser user, String reason) throws RemoteException {
             mChannelListAdapter.updateChannels();
             mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
-        public void onUserStateUpdated(User user) throws RemoteException {
+        public void onUserStateUpdated(IUser user) throws RemoteException {
             mChannelListAdapter.animateUserStateUpdate(user, mChannelView);
         }
 
         @Override
-        public void onUserTalkStateUpdated(User user) throws RemoteException {
+        public void onUserTalkStateUpdated(IUser user) throws RemoteException {
             mChannelListAdapter.animateUserStateUpdate(user, mChannelView);
         }
 	};
@@ -205,7 +207,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
                 // Color the action bar icons to the primary text color of the theme, TODO move this elsewhere
                 int foregroundColor = getActivity().getTheme().obtainStyledAttributes(new int[]{android.R.attr.textColorPrimaryInverse}).getColor(0, -1);
 
-                User self = getService().getSessionUser();
+                IUser self = getService().getSessionUser();
                 muteItem.setIcon(self.isSelfMuted() ? R.drawable.ic_action_microphone_muted : R.drawable.ic_action_microphone);
                 deafenItem.setIcon(self.isSelfDeafened() ? R.drawable.ic_action_audio_muted : R.drawable.ic_action_audio);
                 muteItem.getIcon().mutate().setColorFilter(foregroundColor, PorterDuff.Mode.MULTIPLY);
@@ -273,14 +275,12 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
         switch (item.getItemId()) {
             case R.id.menu_mute_button:
                 try {
-                    User self = getService().getSessionUser();
+                    IUser self = getService().getSessionUser();
 
                     boolean muted = !self.isSelfMuted();
                     boolean deafened = self.isSelfDeafened();
                     deafened &= muted; // Undeafen if mute is off
-                    self.setSelfMuted(muted);
-                    self.setSelfDeafened(deafened);
-                    getService().setSelfMuteDeafState(self.isSelfMuted(), self.isSelfDeafened());
+                    getService().setSelfMuteDeafState(muted, deafened);
 
                     getActivity().supportInvalidateOptionsMenu();
                 } catch (RemoteException e) {
@@ -289,12 +289,10 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
                 return true;
             case R.id.menu_deafen_button:
                 try {
-                    User self = getService().getSessionUser();
+                    IUser self = getService().getSessionUser();
 
                     boolean deafened = self.isSelfDeafened();
-                    self.setSelfDeafened(!deafened);
-                    self.setSelfMuted(!deafened);
-                    getService().setSelfMuteDeafState(self.isSelfDeafened(), self.isSelfDeafened());
+                    getService().setSelfMuteDeafState(deafened, deafened);
 
                     getActivity().supportInvalidateOptionsMenu();
                 } catch (RemoteException e) {
@@ -345,7 +343,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
     }
 
     @Override
-    public void onLocalUserStateUpdated(final User user) {
+    public void onLocalUserStateUpdated(final IUser user) {
         try {
             mChannelListAdapter.notifyDataSetChanged();
 
@@ -357,15 +355,20 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        if (user.isLocalMuted()) {
-                            database.addLocalMutedUser(server.getId(), user.getUserId());
-                        } else {
-                            database.removeLocalMutedUser(server.getId(), user.getUserId());
-                        }
-                        if (user.isLocalIgnored()) {
-                            database.addLocalIgnoredUser(server.getId(), user.getUserId());
-                        } else {
-                            database.removeLocalIgnoredUser(server.getId(), user.getUserId());
+                        // TODO: use dedicated database worker thread?
+                        try {
+                            if (user.isLocalMuted()) {
+                                database.addLocalMutedUser(server.getId(), user.getUserId());
+                            } else {
+                                database.removeLocalMutedUser(server.getId(), user.getUserId());
+                            }
+                            if (user.isLocalIgnored()) {
+                                database.addLocalIgnoredUser(server.getId(), user.getUserId());
+                            } else {
+                                database.removeLocalIgnoredUser(server.getId(), user.getUserId());
+                            }
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
                         }
                     }
                 }).start();
@@ -376,7 +379,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
     }
 
     @Override
-    public void onChannelClick(Channel channel) {
+    public void onChannelClick(IChannel channel) {
         if (mTargetProvider.getChatTarget() != null &&
                 channel.equals(mTargetProvider.getChatTarget().getChannel()) &&
                 mActionMode != null) {
@@ -397,7 +400,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
     }
 
     @Override
-    public void onUserClick(User user) {
+    public void onUserClick(IUser user) {
         if (mTargetProvider.getChatTarget() != null &&
                 user.equals(mTargetProvider.getChatTarget().getUser()) &&
                 mActionMode != null) {
