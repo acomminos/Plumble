@@ -29,7 +29,6 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
-import android.text.TextUtils;
 import android.view.WindowManager;
 
 import com.morlunk.jumble.Constants;
@@ -42,8 +41,11 @@ import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.service.ipc.TalkBroadcastReceiver;
+import com.morlunk.mumbleclient.util.HtmlUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -190,35 +192,29 @@ public class PlumbleService extends JumbleService implements
         @Override
         public void onMessageLogged(IMessage message) throws RemoteException {
             // Split on / strip all HTML tags.
-            String splitMessage[] = message.getMessage().split("<[^>]*>");
-            String strippedMessage = TextUtils.join("", splitMessage);
-            String formattedTtsMessage;
+            Document parsedMessage = Jsoup.parseBodyFragment(message.getMessage());
+            String strippedMessage = parsedMessage.text();
 
+            String ttsMessage;
             if(mShortTtsMessagesEnabled) {
-                // get just the domain portion of links
-                StringBuilder shortenedMessageBuilder = new StringBuilder();
-                for (String part : splitMessage) {
-                    // Cheap pre-check
-                    if (part.contains("://")) {
-                        try {
-                            URI maybeURI = URI.create(part);
-                            if (!TextUtils.isEmpty(maybeURI.getHost())) {
-                                shortenedMessageBuilder.append(
-                                        getString(R.string.chat_message_tts_short_link, maybeURI.getHost())
-                                );
-                                continue;
-                            }
-                        } catch (IllegalArgumentException e) {
-                            // not a valid URI
+                for (Element anchor : parsedMessage.getElementsByTag("A")) {
+                    // Get just the domain portion of links
+                    String href = anchor.attr("href");
+                    // Only shorten anchors without custom text
+                    if (href != null && href.equals(anchor.text())) {
+                        String urlHostname = HtmlUtils.getHostnameFromLink(href);
+                        if (urlHostname != null) {
+                            anchor.text(getString(R.string.chat_message_tts_short_link, urlHostname));
                         }
                     }
-                    shortenedMessageBuilder.append(part);
                 }
-                formattedTtsMessage = getString(R.string.notification_message,
-                        message.getActorName(), shortenedMessageBuilder.toString());
+                ttsMessage = parsedMessage.text();
             } else {
-                formattedTtsMessage = strippedMessage;
+                ttsMessage = strippedMessage;
             }
+
+            String formattedTtsMessage = getString(R.string.notification_message,
+                    message.getActorName(), ttsMessage);
 
             // Read if TTS is enabled, the message is less than threshold, is a text message, and not deafened
             if(mSettings.isTextToSpeechEnabled() &&
