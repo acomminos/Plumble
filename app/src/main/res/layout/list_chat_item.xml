@@ -46,7 +46,8 @@
             android:layout_height="wrap_content"
             android:text="I FIGHT FOR THE USERS!"
             android:id="@+id/list_chat_item_text"
-            android:layout_marginBottom="4dp"/>
+            android:layout_marginBottom="4dp"
+            android:textIsSelectable="true"/>
 
         <TextView
             android:layout_width="wrap_content"
