@@ -3,6 +3,8 @@ Plumble
 
 Plumble is a robust GPLv3 Mumble client for Android that uses the [Jumble](https://github.com/Morlunk/Jumble) protocol implementation.
 
+[![Build Status](https://www.morlunk.com/jenkins/buildStatus/icon?job=Plumble-Nightly)](https://www.morlunk.com/jenkins/job/Plumble-Nightly/)
+
 <a href="https://play.google.com/store/apps/details?id=com.morlunk.mumbleclient">
   <img alt="Get it on Google Play" src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
 </a>
