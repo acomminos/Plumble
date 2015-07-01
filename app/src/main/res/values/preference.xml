@@ -40,8 +40,8 @@
 
     <!-- About -->
     <string name="about">About</string>
-    <string name="aboutSum">Legal and acknowledgments</string>
-    <string name="acknowledgements">Acknowledgments</string>
+    <string name="aboutSum">Legal and acknowledgements</string>
+    <string name="acknowledgements">Acknowledgements</string>
     <string name="acknowledgementsSum">See who contributed to Plumble</string>
     <string name="licenses">Licenses</string>
 
