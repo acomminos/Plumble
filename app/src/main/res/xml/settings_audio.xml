@@ -91,7 +91,7 @@
         <!-- TODO add an actual min of 8000hz -->
         <ListPreference
             android:key="input_quality"
-            android:defaultValue="48000"
+            android:defaultValue="44100"
             android:title="@string/audioSampleRate"
             android:summary="@string/audioSampleRateSum"
             android:entries="@array/audioSampleRateValues"
