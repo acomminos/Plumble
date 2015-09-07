@@ -40,7 +40,6 @@ public class ServerEditFragment extends DialogFragment {
 	private EditText mPortEdit;
 	private EditText mUsernameEdit;
     private EditText mPasswordEdit;
-    private TextView mErrorText;
 	
 	private ServerEditListener mListener;
     private DatabaseProvider mDatabaseProvider;
@@ -110,7 +109,6 @@ public class ServerEditFragment extends DialogFragment {
         mUsernameEdit = (EditText) view.findViewById(R.id.server_edit_username);
         mUsernameEdit.setHint(settings.getDefaultUsername());
         mPasswordEdit = (EditText) view.findViewById(R.id.server_edit_password);
-        mErrorText = (TextView) view.findViewById(R.id.server_edit_error);
         if (getServer() != null) {
             Server oldServer = getServer();
             mNameEdit.setText(oldServer.getName());
@@ -189,32 +187,26 @@ public class ServerEditFragment extends DialogFragment {
      * @return true if the inputted values are valid, false otherwise.
      */
     public boolean validate() {
-        String error = null;
-
         if (mHostEdit.getText().length() == 0) {
-            error = getString(R.string.invalid_host);
+            mHostEdit.setError(getString(R.string.invalid_host));
+            return false;
         } else if (mPortEdit.getText().length() > 0) {
             try {
                 int port = Integer.parseInt(mPortEdit.getText().toString());
                 if (port < 0 || port > 65535) {
-                    error = getString(R.string.invalid_port_range);
+                    mPortEdit.setError(getString(R.string.invalid_port_range));
+                    return false;
                 }
             } catch (NumberFormatException nfe) {
-                error = getString(R.string.invalid_port_range);
+                mPortEdit.setError(getString(R.string.invalid_port_range));
+                return false;
             }
         }
-
-        mErrorText.setVisibility(error != null ? View.VISIBLE : View.GONE);
-        if (error != null) {
-            mErrorText.setText(error);
-            return false;
-        } else {
-            return true;
-        }
+        return true;
     }
 
     public interface ServerEditListener {
-        public void serverInfoUpdated();
-        public void connectToServer(Server server);
+        void serverInfoUpdated();
+        void connectToServer(Server server);
     }
 }
