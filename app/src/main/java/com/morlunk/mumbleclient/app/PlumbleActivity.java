@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -325,11 +326,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             try {
                 Server server = MumbleURLParser.parseURL(url);
 
-                // Open a dialog prompting the user to add the Mumble server.
-                Bundle args = new Bundle();
-                args.putBoolean("save", false);
-                args.putParcelable("server", server);
-                ServerEditFragment fragment = (ServerEditFragment) ServerEditFragment.instantiate(this, ServerEditFragment.class.getName(), args);
+                // Open a dialog prompting the user to connect to the Mumble server.
+                DialogFragment fragment = (DialogFragment) ServerEditFragment.createServerEditDialog(
+                        PlumbleActivity.this, server, ServerEditFragment.Action.CONNECT_ACTION, true);
                 fragment.show(getSupportFragmentManager(), "url_edit");
             } catch (MalformedURLException e) {
                 Toast.makeText(this, getString(R.string.mumble_url_parse_failed), Toast.LENGTH_LONG).show();
@@ -715,11 +714,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         }
     }
 
-    @Override
-    public void serverInfoUpdated() {
-        loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
-    }
-
     /*
      * HERE BE IMPLEMENTATIONS
      */
@@ -783,5 +777,22 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void onServerEdited(ServerEditFragment.Action action, Server server) {
+        switch (action) {
+            case ADD_ACTION:
+                mDatabase.addServer(server);
+                loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+                break;
+            case EDIT_ACTION:
+                mDatabase.updateServer(server);
+                loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+                break;
+            case CONNECT_ACTION:
+                connectToServer(server);
+                break;
+        }
     }
 }

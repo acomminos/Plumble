@@ -20,8 +20,10 @@ package com.morlunk.mumbleclient.servers;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -31,10 +33,12 @@ import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
-import com.morlunk.mumbleclient.db.DatabaseProvider;
 
 public class ServerEditFragment extends DialogFragment {
-    private TextView mNameTitle;
+    private static final String ARGUMENT_SERVER = "server";
+    private static final String ARGUMENT_ACTION = "action";
+    private static final String ARGUMENT_IGNORE_TITLE = "ignore_title";
+
 	private EditText mNameEdit;
 	private EditText mHostEdit;
 	private EditText mPortEdit;
@@ -42,7 +46,24 @@ public class ServerEditFragment extends DialogFragment {
     private EditText mPasswordEdit;
 	
 	private ServerEditListener mListener;
-    private DatabaseProvider mDatabaseProvider;
+
+    /**
+     * Creates a new {@link ServerEditFragment} dialog. Results will be delivered to the parent
+     * activity via {@link ServerEditListener}.
+     * @param server Optional, if set will populate the fragment with data from the server.
+     * @param action The action the fragment is performing (i.e. Add, Edit)
+     * @param ignoreTitle If true, don't show fields related to the server title (useful for quick
+     *                    connect dialogs)
+     */
+    public static DialogFragment createServerEditDialog(Context context, Server server,
+                                                  Action action,
+                                                  boolean ignoreTitle) {
+        Bundle args = new Bundle();
+        args.putParcelable(ARGUMENT_SERVER, server);
+        args.putInt(ARGUMENT_ACTION, action.ordinal());
+        args.putBoolean(ARGUMENT_IGNORE_TITLE, ignoreTitle);
+        return (DialogFragment) Fragment.instantiate(context, ServerEditFragment.class.getName(), args);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,12 +74,10 @@ public class ServerEditFragment extends DialogFragment {
     @Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-
         try {
-            mDatabaseProvider = (DatabaseProvider) activity;
             mListener = (ServerEditListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()+" must implement DatabaseProvider and ServerEditListener!");
+            throw new ClassCastException(activity.toString() + " must implement ServerEditListener!");
         }
 	}
 
@@ -71,11 +90,8 @@ public class ServerEditFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 if (validate()) {
-                    Server server = createServer(shouldSave());
-
-                    // If we're not committing this server, connect immediately.
-                    if (!shouldSave()) mListener.connectToServer(server);
-
+                    Server server = createServer();
+                    mListener.onServerEdited(getAction(), server);
                     dismiss();
                 }
             }
@@ -87,30 +103,36 @@ public class ServerEditFragment extends DialogFragment {
         AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
         Settings settings = Settings.getInstance(getActivity());
 
-        int actionTitle;
-        if (shouldSave() && getServer() == null) {
-            actionTitle = R.string.add;
-        } else if (shouldSave()) {
-            actionTitle = R.string.save;
-        } else {
-            actionTitle = R.string.connect;
+        String actionName;
+        switch (getAction()) {
+            case ADD_ACTION:
+                actionName = getString(R.string.add);
+                break;
+            case EDIT_ACTION:
+                actionName = getString(R.string.edit);
+                break;
+            case CONNECT_ACTION:
+                actionName = getString(R.string.connect);
+                break;
+            default:
+                throw new RuntimeException("Unknown action " + getAction());
         }
-
-        adb.setPositiveButton(actionTitle, null);
+        adb.setPositiveButton(actionName, null);
         adb.setNegativeButton(android.R.string.cancel, null);
 
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         View view = inflater.inflate(R.layout.dialog_server_edit, null, false);
 
-        mNameTitle = (TextView) view.findViewById(R.id.server_edit_name_title);
+        TextView titleLabel = (TextView) view.findViewById(R.id.server_edit_name_title);
         mNameEdit = (EditText) view.findViewById(R.id.server_edit_name);
         mHostEdit = (EditText) view.findViewById(R.id.server_edit_host);
         mPortEdit = (EditText) view.findViewById(R.id.server_edit_port);
         mUsernameEdit = (EditText) view.findViewById(R.id.server_edit_username);
         mUsernameEdit.setHint(settings.getDefaultUsername());
         mPasswordEdit = (EditText) view.findViewById(R.id.server_edit_password);
-        if (getServer() != null) {
-            Server oldServer = getServer();
+
+        Server oldServer = getServer();
+        if (oldServer != null) {
             mNameEdit.setText(oldServer.getName());
             mHostEdit.setText(oldServer.getHost());
             mPortEdit.setText(String.valueOf(oldServer.getPort()));
@@ -118,8 +140,8 @@ public class ServerEditFragment extends DialogFragment {
             mPasswordEdit.setText(oldServer.getPassword());
         }
 
-        if (!shouldSave()) {
-            mNameTitle.setVisibility(View.GONE);
+        if (shouldIgnoreTitle()) {
+            titleLabel.setVisibility(View.GONE);
             mNameEdit.setVisibility(View.GONE);
         }
 
@@ -131,54 +153,32 @@ public class ServerEditFragment extends DialogFragment {
         return adb.create();
     }
 
-    private boolean shouldSave() {
-        return getArguments() == null || getArguments().getBoolean("save", true);
-    }
+	public Server createServer() {
+        String name = (mNameEdit).getText().toString().trim();
+        String host = (mHostEdit).getText().toString().trim();
 
-    private Server getServer() {
-        return getArguments() != null ? (Server) getArguments().getParcelable("server") : null;
-    }
+        int port;
+        try {
+            port = Integer.parseInt((mPortEdit).getText().toString());
+        } catch (final NumberFormatException ex) {
+            port = Constants.DEFAULT_PORT;
+        }
 
-    /**
-     * Creates or updates a server with the information in this fragment.
-     * @param shouldCommit Whether to commit the created service to the DB.
-     * @return The new or updated server.
-     */
-	public Server createServer(boolean shouldCommit) {
-		String name = (mNameEdit).getText().toString().trim();
-		String host = (mHostEdit).getText().toString().trim();
-
-		int port;
-		try {
-			port = Integer.parseInt((mPortEdit).getText().toString());
-		} catch (final NumberFormatException ex) {
-			port = Constants.DEFAULT_PORT;
-		}
-
-		String username = (mUsernameEdit).getText().toString().trim();
+        String username = (mUsernameEdit).getText().toString().trim();
         String password = mPasswordEdit.getText().toString();
 
         if (username.equals(""))
             username = mUsernameEdit.getHint().toString();
 
-        Server server;
+        // Inherit database ID of provided server.
+        long id;
+        if (getServer() != null) {
+            id = getServer().getId();
+        } else {
+            id = -1;
+        }
 
-		if (getServer() != null) {
-            server = getServer();
-            server.setName(name);
-            server.setHost(host);
-            server.setPort(port);
-            server.setUsername(username);
-            server.setPassword(password);
-			if(shouldCommit) mDatabaseProvider.getDatabase().updateServer(server);
-		} else {
-            server = new Server(-1, name, host, port, username, password);
-			if(shouldCommit) mDatabaseProvider.getDatabase().addServer(server);
-		}
-
-        if(shouldCommit) mListener.serverInfoUpdated();
-
-        return server;
+        return new Server(id, name, host, port, username, password);
 	}
 
     /**
@@ -205,8 +205,25 @@ public class ServerEditFragment extends DialogFragment {
         return true;
     }
 
+    private Server getServer() {
+        return getArguments().getParcelable(ARGUMENT_SERVER);
+    }
+
+    private Action getAction() {
+        return Action.values()[getArguments().getInt(ARGUMENT_ACTION)];
+    }
+
+    private boolean shouldIgnoreTitle() {
+        return getArguments().getBoolean(ARGUMENT_IGNORE_TITLE);
+    }
+
     public interface ServerEditListener {
-        void serverInfoUpdated();
-        void connectToServer(Server server);
+        void onServerEdited(Action action, Server server);
+    }
+
+    public enum Action {
+        CONNECT_ACTION,
+        EDIT_ACTION,
+        ADD_ACTION
     }
 }

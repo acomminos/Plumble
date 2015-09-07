@@ -23,6 +23,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -118,16 +119,13 @@ public class FavouriteServerListFragment extends Fragment implements OnItemClick
     }
 
     public void addServer() {
-        ServerEditFragment infoDialog = new ServerEditFragment();
-        infoDialog.show(getFragmentManager(), "serverInfo");
+        ServerEditFragment.createServerEditDialog(getActivity(), null, ServerEditFragment.Action.ADD_ACTION, false)
+                .show(getFragmentManager(), "serverInfo");
     }
 
     public void editServer(Server server) {
-        ServerEditFragment infoDialog = new ServerEditFragment();
-        Bundle args = new Bundle();
-        args.putParcelable("server", server);
-        infoDialog.setArguments(args);
-        infoDialog.show(getFragmentManager(), "serverInfo");
+        ServerEditFragment.createServerEditDialog(getActivity(), server, ServerEditFragment.Action.EDIT_ACTION, false)
+                .show(getFragmentManager(), "serverInfo");
     }
 
     public void shareServer(Server server) {
