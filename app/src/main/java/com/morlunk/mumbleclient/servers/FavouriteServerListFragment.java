@@ -111,9 +111,14 @@ public class FavouriteServerListFragment extends Fragment implements OnItemClick
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.menu_add_server_item) {
-            addServer();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.menu_add_server_item:
+                addServer();
+                return true;
+            case R.id.menu_quick_connect:
+                ServerEditFragment.createServerEditDialog(getActivity(), null, ServerEditFragment.Action.CONNECT_ACTION, true)
+                        .show(getFragmentManager(), "serverInfo");
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
