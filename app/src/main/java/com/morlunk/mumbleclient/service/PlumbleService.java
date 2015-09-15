@@ -327,8 +327,9 @@ public class PlumbleService extends JumbleService implements
     }
 
     @Override
-    public void onConnectionEstablished() {
-        super.onConnectionEstablished();
+    public void onConnectionSynchronized() {
+        super.onConnectionSynchronized();
+
         // Restore mute/deafen state
         if(mSettings.isMuted() || mSettings.isDeafened()) {
             try {
@@ -337,12 +338,6 @@ public class PlumbleService extends JumbleService implements
                 e.printStackTrace();
             }
         }
-
-    }
-
-    @Override
-    public void onConnectionSynchronized() {
-        super.onConnectionSynchronized();
 
         registerReceiver(mTalkReceiver, new IntentFilter(TalkBroadcastReceiver.BROADCAST_TALK));
 
