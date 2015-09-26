@@ -59,7 +59,7 @@ import com.morlunk.mumbleclient.db.DatabaseProvider;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 
-public class ChannelListFragment extends JumbleServiceFragment implements UserActionModeCallback.LocalUserUpdateListener, OnChannelClickListener, OnUserClickListener {
+public class ChannelListFragment extends JumbleServiceFragment implements OnChannelClickListener, OnUserClickListener {
 
 	private IJumbleObserver mServiceObserver = new JumbleObserver() {
         @Override
@@ -317,7 +317,9 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
     }
 
     private void setupChannelList() throws RemoteException {
-        mChannelListAdapter = new ChannelListAdapter(getActivity(), getService(), mDatabaseProvider.getDatabase(), isShowingPinnedChannels());
+        mChannelListAdapter = new ChannelListAdapter(getActivity(), getService(),
+                mDatabaseProvider.getDatabase(), getChildFragmentManager(),
+                isShowingPinnedChannels());
         mChannelListAdapter.setOnChannelClickListener(this);
         mChannelListAdapter.setOnUserClickListener(this);
         mChannelView.setAdapter(mChannelListAdapter);
@@ -342,43 +344,6 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
     private boolean isShowingPinnedChannels() {
         return getArguments().getBoolean("pinned");
     }
-
-    @Override
-    public void onLocalUserStateUpdated(final IUser user) {
-        try {
-            mChannelListAdapter.notifyDataSetChanged();
-
-            // Add or remove registered user from local mute history
-            final PlumbleDatabase database = mDatabaseProvider.getDatabase();
-            final Server server = getService().getConnectedServer();
-
-            if (user.getUserId() >= 0 && server.isSaved()) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // TODO: use dedicated database worker thread?
-                        try {
-                            if (user.isLocalMuted()) {
-                                database.addLocalMutedUser(server.getId(), user.getUserId());
-                            } else {
-                                database.removeLocalMutedUser(server.getId(), user.getUserId());
-                            }
-                            if (user.isLocalIgnored()) {
-                                database.addLocalIgnoredUser(server.getId(), user.getUserId());
-                            } else {
-                                database.removeLocalIgnoredUser(server.getId(), user.getUserId());
-                            }
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void onChannelClick(IChannel channel) {
         if (mTargetProvider.getChatTarget() != null &&
@@ -408,7 +373,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements UserAc
             // Dismiss action mode if double pressed. FIXME: use list view selection instead?
             mActionMode.finish();
         } else {
-            ActionMode.Callback cb = new UserActionModeCallback(getActivity(), getService(), user, mTargetProvider, getChildFragmentManager(), this) {
+            ActionMode.Callback cb = new UserActionModeCallback(user, mTargetProvider) {
                 @Override
                 public void onDestroyActionMode(ActionMode actionMode) {
                     super.onDestroyActionMode(actionMode);

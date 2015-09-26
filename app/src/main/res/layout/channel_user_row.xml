@@ -21,12 +21,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp"
     android:background="?attr/selectableItemBackground">
 
     <FrameLayout
         android:layout_width="32dp"
-        android:layout_height="32dp">
+        android:layout_height="32dp"
+        android:layout_margin="8dp">
 
         <!--<com.morlunk.mumbleclient.view.CircleImageView-->
             <!--android:id="@+id/user_row_avatar"-->
@@ -53,4 +53,14 @@
         android:paddingLeft="10dp"
         android:text="The quick brown fox"
         android:textSize="14sp"/>
+
+    <ImageView
+        android:id="@+id/user_row_more"
+        android:layout_width="32dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_more_vert_black_24dp"
+        android:layout_gravity="center"
+        android:paddingLeft="8dp"
+        android:tint="?android:textColorSecondary"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
 </LinearLayout>

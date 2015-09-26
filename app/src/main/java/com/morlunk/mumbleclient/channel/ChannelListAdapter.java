@@ -25,6 +25,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.RemoteException;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -36,15 +37,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
-import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.IUser;
+import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.model.TalkState;
-import com.morlunk.jumble.model.User;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.drawable.CircleDrawable;
 import com.morlunk.mumbleclient.drawable.FlipDrawable;
+import com.morlunk.mumbleclient.service.PlumbleService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ import java.util.List;
 /**
  * Created by andrew on 31/07/13.
  */
-public class ChannelListAdapter extends RecyclerView.Adapter {
+public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenuProvider.Listener {
     // Set particular bits to make the integer-based model item ids unique.
     public static final long CHANNEL_ID_MASK = (0x1L << 32);
     public static final long USER_ID_MASK = (0x1L << 33);
@@ -76,12 +77,15 @@ public class ChannelListAdapter extends RecyclerView.Adapter {
     private HashMap<Integer, Boolean> mExpandedChannels;
     private OnUserClickListener mUserClickListener;
     private OnChannelClickListener mChannelClickListener;
+    private final FragmentManager mFragmentManager;
 
-    public ChannelListAdapter(Context context, IJumbleService service, PlumbleDatabase database, boolean showPinnedOnly) throws RemoteException {
+    public ChannelListAdapter(Context context, IJumbleService service, PlumbleDatabase database,
+                              FragmentManager fragmentManager, boolean showPinnedOnly) throws RemoteException {
         setHasStableIds(true);
         mContext = context;
         mService = service;
         mDatabase = database;
+        mFragmentManager = fragmentManager;
 
         mRootChannels = new ArrayList<Integer>();
         if(showPinnedOnly) {
@@ -186,6 +190,9 @@ public class ChannelListAdapter extends RecyclerView.Adapter {
                         uvh.mUserHolder.getPaddingTop(),
                         uvh.mUserHolder.getPaddingRight(),
                         uvh.mUserHolder.getPaddingBottom());
+
+                uvh.mMoreButton.setOnClickListener(new UserMenuProvider(mContext, user,
+                        (PlumbleService.PlumbleBinder) mService, mFragmentManager, this));
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -367,17 +374,54 @@ public class ChannelListAdapter extends RecyclerView.Adapter {
         notifyDataSetChanged();
     }
 
+    @Override
+    public void onLocalUserStateUpdated(final IUser user) {
+        try {
+            notifyDataSetChanged();
+
+            // Add or remove registered user from local mute history
+            final Server server = mService.getConnectedServer();
+
+            if (user.getUserId() >= 0 && server.isSaved()) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // TODO: use dedicated database worker thread?
+                        try {
+                            if (user.isLocalMuted()) {
+                                mDatabase.addLocalMutedUser(server.getId(), user.getUserId());
+                            } else {
+                                mDatabase.removeLocalMutedUser(server.getId(), user.getUserId());
+                            }
+                            if (user.isLocalIgnored()) {
+                                mDatabase.addLocalIgnoredUser(server.getId(), user.getUserId());
+                            } else {
+                                mDatabase.removeLocalIgnoredUser(server.getId(), user.getUserId());
+                            }
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static class UserViewHolder extends RecyclerView.ViewHolder {
         public LinearLayout mUserHolder;
         public TextView mUserName;
 //        public ImageView mUserAvatar;
         public ImageView mUserTalkHighlight;
+        public ImageView mMoreButton;
 
         public UserViewHolder(View itemView) {
             super(itemView);
             mUserHolder = (LinearLayout) itemView.findViewById(R.id.user_row_title);
             mUserTalkHighlight = (ImageView) itemView.findViewById(R.id.user_row_talk_highlight);
             mUserName = (TextView) itemView.findViewById(R.id.user_row_name);
+            mMoreButton = (ImageView) itemView.findViewById(R.id.user_row_more);
         }
     }
 
