@@ -221,7 +221,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
         try {
             if(getService() != null) {
                 MenuItem bluetoothItem = menu.findItem(R.id.menu_bluetooth);
-                bluetoothItem.setChecked(getService().isBluetoothAvailable());
+                bluetoothItem.setChecked(getService().usingBluetoothSco());
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -304,12 +304,15 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
                 return false;
             case R.id.menu_bluetooth:
                 item.setChecked(!item.isChecked());
-//                try {
-                    // FIXME
-//                    getService().setBluetoothEnabled(item.isChecked());
-//                } catch (RemoteException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    if (item.isChecked()) {
+                        getService().enableBluetoothSco();
+                    } else {
+                        getService().disableBluetoothSco();
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
                 return true;
         }
 
