@@ -18,12 +18,11 @@
 package com.morlunk.mumbleclient.channel.comment;
 
 import android.os.RemoteException;
-import android.widget.Toast;
 
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
-import com.morlunk.jumble.model.User;
-import com.morlunk.jumble.net.JumbleObserver;
+import com.morlunk.jumble.model.IChannel;
+import com.morlunk.jumble.util.JumbleObserver;
 
 /**
  * Created by andrew on 03/03/14.
@@ -34,7 +33,7 @@ public class ChannelDescriptionFragment extends AbstractCommentFragment {
     public void requestComment(final IJumbleService service) throws RemoteException {
         service.registerObserver(new JumbleObserver() {
             @Override
-            public void onChannelStateUpdated(Channel channel) throws RemoteException {
+            public void onChannelStateUpdated(IChannel channel) throws RemoteException {
                 if(channel.getId() == getChannelId() &&
                         channel.getDescription() != null) {
                     loadComment(channel.getDescription());

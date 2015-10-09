@@ -32,11 +32,14 @@ import android.util.Log;
 
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.IChannel;
+import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.User;
 import com.morlunk.mumbleclient.Constants;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.service.PlumbleService;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -121,32 +124,89 @@ public class ChannelSearchProvider extends ContentProvider {
 		
 		MatrixCursor cursor = new MatrixCursor(new String[] { "_ID", SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA, SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_ICON_1, SearchManager.SUGGEST_COLUMN_TEXT_2, SearchManager.SUGGEST_COLUMN_INTENT_DATA });
 
-        List<Channel> channels;
-        List<User> users;
+        List<IChannel> channels;
+        List<IUser> users;
         try {
-            channels = mService.getChannelList();
-            users = mService.getUserList();
+            channels = channelSearch(mService.getRootChannel(), query);
+            users = userSearch(mService.getRootChannel(), query);
+
+            for(int x=0;x<channels.size();x++) {
+                IChannel channel = channels.get(x);
+                cursor.addRow(new Object[] { x, INTENT_DATA_CHANNEL, channel.getName(), R.drawable.ic_action_channels, getContext().getString(R.string.search_channel_users, channel.getSubchannelUserCount()), channel.getId() });
+            }
+
+            for(int x=0;x<users.size();x++) {
+                IUser user = users.get(x);
+                cursor.addRow(new Object[] { x, INTENT_DATA_USER, user.getName(), R.drawable.ic_action_user_dark, getContext().getString(R.string.user), user.getSession() });
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
-            return null;
         }
-
-        for(int x=0;x<channels.size();x++) {
-			Channel channel = channels.get(x);
-			String channelNameLower = channel.getName().toLowerCase(Locale.getDefault());
-			if(channelNameLower.contains(query))
-				cursor.addRow(new Object[] { x, INTENT_DATA_CHANNEL, channel.getName(), R.drawable.ic_action_channels, getContext().getString(R.string.search_channel_users, channel.getSubchannelUserCount()), channel.getId() });
-		}
-
-		for(int x=0;x<users.size();x++) {
-			User user = users.get(x);
-			String userNameLower = user.getName().toLowerCase(Locale.getDefault());
-			if(userNameLower.contains(query))
-				cursor.addRow(new Object[] { x, INTENT_DATA_USER, user.getName(), R.drawable.ic_action_user_dark, getContext().getString(R.string.user), user.getSession() });
-		}
-		
 		return cursor;
 	}
+
+    /**
+     * Recursively searches the channel tree for a user with a name containing the given string,
+     * ignoring case.
+     * @param root The channel to recursively search for users within.
+     * @param str The string to match against the user's name. Case insensitive.
+     * @return A list of users whose names contain str.
+     */
+    private List<IUser> userSearch(IChannel root, String str) throws RemoteException {
+        List<IUser> list = new LinkedList<IUser>();
+        userSearch(root, str, list);
+        return list;
+    }
+
+    /**
+     * @see #userSearch(IChannel,String)
+     */
+    private void userSearch(IChannel root, String str, List<IUser> users) throws RemoteException {
+        if (root == null) {
+            return;
+        }
+        for (IUser user : (List<IUser>) root.getUsers()) {
+            if (user != null && user.getName() != null
+                    && user.getName().toLowerCase().contains(str.toLowerCase())) {
+                users.add(user);
+            }
+        }
+        for (IChannel subc : (List<IChannel>) root.getSubchannels()) {
+            if (subc != null)
+                userSearch(subc, str, users);
+        }
+    }
+
+    /**
+     * Recursively searches the channel tree for a channel with a name containing the given string,
+     * ignoring case.
+     * @param root The channel to recursively search for subchannels within.
+     * @param str The string to match against the channel's name. Case insensitive.
+     * @return A list of channels whose names contain str.
+     */
+    private List<IChannel> channelSearch(IChannel root, String str) throws RemoteException {
+        List<IChannel> list = new LinkedList<IChannel>();
+        channelSearch(root, str, list);
+        return list;
+    }
+
+    /**
+     * @see #channelSearch(IChannel,String)
+     */
+    private void channelSearch(IChannel root, String str, List<IChannel> channels) throws RemoteException {
+        if (root == null) {
+            return;
+        }
+
+        if (root.getName().toLowerCase().contains(str.toLowerCase())) {
+            channels.add(root);
+        }
+
+        for (IChannel subc : (List<IChannel>) root.getSubchannels()) {
+            if (subc != null)
+                channelSearch(subc, str, channels);
+        }
+    }
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,

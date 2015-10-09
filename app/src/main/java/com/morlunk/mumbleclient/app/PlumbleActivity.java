@@ -24,36 +24,38 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Server;
-import com.morlunk.jumble.net.JumbleObserver;
+import com.morlunk.jumble.util.JumbleException;
+import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.jumble.util.MumbleURLParser;
+import com.morlunk.jumble.util.ParcelableByteArray;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.channel.AccessTokenFragment;
@@ -65,29 +67,40 @@ import com.morlunk.mumbleclient.db.PlumbleSQLiteDatabase;
 import com.morlunk.mumbleclient.db.PublicServer;
 import com.morlunk.mumbleclient.preference.PlumbleCertificateGenerateTask;
 import com.morlunk.mumbleclient.preference.Preferences;
+import com.morlunk.mumbleclient.servers.FavouriteServerListFragment;
 import com.morlunk.mumbleclient.servers.PublicServerListFragment;
 import com.morlunk.mumbleclient.servers.ServerEditFragment;
-import com.morlunk.mumbleclient.servers.ServerListFragment;
 import com.morlunk.mumbleclient.service.PlumbleService;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.util.JumbleServiceProvider;
+import com.morlunk.mumbleclient.util.PlumbleTrustStore;
 
+import org.spongycastle.util.encoders.Hex;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.security.KeyStore;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener, ServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider, SharedPreferences.OnSharedPreferenceChangeListener, DrawerAdapter.DrawerDataProvider, ServerEditFragment.ServerEditListener {
+import info.guardianproject.onionkit.ui.OrbotHelper;
 
-    /** Broadcasted when the activity gains focus. Used to dismiss chat notifications, bit of a hack. */
-    public static final String ACTION_PLUMBLE_SHOWN = "com.morlunk.mumbleclient.ACTION_PLUMBLE_SHOWN";
-    public static final int RECONNECT_DELAY = 10000;
+public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener,
+        FavouriteServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider,
+        SharedPreferences.OnSharedPreferenceChangeListener, DrawerAdapter.DrawerDataProvider,
+        ServerEditFragment.ServerEditListener {
+    /**
+     * If specified, the provided integer drawer fragment ID is shown when the activity is created.
+     */
+    public static final String EXTRA_DRAWER_FRAGMENT = "drawer_fragment";
 
-    private static final String SAVED_FRAGMENT_TAG = "fragment";
-
-    private IJumbleService mService;
+    private PlumbleService.PlumbleBinder mService;
     private PlumbleDatabase mDatabase;
     private Settings mSettings;
 
@@ -95,7 +108,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private DrawerAdapter mDrawerAdapter;
-    private int mActiveFragment;
 
     private ProgressDialog mConnectingDialog;
     private AlertDialog mErrorDialog;
@@ -107,9 +119,10 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mService = (IJumbleService) service;
+            mService = (PlumbleService.PlumbleBinder) service;
             try {
                 mService.registerObserver(mObserver);
+                mService.clearChatNotifications(); // Clear chat notifications on resume.
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -117,12 +130,22 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
             for(JumbleServiceFragment fragment : mServiceFragments)
                 fragment.setServiceBound(true);
+
+            // Re-show server list if we're showing a fragment that depends on the service.
+            try {
+                if(getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof JumbleServiceFragment &&
+                        mService.getConnectionState() != JumbleService.STATE_CONNECTED) {
+                    loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+                }
+                updateConnectionState(getService());
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            for(JumbleServiceFragment fragment : mServiceFragments)
-                fragment.setServiceBound(false);
+            mService = null;
         }
     };
 
@@ -133,12 +156,16 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             mDrawerAdapter.notifyDataSetChanged();
             supportInvalidateOptionsMenu();
 
-            mConnectingDialog.dismiss();
-            if(mErrorDialog != null) mErrorDialog.dismiss();
+            updateConnectionState(getService());
         }
 
         @Override
-        public void onDisconnected() throws RemoteException {
+        public void onConnecting() throws RemoteException {
+            updateConnectionState(getService());
+        }
+
+        @Override
+        public void onDisconnected(JumbleException e) throws RemoteException {
             // Re-show server list if we're showing a fragment that depends on the service.
             if(getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof JumbleServiceFragment) {
                 loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
@@ -146,36 +173,56 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             mDrawerAdapter.notifyDataSetChanged();
             supportInvalidateOptionsMenu();
 
-            mConnectingDialog.dismiss();
+            updateConnectionState(getService());
         }
 
         @Override
-        public void onConnectionError(String message, boolean reconnecting) throws RemoteException {
-            if(mErrorDialog != null) mErrorDialog.dismiss();
-            mConnectingDialog.dismiss();
+        public void onTLSHandshakeFailed(ParcelableByteArray cert) throws RemoteException {
+            byte[] certBytes = cert.getBytes();
+            final Server lastServer = getService().getConnectedServer();
 
-            AlertDialog.Builder ab = new AlertDialog.Builder(PlumbleActivity.this);
-            ab.setTitle(R.string.connectionRefused);
-            if(!reconnecting) {
-                ab.setMessage(message);
-                ab.setPositiveButton(android.R.string.ok, null);
-            } else {
-                ab.setTitle(R.string.connectionRefused);
-                ab.setMessage(message+"\n"+getString(R.string.reconnecting, RECONNECT_DELAY/1000));
-                ab.setPositiveButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            try {
+                CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+                final X509Certificate x509 = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(certBytes));
+
+                AlertDialog.Builder adb = new AlertDialog.Builder(PlumbleActivity.this);
+                adb.setTitle(R.string.untrusted_certificate);
+                try {
+                    MessageDigest digest = MessageDigest.getInstance("SHA-1");
+                    byte[] certDigest = digest.digest(x509.getEncoded());
+                    String hexDigest = new String(Hex.encode(certDigest));
+                    adb.setMessage(getString(R.string.certificate_info,
+                            x509.getSubjectDN().getName(),
+                            x509.getNotBefore().toString(),
+                            x509.getNotAfter().toString(),
+                            hexDigest));
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                    adb.setMessage(x509.toString());
+                }
+                adb.setPositiveButton(R.string.allow, new DialogInterface.OnClickListener() {
+
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(getService() != null) {
-                            try {
-                                getService().cancelReconnect();
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                            }
+                        // Try to add to trust store
+                        try {
+                            String alias = lastServer.getHost();
+                            KeyStore trustStore = PlumbleTrustStore.getTrustStore(PlumbleActivity.this);
+                            trustStore.setCertificateEntry(alias, x509);
+                            PlumbleTrustStore.saveTrustStore(PlumbleActivity.this, trustStore);
+                            Toast.makeText(PlumbleActivity.this, R.string.trust_added, Toast.LENGTH_LONG).show();
+                            connectToServer(lastServer);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(PlumbleActivity.this, R.string.trust_add_failed, Toast.LENGTH_LONG).show();
                         }
                     }
                 });
+                adb.setNegativeButton(R.string.wizard_cancel, null);
+                adb.show();
+            } catch (CertificateException e) {
+                e.printStackTrace();
             }
-            mErrorDialog = ab.show();
         }
 
         @Override
@@ -190,25 +237,44 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mSettings = Settings.getInstance(this);
-        setTheme(mSettings.getTheme()); // Set custom theme
+        setTheme(mSettings.getTheme());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setStayAwake(mSettings.shouldStayAwake());
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.registerOnSharedPreferenceChangeListener(this);
 
         mDatabase = new PlumbleSQLiteDatabase(this); // TODO add support for cloud storage
+        mDatabase.open();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerList.setOnItemClickListener(this);
         mDrawerAdapter = new DrawerAdapter(this, this);
         mDrawerList.setAdapter(mDrawerAdapter);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 supportInvalidateOptionsMenu();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+                super.onDrawerStateChanged(newState);
+
+                try {
+                    // Prevent push to talk from getting stuck on when the drawer is opened.
+                    if (getService() != null
+                            && getService().getConnectionState() == JumbleService.STATE_CONNECTED
+                            && getService().isTalking() && !mSettings.isPushToTalkToggle()) {
+                        getService().setTalkingState(false);
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -216,6 +282,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 supportInvalidateOptionsMenu();
             }
         };
+
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -226,27 +293,15 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         logo.setColorFilter(iconColor, PorterDuff.Mode.MULTIPLY);
         getSupportActionBar().setLogo(logo);
 
-        mConnectingDialog = new ProgressDialog(this);
-        mConnectingDialog.setIndeterminate(true);
-        mConnectingDialog.setCancelable(true);
-        mConnectingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                try {
-                    mService.disconnect();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
         AlertDialog.Builder dadb = new AlertDialog.Builder(this);
         dadb.setMessage(R.string.disconnectSure);
         dadb.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    if(mService != null && mService.isConnected()) mService.disconnect();
+                    if(mService != null
+                            && mService.getConnectionState() == JumbleService.STATE_CONNECTED)
+                        mService.disconnect();
                     loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -256,11 +311,14 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         dadb.setNegativeButton(android.R.string.cancel, null);
         mDisconnectPromptBuilder = dadb;
 
-        // Restore old fragment or load server list (default)
-        int fragmentId = DrawerAdapter.ITEM_FAVOURITES;
-        if(savedInstanceState != null)
-            fragmentId = savedInstanceState.getInt(SAVED_FRAGMENT_TAG, DrawerAdapter.ITEM_FAVOURITES);
-        loadDrawerFragment(fragmentId);
+        if(savedInstanceState == null) {
+            if (getIntent() != null && getIntent().hasExtra(EXTRA_DRAWER_FRAGMENT)) {
+                loadDrawerFragment(getIntent().getIntExtra(EXTRA_DRAWER_FRAGMENT,
+                        DrawerAdapter.ITEM_FAVOURITES));
+            } else {
+                loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+            }
+        }
 
         // If we're given a Mumble URL to show, open up a server edit fragment.
         if(getIntent() != null &&
@@ -269,17 +327,19 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             try {
                 Server server = MumbleURLParser.parseURL(url);
 
-                // Open a dialog prompting the user to add the Mumble server.
-                Bundle args = new Bundle();
-                args.putBoolean("save", false);
-                args.putParcelable("server", server);
-                ServerEditFragment fragment = (ServerEditFragment) ServerEditFragment.instantiate(this, ServerEditFragment.class.getName(), args);
+                // Open a dialog prompting the user to connect to the Mumble server.
+                DialogFragment fragment = (DialogFragment) ServerEditFragment.createServerEditDialog(
+                        PlumbleActivity.this, server, ServerEditFragment.Action.CONNECT_ACTION, true);
                 fragment.show(getSupportFragmentManager(), "url_edit");
             } catch (MalformedURLException e) {
                 Toast.makeText(this, getString(R.string.mumble_url_parse_failed), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
         }
+
+        setVolumeControlStream(mSettings.isHandsetMode() ?
+                AudioManager.STREAM_VOICE_CALL : AudioManager.STREAM_MUSIC);
+
         if(mSettings.isFirstRun()) showSetupWizard();
     }
 
@@ -293,17 +353,21 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     protected void onResume() {
         super.onResume();
         Intent connectIntent = new Intent(this, PlumbleService.class);
-        bindService(connectIntent, mConnection, BIND_AUTO_CREATE);
-
-        Intent resumeIntent = new Intent(ACTION_PLUMBLE_SHOWN);
-        sendBroadcast(resumeIntent);
+        bindService(connectIntent, mConnection, 0);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if (mErrorDialog != null)
+            mErrorDialog.dismiss();
+        if (mConnectingDialog != null)
+            mConnectingDialog.dismiss();
+
         if(mService != null)
             try {
+                for(JumbleServiceFragment fragment : mServiceFragments)
+                    fragment.setServiceBound(false);
                 mService.unregisterObserver(mObserver);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -315,6 +379,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     protected void onDestroy() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.unregisterOnSharedPreferenceChangeListener(this);
+        mDatabase.close();
         super.onDestroy();
     }
 
@@ -322,13 +387,16 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem disconnectButton = menu.findItem(R.id.action_disconnect);
         try {
-            disconnectButton.setVisible(mService != null && mService.isConnected());
+            disconnectButton.setVisible(mService != null &&
+                    mService.getConnectionState() == JumbleService.STATE_CONNECTED);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
 
-        // Color the action bar icons to the primary text color of the theme, TODO optimize
-        int foregroundColor = getTheme().obtainStyledAttributes(new int[] { android.R.attr.textColorPrimaryInverse }).getColor(0, -1);
+        // Color the action bar icons to the primary text color of the theme.
+        int foregroundColor = getSupportActionBar().getThemedContext()
+                .obtainStyledAttributes(new int[] { android.R.attr.textColor })
+                .getColor(0, -1);
         for(int x=0; x < menu.size(); ++x) {
             MenuItem item = menu.getItem(x);
             if(item.getIcon() != null) {
@@ -360,10 +428,6 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     e.printStackTrace();
                 }
                 return true;
-            case R.id.action_settings:
-                Intent prefIntent = new Intent(this, Preferences.class);
-                startActivity(prefIntent);
-                return true;
         }
 
         return false;
@@ -376,42 +440,27 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        // Persist active fragment across rotations
-        outState.putInt(SAVED_FRAGMENT_TAG, mActiveFragment);
-
-    }
-
-    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        try {
-            if(Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod()) &&
-                    keyCode == mSettings.getPushToTalkKey() &&
-                    mService != null &&
-                    mService.isConnected()) {
-                mService.setTalkingState(true);
-                return true;
+        if (mService != null && keyCode == mSettings.getPushToTalkKey()) {
+            try {
+                mService.onTalkKeyDown();
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        try {
-            if(Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod()) &&
-                    keyCode == mSettings.getPushToTalkKey() &&
-                    mService != null &&
-                    mService.isConnected()) {
-                mService.setTalkingState(false);
-                return true;
+        if (mService != null && keyCode == mSettings.getPushToTalkKey()) {
+            try {
+                mService.onTalkKeyUp();
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            return true;
         }
         return super.onKeyUp(keyCode, event);
     }
@@ -419,7 +468,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     @Override
     public void onBackPressed() {
         try {
-            if(mService.isConnected()) {
+            if(mService != null &&
+                    mService.getConnectionState() == JumbleService.STATE_CONNECTED) {
                 mDisconnectPromptBuilder.show();
                 return;
             }
@@ -452,7 +502,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     @Override
                     protected void onPostExecute(File result) {
                         super.onPostExecute(result);
-                        mSettings.setCertificatePath(result.getAbsolutePath());
+                        if(result != null) mSettings.setCertificatePath(result.getAbsolutePath());
                     }
                 };
                 generateTask.execute();
@@ -493,28 +543,31 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 args.putBoolean("pinned", true);
                 break;
             case DrawerAdapter.ITEM_FAVOURITES:
-                fragmentClass = ServerListFragment.class;
-                break;
-            case DrawerAdapter.ITEM_LAN:
+                fragmentClass = FavouriteServerListFragment.class;
                 break;
             case DrawerAdapter.ITEM_PUBLIC:
                 fragmentClass = PublicServerListFragment.class;
                 break;
+            case DrawerAdapter.ITEM_SETTINGS:
+                Intent prefIntent = new Intent(this, Preferences.class);
+                startActivity(prefIntent);
+                return;
             default:
                 return;
         }
         Fragment fragment = Fragment.instantiate(this, fragmentClass.getName(), args);
         getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_frame, fragment, fragmentClass.getName())
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
         setTitle(mDrawerAdapter.getItemWithId(fragmentId).title);
-        mActiveFragment = fragmentId;
     }
 
     public void connectToServer(final Server server) {
         // Check if we're already connected to a server; if so, inform user.
         try {
-            if(mService != null && mService.isConnected()) {
+            if(mService != null &&
+                    mService.getConnectionState() == JumbleService.STATE_CONNECTED) {
                 AlertDialog.Builder adb = new AlertDialog.Builder(this);
                 adb.setMessage(R.string.reconnect_dialog_message);
                 adb.setPositiveButton(R.string.connect, new DialogInterface.OnClickListener() {
@@ -524,7 +577,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                             // Register an observer to reconnect to the new server once disconnected.
                             mService.registerObserver(new JumbleObserver() {
                                 @Override
-                                public void onDisconnected() throws RemoteException {
+                                public void onDisconnected(JumbleException e) throws RemoteException {
                                     connectToServer(server);
                                     mService.unregisterObserver(this);
                                 }
@@ -543,53 +596,17 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             e.printStackTrace();
         }
 
-        mConnectingDialog.setMessage(getString(R.string.connecting_to_server, server.getHost(), server.getPort()));
-        mConnectingDialog.show();
-
-        /* Convert input method defined in settings to an integer format used by Jumble. */
-        int inputMethod = 0;
-        String prefInputMethod = mSettings.getInputMethod();
-        if(Settings.ARRAY_INPUT_METHOD_VOICE.equals(prefInputMethod))
-            inputMethod = Constants.TRANSMIT_VOICE_ACTIVITY;
-        else if(Settings.ARRAY_INPUT_METHOD_PTT.equals(prefInputMethod))
-            inputMethod = Constants.TRANSMIT_PUSH_TO_TALK;
-        else if(Settings.ARRAY_INPUT_METHOD_CONTINUOUS.equals(prefInputMethod) ||
-                Settings.ARRAY_INPUT_METHOD_HANDSET.equals(prefInputMethod))
-            inputMethod = Constants.TRANSMIT_CONTINUOUS;
-
-        int audioSource = Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod()) ?
-                MediaRecorder.AudioSource.DEFAULT : MediaRecorder.AudioSource.MIC;
-        int audioStream = Settings.ARRAY_INPUT_METHOD_HANDSET.equals(mSettings.getInputMethod()) ?
-                AudioManager.STREAM_VOICE_CALL : AudioManager.STREAM_MUSIC;
-
-        String applicationVersion = "";
-        try {
-            applicationVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+        // Prompt to start Orbot if enabled but not running
+        if (mSettings.isTorEnabled()) {
+            OrbotHelper orbotHelper = new OrbotHelper(this);
+            if (!orbotHelper.isOrbotRunning()) {
+                orbotHelper.requestOrbotStart(this);
+                return;
+            }
         }
 
-        Intent connectIntent = new Intent(this, PlumbleService.class);
-        connectIntent.putExtra(JumbleService.EXTRAS_SERVER, server);
-        connectIntent.putExtra(JumbleService.EXTRAS_CLIENT_NAME, getString(R.string.app_name)+" "+applicationVersion);
-        connectIntent.putExtra(JumbleService.EXTRAS_TRANSMIT_MODE, inputMethod);
-        connectIntent.putExtra(JumbleService.EXTRAS_DETECTION_THRESHOLD, mSettings.getDetectionThreshold());
-        connectIntent.putExtra(JumbleService.EXTRAS_AMPLITUDE_BOOST, mSettings.getAmplitudeBoostMultiplier());
-        connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE, mSettings.getCertificate());
-        connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE_PASSWORD, mSettings.getCertificatePassword());
-        connectIntent.putExtra(JumbleService.EXTRAS_AUTO_RECONNECT, mSettings.isAutoReconnectEnabled());
-        connectIntent.putExtra(JumbleService.EXTRAS_AUTO_RECONNECT_DELAY, RECONNECT_DELAY);
-        connectIntent.putExtra(JumbleService.EXTRAS_USE_OPUS, !mSettings.isOpusDisabled());
-        connectIntent.putExtra(JumbleService.EXTRAS_INPUT_RATE, mSettings.getInputSampleRate());
-        connectIntent.putExtra(JumbleService.EXTRAS_INPUT_QUALITY, mSettings.getInputQuality());
-        connectIntent.putExtra(JumbleService.EXTRAS_FORCE_TCP, mSettings.isTcpForced());
-        connectIntent.putExtra(JumbleService.EXTRAS_USE_TOR, mSettings.isTorEnabled());
-        connectIntent.putStringArrayListExtra(JumbleService.EXTRAS_ACCESS_TOKENS, (ArrayList<String>) mDatabase.getAccessTokens(server.getId()));
-        connectIntent.putExtra(JumbleService.EXTRAS_AUDIO_SOURCE, audioSource);
-        connectIntent.putExtra(JumbleService.EXTRAS_AUDIO_STREAM, audioStream);
-        connectIntent.putExtra(JumbleService.EXTRAS_FRAMES_PER_PACKET, mSettings.getFramesPerPacket());
-        connectIntent.setAction(JumbleService.ACTION_CONNECT);
-        startService(connectIntent);
+        ServerConnectTask connectTask = new ServerConnectTask(this, mDatabase);
+        connectTask.execute(server);
     }
 
     public void connectToPublicServer(final PublicServer server) {
@@ -619,9 +636,87 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         alertBuilder.show();
     }
 
-    @Override
-    public void serverInfoUpdated() {
-        loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+    private void setStayAwake(boolean stayAwake) {
+        if (stayAwake) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+    }
+
+    /**
+     * Updates the activity to represent the connection state of the given service.
+     * Will show reconnecting dialog if reconnecting, dismiss otherwise, etc.
+     * Basically, this service will do catch-up if the activity wasn't bound to receive
+     * connection state updates.
+     * @param service A bound IJumbleService.
+     */
+    private void updateConnectionState(IJumbleService service) throws RemoteException {
+        if (mConnectingDialog != null)
+            mConnectingDialog.dismiss();
+        if (mErrorDialog != null)
+            mErrorDialog.dismiss();
+
+        switch (mService.getConnectionState()) {
+            case JumbleService.STATE_CONNECTING:
+                Server server = service.getConnectedServer();
+                mConnectingDialog = new ProgressDialog(this);
+                mConnectingDialog.setIndeterminate(true);
+                mConnectingDialog.setCancelable(true);
+                mConnectingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        try {
+                            mService.disconnect();
+                            Toast.makeText(PlumbleActivity.this, R.string.cancelled,
+                                    Toast.LENGTH_SHORT).show();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                mConnectingDialog.setMessage(getString(R.string.connecting_to_server, server.getHost(),
+                        server.getPort()));
+                mConnectingDialog.show();
+                break;
+            case JumbleService.STATE_CONNECTION_LOST:
+                // Only bother the user if the error hasn't already been shown.
+                if (!getService().isErrorShown()) {
+                    JumbleException error = getService().getConnectionError();
+                    AlertDialog.Builder ab = new AlertDialog.Builder(PlumbleActivity.this);
+                    ab.setTitle(R.string.connectionRefused);
+                    if (mService.isReconnecting()) {
+                        ab.setMessage(getString(R.string.attempting_reconnect, error.getMessage()));
+                        ab.setPositiveButton(R.string.cancel_reconnect, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (getService() != null) {
+                                    try {
+                                        getService().cancelReconnect();
+                                        getService().markErrorShown();
+                                    } catch (RemoteException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        ab.setMessage(error.getMessage());
+                        ab.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (getService() != null)
+                                    getService().markErrorShown();
+                            }
+                        });
+                    }
+                    ab.setCancelable(false);
+                    mErrorDialog = ab.show();
+                }
+                break;
+
+
+        }
     }
 
     /*
@@ -629,7 +724,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
      */
 
     @Override
-    public IJumbleService getService() {
+    public PlumbleService.PlumbleBinder getService() {
         return mService;
     }
 
@@ -659,13 +754,19 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 finish();
                 startActivity(intent);
             }
+        } else if (Settings.PREF_STAY_AWAKE.equals(key)) {
+            setStayAwake(mSettings.shouldStayAwake());
+        } else if (Settings.PREF_HANDSET_MODE.equals(key)) {
+            setVolumeControlStream(mSettings.isHandsetMode() ?
+                    AudioManager.STREAM_VOICE_CALL : AudioManager.STREAM_MUSIC);
         }
     }
 
     @Override
     public boolean isConnected() {
         try {
-            return mService != null && mService.isConnected();
+            return mService != null
+                    && mService.getConnectionState() == JumbleService.STATE_CONNECTED;
         } catch (RemoteException e) {
             e.printStackTrace();
             return false;
@@ -675,7 +776,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     @Override
     public String getConnectedServerName() {
         try {
-            if(mService != null && mService.isConnected()) {
+            if(mService != null
+                    && mService.getConnectionState() == JumbleService.STATE_CONNECTED) {
                 Server server = mService.getConnectedServer();
                 return server.getName().equals("") ? server.getHost() : server.getName();
             }
@@ -683,5 +785,22 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void onServerEdited(ServerEditFragment.Action action, Server server) {
+        switch (action) {
+            case ADD_ACTION:
+                mDatabase.addServer(server);
+                loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+                break;
+            case EDIT_ACTION:
+                mDatabase.updateServer(server);
+                loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
+                break;
+            case CONNECT_ACTION:
+                connectToServer(server);
+                break;
+        }
     }
 }

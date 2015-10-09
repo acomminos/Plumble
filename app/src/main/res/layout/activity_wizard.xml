@@ -44,7 +44,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:text="@string/wizard_back"
-            style="@style/Plumble.BorderlessButton"/>
+            android:background="?attr/selectableItemBackground"/>
 
         <View
             android:layout_height="match_parent"
@@ -57,7 +57,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:text="@string/wizard_next"
-            style="@style/Plumble.BorderlessButton"/>
+            android:background="?attr/selectableItemBackground"/>
         </LinearLayout>
 
 </LinearLayout>

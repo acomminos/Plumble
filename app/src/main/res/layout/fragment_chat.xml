@@ -60,8 +60,8 @@
 		    android:layout_weight="1"
             android:minHeight="48dp"
 		    android:hint="@string/send_message"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-		    android:inputType="textAutoCorrect"
+            android:maxLines="4"
+		    android:inputType="textAutoCorrect|textMultiLine"
 		    android:imeOptions="actionSend"
 	    	android:layout_marginLeft="10dp"
 	    	android:layout_marginRight="10dp" >
@@ -69,12 +69,13 @@
 
 		<ImageButton
 		    android:id="@+id/chatTextSend"
-            style="@style/Plumble.BorderlessButton"
 		    android:layout_width="48dp"
-		    android:layout_height="48dp"
+		    android:layout_height="match_parent"
 		    android:src="@drawable/ic_action_send"
             android:tint="?android:attr/textColorPrimary"
-		    android:enabled="false"/>
+		    android:enabled="false"
+            android:layout_gravity="bottom"
+            android:background="?attr/selectableItemBackground"/>
 
 	</LinearLayout>
 </LinearLayout>

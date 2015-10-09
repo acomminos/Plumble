@@ -1,0 +1,21 @@
+[main]
+host = https://www.transifex.com
+
+[plumble.jumble-strings]
+file_filter = libraries/Jumble/src/main/res/values-<lang>/strings.xml
+source_file = libraries/Jumble/src/main/res/values/strings.xml
+source_lang = en
+type = ANDROID
+
+[plumble.preferencexml]
+file_filter = app/src/main/res/values-<lang>/preference.xml
+source_file = app/src/main/res/values/preference.xml
+source_lang = en
+type = ANDROID
+
+[plumble.stringsxml]
+file_filter = app/src/main/res/values-<lang>/strings.xml
+source_file = app/src/main/res/values/strings.xml
+source_lang = en
+type = ANDROID
+

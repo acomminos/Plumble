@@ -18,95 +18,103 @@
 package com.morlunk.mumbleclient.channel;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.CursorWrapper;
-import android.database.sqlite.SQLiteCursor;
+import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.PopupMenu;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.model.IChannel;
+import com.morlunk.jumble.model.IUser;
+import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.model.User;
-import com.morlunk.jumble.net.JumbleObserver;
-import com.morlunk.jumble.net.Permissions;
-import com.morlunk.mumbleclient.Constants;
+import com.morlunk.jumble.util.JumbleException;
+import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
-import com.morlunk.mumbleclient.channel.comment.ChannelDescriptionFragment;
+import com.morlunk.mumbleclient.Settings;
+import com.morlunk.mumbleclient.channel.actionmode.ChannelActionModeCallback;
+import com.morlunk.mumbleclient.channel.actionmode.UserActionModeCallback;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
+import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
-import com.morlunk.mumbleclient.view.PlumbleNestedListView;
-import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedChildClickListener;
-import com.morlunk.mumbleclient.view.PlumbleNestedListView.OnNestedGroupClickListener;
 
-public class ChannelListFragment extends JumbleServiceFragment implements OnNestedChildClickListener, OnNestedGroupClickListener, ChannelListAdapter.ChannelMenuListener {
+public class ChannelListFragment extends JumbleServiceFragment implements OnChannelClickListener, OnUserClickListener {
 
 	private IJumbleObserver mServiceObserver = new JumbleObserver() {
         @Override
-        public void onDisconnected() throws RemoteException {
+        public void onDisconnected(JumbleException e) throws RemoteException {
             mChannelView.setAdapter(null);
         }
 
         @Override
-        public void onUserJoinedChannel(User user, Channel newChannel, Channel oldChannel) throws RemoteException {
-            updateChannelList();
+        public void onUserJoinedChannel(IUser user, IChannel newChannel, IChannel oldChannel) throws RemoteException {
+            mChannelListAdapter.updateChannels();
+            mChannelListAdapter.notifyDataSetChanged();
             if(getService().getSession() == user.getSession()) {
                 scrollToChannel(newChannel.getId());
             }
         }
 
         @Override
-		public void onChannelAdded(Channel channel) throws RemoteException {
-			updateChannelList();
+		public void onChannelAdded(IChannel channel) throws RemoteException {
+            mChannelListAdapter.updateChannels();
+			mChannelListAdapter.notifyDataSetChanged();
 		}
 
 		@Override
-		public void onChannelRemoved(Channel channel) throws RemoteException {
-			updateChannelList();
+		public void onChannelRemoved(IChannel channel) throws RemoteException {
+            mChannelListAdapter.updateChannels();
+			mChannelListAdapter.notifyDataSetChanged();
 		}
 
         @Override
-        public void onChannelStateUpdated(Channel channel) throws RemoteException {
-            updateChannel(channel);
+        public void onChannelStateUpdated(IChannel channel) throws RemoteException {
+            mChannelListAdapter.updateChannels();
+            mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
-        public void onUserConnected(User user) throws RemoteException {
-            updateChannelList();
+        public void onUserConnected(IUser user) throws RemoteException {
+            mChannelListAdapter.updateChannels();
+            mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
-        public void onUserRemoved(User user, String reason) throws RemoteException {
-            removeUser(user);
+        public void onUserRemoved(IUser user, String reason) throws RemoteException {
+            mChannelListAdapter.updateChannels();
+            mChannelListAdapter.notifyDataSetChanged();
         }
 
         @Override
-        public void onUserStateUpdated(User user) throws RemoteException {
-            updateUser(user);
+        public void onUserStateUpdated(IUser user) throws RemoteException {
+            mChannelListAdapter.animateUserStateUpdate(user, mChannelView);
+            getActivity().supportInvalidateOptionsMenu(); // Update self mute/deafen state
         }
 
         @Override
-        public void onUserTalkStateUpdated(User user) throws RemoteException {
-            updateUserTalking(user);
+        public void onUserTalkStateUpdated(IUser user) throws RemoteException {
+            mChannelListAdapter.animateUserStateUpdate(user, mChannelView);
         }
 	};
 
@@ -118,10 +126,11 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         }
     };
 
-	private PlumbleNestedListView mChannelView;
+	private RecyclerView mChannelView;
 	private ChannelListAdapter mChannelListAdapter;
     private ChatTargetProvider mTargetProvider;
     private DatabaseProvider mDatabaseProvider;
+    private ActionMode mActionMode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -148,11 +157,8 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_channel_list, container, false);
-
-        // Get the UI views
-        mChannelView = (PlumbleNestedListView) view.findViewById(R.id.channelUsers);
-        mChannelView.setOnChildClickListener(this);
-        mChannelView.setOnGroupClickListener(this);
+        mChannelView = (RecyclerView) view.findViewById(R.id.channelUsers);
+        mChannelView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         return view;
     }
@@ -178,10 +184,11 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
     @Override
     public void onServiceBound(IJumbleService service) {
         try {
-            if(mChannelListAdapter == null)
+            if (mChannelListAdapter == null) {
                 setupChannelList();
-            else
-                updateChannelList();
+            } else {
+                mChannelListAdapter.setService(service);
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -195,10 +202,17 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         MenuItem deafenItem = menu.findItem(R.id.menu_deafen_button);
 
         try {
-            if(getService() != null && getService().isConnected() && getService().getSessionUser() != null) {
-                User self = getService().getSessionUser();
+            if(getService() != null
+                    && getService().getConnectionState() == JumbleService.STATE_CONNECTED
+                    && getService().getSessionUser() != null) {
+                // Color the action bar icons to the primary text color of the theme, TODO move this elsewhere
+                int foregroundColor = getActivity().getTheme().obtainStyledAttributes(new int[]{android.R.attr.textColorPrimaryInverse}).getColor(0, -1);
+
+                IUser self = getService().getSessionUser();
                 muteItem.setIcon(self.isSelfMuted() ? R.drawable.ic_action_microphone_muted : R.drawable.ic_action_microphone);
                 deafenItem.setIcon(self.isSelfDeafened() ? R.drawable.ic_action_audio_muted : R.drawable.ic_action_audio);
+                muteItem.getIcon().mutate().setColorFilter(foregroundColor, PorterDuff.Mode.MULTIPLY);
+                deafenItem.getIcon().mutate().setColorFilter(foregroundColor, PorterDuff.Mode.MULTIPLY);
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -207,7 +221,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         try {
             if(getService() != null) {
                 MenuItem bluetoothItem = menu.findItem(R.id.menu_bluetooth);
-                bluetoothItem.setChecked(getService().isBluetoothAvailable());
+                bluetoothItem.setChecked(getService().usingBluetoothSco());
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -262,14 +276,12 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
         switch (item.getItemId()) {
             case R.id.menu_mute_button:
                 try {
-                    User self = getService().getSessionUser();
+                    IUser self = getService().getSessionUser();
 
                     boolean muted = !self.isSelfMuted();
                     boolean deafened = self.isSelfDeafened();
                     deafened &= muted; // Undeafen if mute is off
-                    self.setSelfMuted(muted);
-                    self.setSelfDeafened(deafened);
-                    getService().setSelfMuteDeafState(self.isSelfMuted(), self.isSelfDeafened());
+                    getService().setSelfMuteDeafState(muted, deafened);
 
                     getActivity().supportInvalidateOptionsMenu();
                 } catch (RemoteException e) {
@@ -278,12 +290,10 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
                 return true;
             case R.id.menu_deafen_button:
                 try {
-                    User self = getService().getSessionUser();
+                    IUser self = getService().getSessionUser();
 
-                    boolean deafened = self.isSelfDeafened();
-                    self.setSelfDeafened(!deafened);
-                    self.setSelfMuted(!deafened);
-                    getService().setSelfMuteDeafState(self.isSelfDeafened(), self.isSelfDeafened());
+                    boolean deafened = !self.isSelfDeafened();
+                    getService().setSelfMuteDeafState(deafened, deafened);
 
                     getActivity().supportInvalidateOptionsMenu();
                 } catch (RemoteException e) {
@@ -295,7 +305,11 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
             case R.id.menu_bluetooth:
                 item.setChecked(!item.isChecked());
                 try {
-                    getService().setBluetoothEnabled(item.isChecked());
+                    if (item.isChecked()) {
+                        getService().enableBluetoothSco();
+                    } else {
+                        getService().disableBluetoothSco();
+                    }
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -306,41 +320,12 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
     }
 
     private void setupChannelList() throws RemoteException {
-        mChannelListAdapter = new ChannelListAdapter(getActivity(), mChannelView, getService(), mDatabaseProvider.getDatabase(), isShowingPinnedChannels());
-        mChannelListAdapter.setChannelMenuListener(this);
+        mChannelListAdapter = new ChannelListAdapter(getActivity(), getService(),
+                mDatabaseProvider.getDatabase(), getChildFragmentManager(),
+                isShowingPinnedChannels());
+        mChannelListAdapter.setOnChannelClickListener(this);
+        mChannelListAdapter.setOnUserClickListener(this);
         mChannelView.setAdapter(mChannelListAdapter);
-		updateChannelList();
-	}
-
-	public void updateChannelList() throws RemoteException {
-		mChannelListAdapter.updateChannelList();
-		mChannelListAdapter.notifyDataSetChanged();
-	}
-
-	public void updateUser(User user) throws RemoteException {
-		mChannelListAdapter.refreshUser(user);
-	}
-
-	public void updateChannel(Channel channel) throws RemoteException {
-		if(channel.getDescription() != null || channel.getDescriptionHash() != null) {
-//          TODO reimplement comment caching
-//			mChannelListAdapter.commentsSeen.put(channel, mChannelListAdapter.database.isCommentSeen(
-//				channel.getName(),
-//				channel.getDescriptionHash() != null ? new String(channel.getDescriptionHash()) : channel.getDescription()));
-		}
-		updateChannelList();
-	}
-
-	public void updateUserTalking(User user) {
-		mChannelListAdapter.refreshTalkingState(user);
-	}
-
-	/**
-	 * Removes the user from the channel list.
-	 *
-	 * @param user
-	 */
-	public void removeUser(User user) {
         mChannelListAdapter.notifyDataSetChanged();
 	}
 
@@ -348,159 +333,57 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnNest
 	 * Scrolls to the passed channel.
 	 */
 	public void scrollToChannel(int channelId) {
-		int channelPosition = mChannelListAdapter.getVisibleFlatGroupPosition(channelId);
+		int channelPosition = mChannelListAdapter.getChannelPosition(channelId);
         mChannelView.smoothScrollToPosition(channelPosition);
     }
 	/**
 	 * Scrolls to the passed user.
 	 */
 	public void scrollToUser(int userId) {
-		int userPosition = mChannelListAdapter.getVisibleFlatChildPosition(userId);
+		int userPosition = mChannelListAdapter.getUserPosition(userId);
 		mChannelView.smoothScrollToPosition(userPosition);
 	}
-
-    public void setChatTarget(User chatTarget) {
-		User oldTarget = chatTarget;
-		if (mChannelListAdapter != null) {
-            try {
-                if (oldTarget != null)
-                    mChannelListAdapter.refreshUser(oldTarget);
-                mChannelListAdapter.refreshUser(chatTarget);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-		}
-	}
-	@Override
-	public void onNestedChildClick(AdapterView<?> parent, View view, int groupId, int childPosition) {
-        User user = mChannelListAdapter.getChild(groupId, childPosition);
-        showUserMenu(view, user);
-	}
-
-	@Override
-	public void onNestedGroupClick(AdapterView<?> parent, View view, int groupId) {
-        try {
-            getService().joinChannel(groupId);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void showChannelMenu(Channel channel, View anchor) {
-        PopupMenu menu = new PopupMenu(getActivity(), anchor);
-        menu.inflate(R.menu.channel_modify_menu);
-        // TODO detect permissions
-        ChannelPopupMenuListener menuListener = new ChannelPopupMenuListener(channel);
-        menu.setOnMenuItemClickListener(menuListener);
-        boolean targeted = mTargetProvider.getChatTarget() != null &&
-                mTargetProvider.getChatTarget().getChannel() != null &&
-                mTargetProvider.getChatTarget().getChannel().getId() == channel.getId();
-        menu.getMenu().findItem(R.id.menu_channel_send_message).setChecked(targeted);
-
-        try {
-            long serverId = getService().getConnectedServer().getId();
-            boolean pinned = mDatabaseProvider.getDatabase().isChannelPinned(serverId, channel.getId());
-            menu.getMenu().findItem(R.id.menu_channel_pin).setChecked(pinned);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        int permissions = channel.getPermissions();
-
-        // This breaks uMurmur ACL. Put in a fix based on server version perhaps?
-        //menu.getMenu().findItem(R.id.menu_channel_add).setVisible((permissions & (Permissions.MakeChannel | Permissions.MakeTempChannel)) > 0);
-        menu.getMenu().findItem(R.id.menu_channel_edit).setVisible((permissions & Permissions.Write) > 0);
-        menu.getMenu().findItem(R.id.menu_channel_remove).setVisible((permissions & Permissions.Write) > 0);
-        menu.getMenu().findItem(R.id.menu_channel_view_description).setVisible(channel.getDescription() != null || channel.getDescriptionHash() != null);
-
-        menu.show();
-    }
-
-    /**
-     * Slides a PopupWindow containing a user menu underneath the passed view.
-     */
-    public void showUserMenu(final View view, final User user) {
-        try {
-            ChannelUserWindow userWindow = ChannelUserWindow.instantiate(getActivity(), getService(), getChildFragmentManager(), user, mTargetProvider);
-            userWindow.showAsDropDown(view);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
 
     private boolean isShowingPinnedChannels() {
         return getArguments().getBoolean("pinned");
     }
-
-    private class ChannelPopupMenuListener implements PopupMenu.OnMenuItemClickListener {
-
-        private Channel mChannel;
-
-        public ChannelPopupMenuListener(Channel channel) {
-            mChannel = channel;
+    @Override
+    public void onChannelClick(IChannel channel) {
+        if (mTargetProvider.getChatTarget() != null &&
+                channel.equals(mTargetProvider.getChatTarget().getChannel()) &&
+                mActionMode != null) {
+            // Dismiss action mode if double pressed. FIXME: use list view selection instead?
+            mActionMode.finish();
+        } else {
+            ActionMode.Callback cb = new ChannelActionModeCallback(getActivity(),
+                    getService(), channel, mTargetProvider, mDatabaseProvider.getDatabase(),
+                    getChildFragmentManager()) {
+                @Override
+                public void onDestroyActionMode(ActionMode actionMode) {
+                    super.onDestroyActionMode(actionMode);
+                    mActionMode = null;
+                }
+            };
+            mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
         }
+    }
 
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            boolean adding = false;
-            switch(menuItem.getItemId()) {
-                case R.id.menu_channel_add:
-                    adding = true;
-                case R.id.menu_channel_edit:
-                    ChannelEditFragment addFragment = new ChannelEditFragment();
-                    Bundle args = new Bundle();
-                    if(adding) args.putInt("parent", mChannel.getId());
-                    else args.putInt("channel", mChannel.getId());
-                    args.putBoolean("adding", adding);
-                    addFragment.setArguments(args);
-                    addFragment.show(getChildFragmentManager(), "ChannelAdd");
-                    return true;
-                case R.id.menu_channel_remove:
-                    AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
-                    adb.setTitle(R.string.confirm);
-                    adb.setMessage(R.string.confirm_delete_channel);
-                    adb.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            try {
-                                getService().removeChannel(mChannel.getId());
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    adb.setNegativeButton(android.R.string.cancel, null);
-                    adb.show();
-                    return true;
-                case R.id.menu_channel_view_description:
-                    Bundle commentArgs = new Bundle();
-                    commentArgs.putInt("channel", mChannel.getId());
-                    commentArgs.putString("comment", mChannel.getDescription());
-                    commentArgs.putBoolean("editing", false);
-                    ChannelDescriptionFragment commentFragment = (ChannelDescriptionFragment) Fragment.instantiate(getActivity(), ChannelDescriptionFragment.class.getName(), commentArgs);
-                    commentFragment.show(getChildFragmentManager(), ChannelDescriptionFragment.class.getName());
-                    return true;
-                case R.id.menu_channel_send_message:
-                    if(mTargetProvider.getChatTarget() != null &&
-                            mTargetProvider.getChatTarget().getChannel() != null &&
-                            mTargetProvider.getChatTarget().getChannel().getId() == mChannel.getId())
-                        mTargetProvider.setChatTarget(null);
-                    else
-                        mTargetProvider.setChatTarget(new ChatTargetProvider.ChatTarget(mChannel));
-                    return true;
-                case R.id.menu_channel_pin:
-                    try {
-                        long serverId = getService().getConnectedServer().getId();
-                        boolean pinned = mDatabaseProvider.getDatabase().isChannelPinned(serverId, mChannel.getId());
-                        if(!pinned) mDatabaseProvider.getDatabase().addPinnedChannel(serverId, mChannel.getId());
-                        else mDatabaseProvider.getDatabase().removePinnedChannel(serverId, mChannel.getId());
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                    return true;
-            }
-            return false;
+    @Override
+    public void onUserClick(IUser user) {
+        if (mTargetProvider.getChatTarget() != null &&
+                user.equals(mTargetProvider.getChatTarget().getUser()) &&
+                mActionMode != null) {
+            // Dismiss action mode if double pressed. FIXME: use list view selection instead?
+            mActionMode.finish();
+        } else {
+            ActionMode.Callback cb = new UserActionModeCallback(user, mTargetProvider) {
+                @Override
+                public void onDestroyActionMode(ActionMode actionMode) {
+                    super.onDestroyActionMode(actionMode);
+                    mActionMode = null;
+                }
+            };
+            mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
         }
     }
 }

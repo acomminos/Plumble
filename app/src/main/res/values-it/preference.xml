@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--Theme names-->
+  <!--Call modes-->
+  <!--Hot corner-->
+  <!--About-->
+  <string name="about">Info su</string>
+  <string name="acknowledgementsSum">Guarda chi ha contribuito a Plumble</string>
+  <string name="licenses">Licenze</string>
+  <string name="authentication">Autenticazione</string>
+  <string name="authenticationSum">Gestisci e crea certificati</string>
+  <string name="certificateFile">File certificato</string>
+  <string name="certificatePassword">Password certificato</string>
+  <string name="audioInput">Input audio</string>
+  <string name="audioInputVolume">Volume microfono</string>
+  <string name="general">Generale</string>
+  <string name="theme">Tema</string>
+  <string name="advancedAudio">Avanzato</string>
+  <string name="forceTcp">Forza TCP</string>
+  <string name="audio">Audio</string>
+  <string name="audioSum">Regola input e output audio</string>
+  <string name="noCert">Nessun certificato</string>
+  <string name="chatNotifications">Notifiche chat</string>
+  <string name="certificateGenerate">Genera certificato</string>
+  <string name="audioOutput">Output audio</string>
+  <string name="disableOpus">Disabilita codec Opus</string>
+  <string name="useTts">Text-to-Speech</string>
+  <string name="autoReconnect">Riconnessione automatica</string>
+  <string name="useTor">Connetti tramite Tor</string>
+  <string name="inputQuality">Qualità Input</string>
+  <string name="loadImages">Carica immagini esterne</string>
+  <string name="clearServerCertificates">Pulisci certificati server</string>
+</resources>

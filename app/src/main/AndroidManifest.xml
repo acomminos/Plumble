@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ Copyright (C) 2014 Andrew Comminos
   ~
@@ -16,7 +15,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.morlunk.mumbleclient">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:installLocation="auto"
+    package="com.morlunk.mumbleclient" >
 
     <uses-feature
         android:name="android.hardware.microphone"
@@ -34,55 +35,62 @@
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
 
     <application
+        android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Plumble"
-        android:allowBackup="true">
-
-        <activity android:name=".wizard.WizardActivity"/>
-
-        <activity android:name=".preference.Preferences"
-                android:parentActivityName=".app.PlumbleActivity">
+        android:theme="@style/Theme.Plumble" >
+        <activity android:name=".wizard.WizardActivity" />
+        <activity
+            android:name=".preference.Preferences"
+            android:parentActivityName=".app.PlumbleActivity" >
             <intent-filter>
                 <action android:name="com.morlunk.mumbleclient.app.PREFS_GENERAL" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
                 <action android:name="com.morlunk.mumbleclient.app.PREFS_AUTHENTICATION" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
                 <action android:name="com.morlunk.mumbleclient.app.PREFS_AUDIO" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
                 <action android:name="com.morlunk.mumbleclient.app.PREFS_APPEARANCE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
                 <action android:name="com.morlunk.mumbleclient.app.PREFS_ABOUT" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
         <service
             android:name=".service.PlumbleService"
-            android:enabled="true"/>
+            android:enabled="true" />
 
         <activity
             android:name=".app.PlumbleActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:configChanges="keyboardHidden|orientation|screenSize"> <!-- TODO get fragment state preservation into a state where this is unnecessary -->
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

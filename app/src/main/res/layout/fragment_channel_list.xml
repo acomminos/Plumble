@@ -24,13 +24,13 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<com.morlunk.mumbleclient.view.PlumbleNestedListView
+	<android.support.v7.widget.RecyclerView
 	    android:id="@+id/channelUsers"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
-	    custom:maintainPosition="true"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"
-	    android:fastScrollEnabled="true"/>
+	    android:fastScrollEnabled="true"
+        android:choiceMode="singleChoice"/>
 
 </LinearLayout>

@@ -26,6 +26,9 @@ import java.util.List;
  * Created by andrew on 13/08/13.
  */
 public interface PlumbleDatabase {
+    public void open();
+    public void close();
+
     public List<Server> getServers();
     public void addServer(Server server);
     public void updateServer(Server server);
@@ -42,4 +45,12 @@ public interface PlumbleDatabase {
     public List<String> getAccessTokens(long serverId);
     public void addAccessToken(long serverId, String token);
     public void removeAccessToken(long serverId, String token);
+
+    public List<Integer> getLocalMutedUsers(long serverId);
+    public void addLocalMutedUser(long serverId, int userId);
+    public void removeLocalMutedUser(long serverId, int userId);
+
+    public List<Integer> getLocalIgnoredUsers(long serverId);
+    public void addLocalIgnoredUser(long serverId, int userId);
+    public void removeLocalIgnoredUser(long serverId, int userId);
 }

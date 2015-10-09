@@ -19,6 +19,8 @@
 <resources>
     <color name="cardOutline">#d3d3d3</color>
     <color name="push_to_talk_background">#555555</color>
+    <color name="card_dark">#111111</color>
+    <color name="list_highlight_colour">#55CCCCCC</color>
 
     <color name="popup_menu_item_background">#555555</color>
     <color name="popup_menu_item_disabled_mask">#66000000</color>
@@ -53,4 +55,12 @@
     <color name="solarized_base1">#93a1a1</color>
     <color name="solarized_base2">#eee8d5</color>
     <color name="solarized_base3">#fdf6e3</color>
+
+    <!-- Ripple talk states -->
+    <color name="ripple_talk_state_on">@color/holo_red_dark</color>
+    <color name="ripple_talk_state_off">#FFFFFFFF</color>
+    <color name="ripple_talk_state_disabled">#FF666666</color>
+    <color name="ripple_talk_state_suppressed">@color/holo_green_dark</color>
+    <color name="ripple_talk_state_server_muted">@color/holo_blue_dark</color>
+    <color name="ripple_talk_state_server_deafened">@color/holo_blue_dark</color>
 </resources>

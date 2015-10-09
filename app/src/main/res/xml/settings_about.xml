@@ -22,6 +22,9 @@
         android:title="@string/app_name"
         android:summary="@string/copyright"/>
     <Preference
+        android:key="version"
+        android:title="@string/version"/>
+    <Preference
         android:title="@string/acknowledgements"
         android:summary="@string/acknowledgementsSum">
         <intent

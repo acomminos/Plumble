@@ -33,35 +33,39 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class PlumbleCertificateManager {
 
-	private static final String PLUMBLE_CERTIFICATE_FOLDER = "Plumble";
-	private static final String PLUMBLE_CERTIFICATE_FORMAT = "plumble-%d.p12";
+	private static final String CERTIFICATE_FOLDER = "Plumble";
+	private static final String CERTIFICATE_FORMAT = "plumble-%s.p12";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 	
 	/**
 	 * Generates a new X.509 passwordless certificate in PKCS12 format for connection to a Mumble server.
-	 * This certificate is stored in the {@value #PLUMBLE_CERTIFICATE_FOLDER} folder on the external storage, in the format {@value #PLUMBLE_CERTIFICATE_FORMAT} where the timestamp is substituted in.
+	 * This certificate is stored in the {@value #CERTIFICATE_FOLDER} folder on the external storage, in the format {@value #CERTIFICATE_FORMAT} where the timestamp is substituted in.
 	 * @return The path of the generated certificate if the operation was a success. Otherwise, null.
 	 */
-	public static File generateCertificate() throws NoSuchAlgorithmException, OperatorCreationException, CertificateException, KeyStoreException, NoSuchProviderException, IOException {
-            File certificateDirectory = getCertificateDirectory();
-                
-            String certificateName = String.format(Locale.US, PLUMBLE_CERTIFICATE_FORMAT, System.currentTimeMillis() / 1000L);
-            File certificateFile = new File(certificateDirectory, certificateName);
-            FileOutputStream outputStream = new FileOutputStream(certificateFile);
-            JumbleCertificateGenerator.generateCertificate(outputStream);
-            return certificateFile;
-	}
-	
-	/**
-	 * Returns a list of certificates in the {@value #PLUMBLE_CERTIFICATE_FOLDER} folder on external storage, ending with pfx or p12.
+    public static File generateCertificate() throws NoSuchAlgorithmException, OperatorCreationException, CertificateException, KeyStoreException, NoSuchProviderException, IOException {
+        File certificateDirectory = getCertificateDirectory();
+
+        String date = DATE_FORMAT.format(new Date());
+        String certificateName = String.format(Locale.US, CERTIFICATE_FORMAT, date);
+        File certificateFile = new File(certificateDirectory, certificateName);
+        FileOutputStream outputStream = new FileOutputStream(certificateFile);
+        JumbleCertificateGenerator.generateCertificate(outputStream);
+        return certificateFile;
+    }
+
+    /**
+	 * Returns a list of certificates in the {@value #CERTIFICATE_FOLDER} folder on external storage, ending with pfx or p12.
 	 * @return A list of {@link File} objects containing certificates.
 	 */
-	public static List<File> getAvailableCertificates() {
+	public static List<File> getAvailableCertificates() throws IOException {
 		File certificateDirectory = getCertificateDirectory();
 		
 		File[] p12Files = certificateDirectory.listFiles(new FileFilter() {
@@ -118,11 +122,14 @@ public class PlumbleCertificateManager {
 	 * Will create if does not exist, and throw an assert if the external storage is not mounted.
 	 * @return The {@link File} object of the directory.
 	 */
-	public static File getCertificateDirectory() {
-		assert Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
-		File certificateDirectory = new File(Environment.getExternalStorageDirectory(), PLUMBLE_CERTIFICATE_FOLDER);
-		if(!certificateDirectory.exists())
-			certificateDirectory.mkdir();
-		return certificateDirectory;
+	public static File getCertificateDirectory() throws IOException {
+		if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File certificateDirectory = new File(Environment.getExternalStorageDirectory(), CERTIFICATE_FOLDER);
+            if(!certificateDirectory.exists())
+                certificateDirectory.mkdir();
+            return certificateDirectory;
+        } else {
+            throw new IOException("External storage not available.");
+        }
 	}
 }

@@ -17,4 +17,8 @@
 
 
 
-include ':libraries:libonionkit:libonionkit', ':libraries:Jumble', ':app'
+
+
+
+
+include ':libraries:NetCipher:libnetcipher', ':libraries:Jumble', ':app'

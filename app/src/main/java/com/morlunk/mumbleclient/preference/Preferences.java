@@ -22,6 +22,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.os.Build;
@@ -40,6 +42,7 @@ import android.widget.Toast;
 
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
+import com.morlunk.mumbleclient.util.PlumbleTrustStore;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +66,9 @@ public class Preferences extends PreferenceActivity {
 
     private static final String CERTIFICATE_GENERATE_KEY = "certificateGenerate";
     private static final String CERTIFICATE_PATH_KEY = "certificatePath";
+    private static final String TRUST_CLEAR_KEY = "clearTrust";
     private static final String USE_TOR_KEY = "useTor";
+    private static final String VERSION_KEY = "version";
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -86,6 +91,7 @@ public class Preferences extends PreferenceActivity {
                 addPreferencesFromResource(R.xml.settings_appearance);
             } else if (ACTION_PREFS_ABOUT.equals(action)) {
                 addPreferencesFromResource(R.xml.settings_about);
+                configureAboutPreferences(this, getPreferenceScreen());
             }
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             addPreferencesFromResource(R.xml.preference_headers_legacy);
@@ -106,6 +112,7 @@ public class Preferences extends PreferenceActivity {
     private static void configureCertificatePreferences(PreferenceScreen screen) {
         final Preference certificateGeneratePreference = screen.findPreference(CERTIFICATE_GENERATE_KEY);
         final ListPreference certificatePathPreference = (ListPreference) screen.findPreference(CERTIFICATE_PATH_KEY);
+        final Preference trustClearPreference = screen.findPreference(TRUST_CLEAR_KEY);
 
         certificateGeneratePreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
@@ -140,12 +147,20 @@ public class Preferences extends PreferenceActivity {
                 return false;
             }
         });
+        trustClearPreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                PlumbleTrustStore.clearTrustStore(preference.getContext());
+                Toast.makeText(preference.getContext(), R.string.trust_cleared, Toast.LENGTH_LONG).show();
+                return true;
+            }
+        });
 
         // Make sure media is mounted, otherwise do not allow certificate loading.
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             try {
                 updateCertificatePath(certificatePathPreference);
-            } catch (NullPointerException exception) {
+            } catch (IOException exception) {
                 certificatePathPreference.setEnabled(false);
                 certificatePathPreference.setSummary(R.string.externalStorageUnavailable);
             }
@@ -215,7 +230,7 @@ public class Preferences extends PreferenceActivity {
 
         // Scan each bitrate and determine if the device supports it
         ListPreference inputQualityPreference = (ListPreference) screen.findPreference(Settings.PREF_INPUT_RATE);
-        String[] bitrateNames = new String[inputQualityPreference.getEntries().length];
+        String[] bitrateNames = new String[inputQualityPreference.getEntryValues().length];
         for(int x=0; x < inputQualityPreference.getEntries().length; ++x) {
             int bitrate = Integer.parseInt(inputQualityPreference.getEntryValues()[x].toString());
             boolean supported = AudioRecord.getMinBufferSize(bitrate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT) > 0;
@@ -238,7 +253,7 @@ public class Preferences extends PreferenceActivity {
      *
      * @param preference The ListPreference to update.
      */
-    private static void updateCertificatePath(ListPreference preference) throws NullPointerException {
+    private static void updateCertificatePath(ListPreference preference) throws NullPointerException, IOException {
         List<File> certificateFiles = PlumbleCertificateManager.getAvailableCertificates();
 
         // Get arrays of certificate paths and names.
@@ -268,12 +283,28 @@ public class Preferences extends PreferenceActivity {
                 super.onPostExecute(result);
 
                 if (result != null) {
-                    updateCertificatePath(certificateList); // Update cert path after
-                    certificateList.setValue(result.getAbsolutePath());
+                    try {
+                        updateCertificatePath(certificateList); // Update cert path after
+                        certificateList.setValue(result.getAbsolutePath());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         };
         generateTask.execute();
+    }
+
+    private static void configureAboutPreferences(Context context, PreferenceScreen screen) {
+        String version = "Unknown";
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            version = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        Preference versionPreference = screen.findPreference(VERSION_KEY);
+        versionPreference.setSummary(version);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -297,6 +328,7 @@ public class Preferences extends PreferenceActivity {
                 addPreferencesFromResource(R.xml.settings_appearance);
             } else if ("about".equals(section)) {
                 addPreferencesFromResource(R.xml.settings_about);
+                configureAboutPreferences(getPreferenceScreen().getContext(), getPreferenceScreen());
             }
         }
     }

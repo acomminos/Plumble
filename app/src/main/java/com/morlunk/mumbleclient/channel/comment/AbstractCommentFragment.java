@@ -30,10 +30,7 @@ import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.TabHost;
 
-import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
-import com.morlunk.jumble.JumbleService;
-import com.morlunk.jumble.net.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.util.JumbleServiceProvider;
 

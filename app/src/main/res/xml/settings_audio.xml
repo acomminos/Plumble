@@ -26,33 +26,19 @@
         android:summary="@string/audioInputMethodSum"
         android:title="@string/audioInputMethod" />
 
-    <!-- TODO add an actual min of 8000hz -->
-    <ListPreference
-        android:key="input_quality"
-        android:defaultValue="48000"
-        android:title="@string/audioSampleRate"
-        android:summary="@string/audioSampleRateSum"
-        android:entries="@array/audioSampleRateNames"
-        android:entryValues="@array/audioSampleRateValues"/>
+    <CheckBoxPreference
+        android:key="handset_mode"
+        android:title="@string/handsetMode"
+        android:summary="@string/handsetModeSum"
+        android:defaultValue="false"/>
 
     <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
-        android:key="input_bitrate"
-        android:title="@string/inputQuality"
-        android:summary="@string/inputQualitySum"
-        multiplier="1000"
-        max="96"
-        min="8"
-        android:defaultValue="40"
-        android:text=" bps"/>
-
-    <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
-        android:key="frames_per_packet"
-        android:title="@string/framesPerPacket"
-        android:summary="@string/framesPerPacketSum"
-        max="6"
-        min="1"
-        android:defaultValue="6"
-        android:text=" frames"/>
+        android:title="@string/audioInputVolume"
+        android:summary="@string/audioInputVolumeSum"
+        android:key="inputVolume"
+        max="200"
+        android:defaultValue="100"
+        android:text="%"/>
 
     <PreferenceCategory android:title="@string/voiceActivitySettings"
         android:key="vad_settings">
@@ -81,6 +67,11 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="ptt_sound"
+            android:summary="@string/pttSoundSum"
+            android:title="@string/pttSound"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="hidePtt"
             android:summary="@string/hidePttSum"
             android:title="@string/hidePtt" />
@@ -89,16 +80,46 @@
             android:key="togglePtt"
             android:summary="@string/togglePttSum"
             android:title="@string/togglePtt" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="half_duplex"
+            android:title="@string/halfDuplex"
+            android:summary="@string/halfDuplexSum"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/advancedAudio" >
 
+        <!-- TODO add an actual min of 8000hz -->
+        <ListPreference
+            android:key="input_quality"
+            android:defaultValue="44100"
+            android:title="@string/audioSampleRate"
+            android:summary="@string/audioSampleRateSum"
+            android:entries="@array/audioSampleRateValues"
+            android:entryValues="@array/audioSampleRateValues"/>
+
         <com.morlunk.mumbleclient.preference.SeekBarDialogPreference
-            android:title="@string/audioInputVolume"
-            android:summary="@string/audioInputVolumeSum"
-            android:key="inputVolume"
-            max="200"
-            android:defaultValue="100"
-            android:text="%"/>
+            android:key="input_bitrate"
+            android:title="@string/inputQuality"
+            android:summary="@string/inputQualitySum"
+            multiplier="1000"
+            max="96"
+            min="8"
+            android:defaultValue="40"
+            android:text=" bps"/>
+
+        <ListPreference
+            android:key="audio_per_packet"
+            android:title="@string/audio_per_packet"
+            android:summary="@string/audio_per_packet_sum"
+            android:defaultValue="2"
+            android:entries="@array/audio_per_packet_names"
+            android:entryValues="@array/audio_per_packet_values" />
+
+        <CheckBoxPreference
+            android:key="preprocessor_enabled"
+            android:title="@string/preprocessor_enabled"
+            android:summary="@string/preprocessor_enabled_sum"
+            android:defaultValue="true" />
 
         <!-- TODO: REIMPLEMENT -->
         <!--

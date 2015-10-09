@@ -24,13 +24,13 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:padding="8dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Version"
+            android:text="@string/version"
             android:textSize="24sp"
             android:fontFamily="sans-serif-condensed"
             android:layout_marginBottom="8dp"/>
@@ -53,7 +53,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Control channel"
+            android:text="@string/control_channel"
             android:textSize="24sp"
             android:fontFamily="sans-serif-condensed"
             android:layout_marginBottom="8dp"
@@ -61,7 +61,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Encrypted with 256 bit AES256-SHA"
+            android:text="@string/tcp_encryption_mode"
             android:layout_marginBottom="8dp"
             />
 
@@ -83,7 +83,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Voice channel"
+            android:text="@string/voice_channel"
             android:textSize="24sp"
             android:fontFamily="sans-serif-condensed"
             android:layout_marginBottom="8dp"
@@ -91,7 +91,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Encrypted with 128 bit OCB-AES128"
+            android:text="@string/udp_encryption_mode"
             android:layout_marginBottom="8dp"
             />
 
@@ -106,7 +106,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Audio bandwidth"
+            android:text="@string/audio_bandwidth"
             android:textSize="24sp"
             android:fontFamily="sans-serif-condensed"
             android:layout_marginBottom="8dp"

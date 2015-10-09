@@ -72,7 +72,7 @@
                 android:textSize="12sp"
                 android:textColor="#858585"
                 android:textStyle="bold"
-                android:background="@null" />
+                android:background="?attr/selectableItemBackground"/>
         </LinearLayout>
     </LinearLayout>
 

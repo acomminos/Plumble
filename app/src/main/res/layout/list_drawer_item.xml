@@ -37,7 +37,7 @@
             android:id="@+id/drawer_item_title"
             android:gravity="center_vertical"
             android:layout_marginLeft="8dp"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:fontFamily="sans-serif-light"
             android:textColor="?android:textColorPrimaryInverse"
             android:layout_weight="1"/>

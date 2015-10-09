@@ -29,11 +29,18 @@ import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.morlunk.jumble.IJumbleObserver;
+import com.morlunk.jumble.model.IUser;
+import com.morlunk.jumble.model.User;
+import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
@@ -56,13 +63,39 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     /** Chat target listeners, notified when the chat target is changed. */
     private List<OnChatTargetSelectedListener> mChatTargetListeners = new ArrayList<OnChatTargetSelectedListener>();
 
+    private JumbleObserver mObserver = new JumbleObserver() {
+        @Override
+        public void onUserTalkStateUpdated(IUser user) throws RemoteException {
+            if (user != null && user.getSession() == getService().getSession()) {
+                // Manually set button selection colour when we receive a talk state update.
+                // This allows representation of talk state when using hot corners and PTT toggle.
+                switch (user.getTalkState()) {
+                    case TALKING:
+                    case SHOUTING:
+                    case WHISPERING:
+                        mTalkButton.setPressed(true);
+                        break;
+                    case PASSIVE:
+                        mTalkButton.setPressed(false);
+                        break;
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_channel, container, false);
         mViewPager = (ViewPager) view.findViewById(R.id.channel_view_pager);
         mTabStrip = (PagerTabStrip) view.findViewById(R.id.channel_tab_strip);
         if(mTabStrip != null) {
-            int[] attrs = new int[] { R.attr.secondaryBackground, android.R.attr.textColorPrimaryInverse };
+            int[] attrs = new int[] { R.attr.colorPrimary, android.R.attr.textColorPrimaryInverse };
             TypedArray a = getActivity().obtainStyledAttributes(attrs);
             int titleStripBackground = a.getColor(0, -1);
             int titleStripColor = a.getColor(1, -1);
@@ -74,7 +107,6 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
             mTabStrip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         }
 
-        final Settings settings = Settings.getInstance(getActivity());
         mTalkView = view.findViewById(R.id.pushtotalk_view);
         mTalkButton = (Button) view.findViewById(R.id.pushtotalk);
         mTalkButton.setOnTouchListener(new View.OnTouchListener() {
@@ -82,19 +114,18 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 try {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                        if (!settings.isPushToTalkToggle())
-                            getService().setTalkingState(true);
-                        else
-                            getService().setTalkingState(!getService().isTalking());
-                    } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                        if (!settings.isPushToTalkToggle())
-                            getService().setTalkingState(false);
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            getService().onTalkKeyDown();
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            getService().onTalkKeyUp();
+                            break;
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
-                return false;
+                return true;
             }
         });
         configureInput();
@@ -126,10 +157,38 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.channel_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Settings settings = Settings.getInstance(getActivity());
+        switch (item.getItemId()) {
+            case R.id.menu_input_voice:
+                settings.setInputMethod(Settings.ARRAY_INPUT_METHOD_VOICE);
+                return true;
+            case R.id.menu_input_ptt:
+                settings.setInputMethod(Settings.ARRAY_INPUT_METHOD_PTT);
+                return true;
+            case R.id.menu_input_continuous:
+                settings.setInputMethod(Settings.ARRAY_INPUT_METHOD_CONTINUOUS);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onDestroy() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         preferences.unregisterOnSharedPreferenceChangeListener(this);
         super.onDestroy();
+    }
+
+    @Override
+    public IJumbleObserver getServiceObserver() {
+        return mObserver;
     }
 
     /**
@@ -151,7 +210,8 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if(Settings.PREF_INPUT_METHOD.equals(key) || Settings.PREF_PUSH_BUTTON_HIDE_KEY.equals(key))
+        if(Settings.PREF_INPUT_METHOD.equals(key) ||
+                Settings.PREF_PUSH_BUTTON_HIDE_KEY.equals(key))
             configureInput();
     }
 
@@ -162,10 +222,6 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
 
     @Override
     public void setChatTarget(ChatTarget target) {
-        if(target != null && mViewPager != null) {
-            // Scroll to chat pane when a user is selected.
-            mViewPager.setCurrentItem(1, true);
-        }
         mChatTarget = target;
         for(OnChatTargetSelectedListener listener : mChatTargetListeners)
             listener.onChatTargetSelected(target);

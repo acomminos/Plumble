@@ -20,8 +20,9 @@ package com.morlunk.mumbleclient.channel.comment;
 import android.os.RemoteException;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.User;
-import com.morlunk.jumble.net.JumbleObserver;
+import com.morlunk.jumble.util.JumbleObserver;
 
 /**
  * Created by andrew on 03/03/14.
@@ -32,7 +33,7 @@ public class UserCommentFragment extends AbstractCommentFragment {
     public void requestComment(final IJumbleService service) throws RemoteException {
         service.registerObserver(new JumbleObserver() {
             @Override
-            public void onUserStateUpdated(User user) throws RemoteException {
+            public void onUserStateUpdated(IUser user) throws RemoteException {
                 if(user.getSession() == getSession() &&
                         user.getComment() != null) {
                     loadComment(user.getComment());

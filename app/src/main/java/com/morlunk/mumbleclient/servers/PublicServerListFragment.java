@@ -17,7 +17,6 @@
 
 package com.morlunk.mumbleclient.servers;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -29,15 +28,12 @@ import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.util.Xml;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -46,36 +42,26 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.morlunk.mumbleclient.Constants;
+import com.morlunk.jumble.model.Server;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
+import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.db.PublicServer;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -84,17 +70,14 @@ import java.util.concurrent.Executors;
  * @author morlunk
  *
  */
-public class PublicServerListFragment extends Fragment implements OnItemClickListener {
+public class PublicServerListFragment extends Fragment implements OnItemClickListener, PublicServerAdapter.PublicServerAdapterMenuListener {
     
-    public static final int MAX_ACTIVE_PINGS = 50;
-    
-    private ServerListFragment.ServerConnectHandler mConnectHandler;
+    private FavouriteServerListFragment.ServerConnectHandler mConnectHandler;
     private DatabaseProvider mDatabaseProvider;
     private List<PublicServer> mServers;
     private GridView mServerGrid;
     private ProgressBar mServerProgress;
     private PublicServerAdapter mServerAdapter;
-    private int mActivePingCount = 0;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,7 +91,7 @@ public class PublicServerListFragment extends Fragment implements OnItemClickLis
         super.onAttach(activity);
         
         try {
-            mConnectHandler = (ServerListFragment.ServerConnectHandler)activity;
+            mConnectHandler = (FavouriteServerListFragment.ServerConnectHandler)activity;
             mDatabaseProvider = (DatabaseProvider) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()+" must implement ServerConnectHandler and DatabaseProvider!");
@@ -163,11 +146,35 @@ public class PublicServerListFragment extends Fragment implements OnItemClickLis
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void favouriteServer(final Server server) {
+        final Settings settings = Settings.getInstance(getActivity());
+        final EditText usernameField = new EditText(getActivity());
+        usernameField.setHint(settings.getDefaultUsername());
+        AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
+        adb.setTitle(R.string.addFavorite);
+        adb.setView(usernameField);
+        adb.setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(usernameField.getText().length() > 0) {
+                    server.setUsername(usernameField.getText().toString());
+                } else {
+                    server.setUsername(settings.getDefaultUsername());
+                }
+                PlumbleDatabase database = mDatabaseProvider.getDatabase();
+                database.addServer(server);
+            }
+        });
+        adb.setNegativeButton(android.R.string.cancel, null);
+        adb.show();
+    }
     
     public void setServers(List<PublicServer> servers) {
         mServers = servers;
         mServerProgress.setVisibility(View.GONE);
-        mServerAdapter = new PublicServerAdapter(getActivity(), servers);
+        mServerAdapter = new PublicServerAdapter(getActivity(), servers, this);
         mServerGrid.setAdapter(mServerAdapter);
     }
     
@@ -262,146 +269,6 @@ public class PublicServerListFragment extends Fragment implements OnItemClickLis
     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
         mConnectHandler.connectToPublicServer(mServerAdapter.getItem(arg2));
     }
-    
-    private class PublicServerAdapter extends ArrayAdapter<PublicServer> {
-        private Map<PublicServer, ServerInfoResponse> infoResponses = new HashMap<PublicServer, ServerInfoResponse>();
-        private List<PublicServer> originalServers;
-
-        private boolean mLightTheme;
-        
-        public PublicServerAdapter(Context context, List<PublicServer> servers) {
-            super(context, android.R.id.text1, servers);
-            originalServers = new ArrayList<PublicServer>(servers);
-            mLightTheme = R.style.Theme_Plumble == Settings.getInstance(context).getTheme();
-        }
-        
-        public void filter(String queryName, String queryCountry) {
-            clear();
-            
-            for(PublicServer server : originalServers) {
-                String serverName = server.getName() != null ? server.getName().toUpperCase(Locale.US) : "";
-                String serverCountry = server.getCountry() != null ? server.getCountry().toUpperCase(Locale.US) : "";
-                
-                if(serverName.contains(queryName) && serverCountry.contains(queryCountry))
-                    add(server);
-            }
-        }
-
-        @SuppressLint("NewApi")
-        @Override
-        public final View getView(
-            final int position,
-            final View v,
-            final ViewGroup parent) {
-            View view = v;
-            
-            if(v == null) {
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = inflater.inflate(R.layout.public_server_list_row, parent, false);
-            }
-            
-            final PublicServer server = getItem(position);
-            view.setTag(server);
-            
-            TextView nameText = (TextView) view.findViewById(R.id.server_row_name);
-            TextView addressText = (TextView) view.findViewById(R.id.server_row_address);
-            
-            if(server.getName().equals("")) {
-                nameText.setText(server.getHost());
-            } else {
-                nameText.setText(server.getName());
-            }
-            
-            addressText.setText(server.getHost()+":"+server.getPort());
-            
-            TextView locationText = (TextView) view.findViewById(R.id.server_row_location);
-            locationText.setText(server.getCountry());
-            
-            // Ping server if available
-            if(!infoResponses.containsKey(server) && mActivePingCount < MAX_ACTIVE_PINGS) {
-                mActivePingCount++;
-                final View serverView = view; // Create final instance of view for use in asynctask
-                ServerInfoTask task = new ServerInfoTask() {
-                    protected void onPostExecute(ServerInfoResponse result) {
-                        super.onPostExecute(result);
-                        infoResponses.put(server, result);
-                        if(serverView != null && serverView.isShown() && serverView.getTag() == server)
-                            updateInfoResponseView(serverView, server);
-                        mActivePingCount--;
-                        Log.d(Constants.TAG, "DEBUG: Servers remaining in queue: "+ mActivePingCount);
-                    };
-                };
-                
-                // Execute on parallel threads if API >= 11. RACE CAR THREADING, WOOOOOOOOOOOOOOOOOOOOOO
-                if(VERSION.SDK_INT >= 11)
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, server);
-                else
-                    task.execute(server);
-            }
-            
-            ImageView favoriteButton = (ImageView)view.findViewById(R.id.server_row_favorite);
-            
-            favoriteButton.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
-
-                    Settings settings = Settings.getInstance(getActivity());
-
-                    // Allow username entry
-                    final EditText usernameField = new EditText(getContext());
-                    usernameField.setHint(settings.getDefaultUsername());
-                    alertBuilder.setView(usernameField);
-
-                    alertBuilder.setTitle(R.string.addFavorite);
-                    
-                    alertBuilder.setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String username = usernameField.getText().toString();
-                            if(username.equals(""))
-                                server.setUsername(usernameField.getHint().toString());
-
-                            mDatabaseProvider.getDatabase().addServer(server);
-                        }
-                    });
-                    
-                    alertBuilder.show();
-                }
-                
-            });
-            
-            updateInfoResponseView(view, server);
-            
-            return view;
-        }
-        
-        private void updateInfoResponseView(View view, PublicServer server) {
-            ServerInfoResponse infoResponse = infoResponses.get(server);
-            // If there is a null value for the server info (rather than none at all), the request must have failed.
-            boolean requestExists = infoResponse != null;
-            boolean requestFailure = infoResponse != null && infoResponse.isDummy();
-            
-            TextView serverVersionText = (TextView) view.findViewById(R.id.server_row_version_status);
-            TextView serverUsersText = (TextView) view.findViewById(R.id.server_row_usercount);
-            ProgressBar serverInfoProgressBar = (ProgressBar) view.findViewById(R.id.server_row_ping_progress);
-            
-            serverVersionText.setVisibility(!requestFailure && !requestExists ? View.INVISIBLE : View.VISIBLE);
-            serverUsersText.setVisibility(!requestFailure && !requestExists ? View.INVISIBLE : View.VISIBLE);
-            serverInfoProgressBar.setVisibility(!requestExists ? View.VISIBLE : View.INVISIBLE);
-            
-            if(infoResponse != null && !requestFailure) {
-                serverVersionText.setText(getResources().getString(R.string.online)+" ("+infoResponse.getVersionString()+")");
-                serverUsersText.setText(infoResponse.getCurrentUsers()+"/"+infoResponse.getMaximumUsers());
-            } else if(requestFailure) {
-                serverVersionText.setText(R.string.offline);
-                serverUsersText.setText("");
-            } else {
-                serverVersionText.setText(R.string.noServerInfo);
-            }
-        }
-    }
 
     private void fillPublicList() {
         new PublicServerFetchTask() {
@@ -451,64 +318,6 @@ public class PublicServerListFragment extends Fragment implements OnItemClickLis
                 arrayAdapter.sort(countryComparator);
             }
         }
-    }
-
-    private class PublicServerFetchTask extends AsyncTask<Void, Void, List<PublicServer>> {
-
-    private static final String MUMBLE_PUBLIC_URL = "http://www.mumble.info/list2.cgi";
-
-    @Override
-    protected List<PublicServer> doInBackground(Void... params) {
-        try {
-            // Fetch XML from server
-            URL url = new URL(MUMBLE_PUBLIC_URL);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.addRequestProperty("version", com.morlunk.jumble.Constants.PROTOCOL_STRING);
-            connection.connect();
-            InputStream stream = connection.getInputStream();
-
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(stream, "UTF-8");
-            parser.nextTag();
-
-            List<PublicServer> serverList = new ArrayList<PublicServer>();
-
-            parser.require(XmlPullParser.START_TAG, null, "servers");
-            while(parser.next() != XmlPullParser.END_TAG) {
-                if (parser.getEventType() != XmlPullParser.START_TAG) {
-                    continue;
-                }
-
-                serverList.add(readEntry(parser));
-            }
-            parser.require(XmlPullParser.END_TAG, null, "servers");
-
-            return serverList;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private PublicServer readEntry(XmlPullParser parser) throws XmlPullParserException, IOException {
-        String name = parser.getAttributeValue(null, "name");
-        String ca = parser.getAttributeValue(null, "ca");
-        String continentCode = parser.getAttributeValue(null, "continent_code");
-        String country = parser.getAttributeValue(null, "country");
-        String countryCode = parser.getAttributeValue(null, "country_code");
-        String ip = parser.getAttributeValue(null, "ip");
-        String port = parser.getAttributeValue(null, "port");
-        String region = parser.getAttributeValue(null, "region");
-        String url = parser.getAttributeValue(null, "url");
-
-        parser.nextTag();
-
-        PublicServer server = new PublicServer(name, ca, continentCode, country, countryCode, ip, Integer.parseInt(port), region, url);
-
-        return server;
-    }
     }
 
     /**
@@ -583,15 +392,16 @@ public class PublicServerListFragment extends Fragment implements OnItemClickLis
             final String country = params.length > 0 ? params[0] : null; // If a country is provided, search within country
 
             Collection<PublicServer> servers;
-            if(country != null)
-                servers = Collections2.filter(mServers, new Predicate<PublicServer>() {
-                    @Override
-                    public boolean apply(PublicServer publicServer) {
-                        return country.equals(publicServer.getCountryCode());
+            if(country != null) {
+                servers = new LinkedList<PublicServer>();
+                for (PublicServer server : mServers) {
+                    if (country.equals(server.getCountryCode())) {
+                        servers.add(server);
                     }
-                });
-            else
+                }
+            } else {
                 servers = mServers;
+            }
 
             // For countries with 0 servers, immediately return null.
             if(servers.size() == 0)

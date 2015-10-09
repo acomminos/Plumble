@@ -20,10 +20,13 @@ package com.morlunk.mumbleclient.util;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.View;
 
 import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.mumbleclient.service.PlumbleService;
 
 /**
  * Fragment class intended to make binding the Jumble service to fragments easier.
@@ -48,7 +51,7 @@ public abstract class JumbleServiceFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mServiceProvider.addServiceFragment(this);
         if(mServiceProvider.getService() != null && !mBound)
@@ -65,6 +68,8 @@ public abstract class JumbleServiceFragment extends Fragment {
 
     /** The definitive place where data from the service will be used to initialize the fragment. Only called once per bind, whether the fragment loads first or the service. */
     public void onServiceBound(IJumbleService service) { }
+
+    public void onServiceUnbound() { }
 
     /** If implemented, will register the returned observer to the service upon binding. */
     public IJumbleObserver getServiceObserver() {
@@ -92,6 +97,7 @@ public abstract class JumbleServiceFragment extends Fragment {
             e.printStackTrace();
         }
 
+        onServiceUnbound();
     }
 
     public void setServiceBound(boolean bound) {
@@ -101,7 +107,7 @@ public abstract class JumbleServiceFragment extends Fragment {
             onServiceDetached(mServiceProvider.getService());
     }
 
-    public IJumbleService getService() {
+    public PlumbleService.PlumbleBinder getService() {
         return mServiceProvider.getService();
     }
 }

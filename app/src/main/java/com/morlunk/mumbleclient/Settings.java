@@ -20,11 +20,17 @@ package com.morlunk.mumbleclient;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.media.AudioManager;
 import android.preference.PreferenceManager;
+import android.view.Gravity;
+
+import com.morlunk.jumble.Constants;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Singleton settings class for universal access to the app's preferences.
@@ -32,14 +38,13 @@ import java.io.IOException;
  */
 public class Settings {
     public static final String PREF_INPUT_METHOD = "audioInputMethod";
+    public static final Set<String> ARRAY_INPUT_METHODS;
     /** Voice activity transmits depending on the amplitude of user input. */
     public static final String ARRAY_INPUT_METHOD_VOICE = "voiceActivity";
     /** Push to talk transmits on command. */
     public static final String ARRAY_INPUT_METHOD_PTT = "ptt";
     /** Continuous transmits always. */
     public static final String ARRAY_INPUT_METHOD_CONTINUOUS = "continuous";
-    /** Handset mode transmits always, using the proximity sensor and phone speaker. */
-    public static final String ARRAY_INPUT_METHOD_HANDSET = "handset";
 
     public static final String PREF_THRESHOLD = "vadThreshold";
     public static final int DEFAULT_THRESHOLD = 50;
@@ -75,6 +80,9 @@ public class Settings {
 
     public static final String PREF_USE_TTS = "useTts";
     public static final Boolean DEFAULT_USE_TTS = true;
+
+    public static final String PREF_SHORT_TTS_MESSAGES = "shortTtsMessages";
+    public static final boolean DEFAULT_SHORT_TTS_MESSAGES = false;
 
     public static final String PREF_AUTO_RECONNECT = "autoReconnect";
     public static final Boolean DEFAULT_AUTO_RECONNECT = true;
@@ -112,17 +120,35 @@ public class Settings {
     public static final String PREF_LOAD_IMAGES = "load_images";
     public static final boolean DEFAULT_LOAD_IMAGES = true;
 
-    public static final String PREF_FRAMES_PER_PACKET = "frames_per_packet";
-    public static final int DEFAULT_FRAMES_PER_PACKET = 6;
+    public static final String PREF_FRAMES_PER_PACKET = "audio_per_packet";
+    public static final String DEFAULT_FRAMES_PER_PACKET = "2";
+
+    public static final String PREF_HALF_DUPLEX = "half_duplex";
+    public static final boolean DEFAULT_HALF_DUPLEX = false;
+
+    public static final String PREF_HANDSET_MODE = "handset_mode";
+    public static final boolean DEFAULT_HANDSET_MODE = false;
+
+    public static final String PREF_PTT_SOUND = "ptt_sound";
+    public static final boolean DEFAULT_PTT_SOUND = false;
+
+    public static final String PREF_PREPROCESSOR_ENABLED = "preprocessor_enabled";
+    public static final boolean DEFAULT_PREPROCESSOR_ENABLED = true;
+
+    public static final String PREF_STAY_AWAKE = "stay_awake";
+    public static final boolean DEFAULT_STAY_AWAKE = false;
+
+    static {
+        ARRAY_INPUT_METHODS = new HashSet<String>();
+        ARRAY_INPUT_METHODS.add(ARRAY_INPUT_METHOD_VOICE);
+        ARRAY_INPUT_METHODS.add(ARRAY_INPUT_METHOD_PTT);
+        ARRAY_INPUT_METHODS.add(ARRAY_INPUT_METHOD_CONTINUOUS);
+    }
 
     private final SharedPreferences preferences;
 
-    private static Settings settings;
-
     public static Settings getInstance(Context context) {
-        if(settings == null)
-            settings = new Settings(context);
-        return settings;
+        return new Settings(context);
     }
 
     private Settings(Context ctx) {
@@ -130,7 +156,38 @@ public class Settings {
     }
 
     public String getInputMethod() {
-        return preferences.getString(PREF_INPUT_METHOD, ARRAY_INPUT_METHOD_VOICE);
+        String method = preferences.getString(PREF_INPUT_METHOD, ARRAY_INPUT_METHOD_VOICE);
+        if(!ARRAY_INPUT_METHODS.contains(method)) {
+            // Set default method for users who used to use handset mode before removal.
+            method = ARRAY_INPUT_METHOD_VOICE;
+        }
+        return method;
+    }
+
+    /**
+     * Converts the preference input method value to the one used to connect to a server via Jumble.
+     * @return An input method value used to instantiate a Jumble service.
+     */
+    public int getJumbleInputMethod() {
+        String inputMethod = getInputMethod();
+        if (ARRAY_INPUT_METHOD_VOICE.equals(inputMethod)) {
+            return Constants.TRANSMIT_VOICE_ACTIVITY;
+        } else if (ARRAY_INPUT_METHOD_PTT.equals(inputMethod)) {
+            return Constants.TRANSMIT_PUSH_TO_TALK;
+        } else if (ARRAY_INPUT_METHOD_CONTINUOUS.equals(inputMethod)) {
+            return Constants.TRANSMIT_CONTINUOUS;
+        }
+        throw new RuntimeException("Could not convert input method '" + inputMethod + "' to a Jumble input method id!");
+    }
+
+    public void setInputMethod(String inputMethod) {
+        if(ARRAY_INPUT_METHOD_VOICE.equals(inputMethod) ||
+                ARRAY_INPUT_METHOD_PTT.equals(inputMethod) ||
+                ARRAY_INPUT_METHOD_CONTINUOUS.equals(inputMethod)) {
+            preferences.edit().putString(PREF_INPUT_METHOD, inputMethod).apply();
+        } else {
+            throw new RuntimeException("Invalid input method " + inputMethod);
+        }
     }
 
     public int getInputSampleRate() {
@@ -155,6 +212,32 @@ public class Settings {
 
     public String getHotCorner() {
         return preferences.getString(PREF_HOT_CORNER_KEY, DEFAULT_HOT_CORNER);
+    }
+
+    /**
+     * Returns whether or not the hot corner is enabled.
+     * @return true if a hot corner should be shown.
+     */
+    public boolean isHotCornerEnabled() {
+        return !ARRAY_HOT_CORNER_NONE.equals(preferences.getString(PREF_HOT_CORNER_KEY, DEFAULT_HOT_CORNER));
+    }
+
+    /**
+     * Returns the view gravity of the hot corner, or 0 if hot corner is disabled.
+     * @return A {@link android.view.Gravity} value, or 0 if disabled.
+     */
+    public int getHotCornerGravity() {
+        String hc = getHotCorner();
+        if(ARRAY_HOT_CORNER_BOTTOM_LEFT.equals(hc)) {
+            return Gravity.LEFT | Gravity.BOTTOM;
+        } else if(ARRAY_HOT_CORNER_BOTTOM_RIGHT.equals(hc)) {
+            return Gravity.RIGHT | Gravity.BOTTOM;
+        } else if(ARRAY_HOT_CORNER_TOP_LEFT.equals(hc)) {
+            return Gravity.LEFT | Gravity.TOP;
+        } else if(ARRAY_HOT_CORNER_TOP_RIGHT.equals(hc)) {
+            return Gravity.RIGHT | Gravity.TOP;
+        }
+        return 0;
     }
 
     /**
@@ -219,6 +302,10 @@ public class Settings {
         return preferences.getBoolean(PREF_USE_TTS, DEFAULT_USE_TTS);
     }
 
+    public boolean isShortTextToSpeechMessagesEnabled() {
+        return preferences.getBoolean(PREF_SHORT_TTS_MESSAGES, DEFAULT_SHORT_TTS_MESSAGES);
+    }
+
     public boolean isAutoReconnectEnabled() {
         return preferences.getBoolean(PREF_AUTO_RECONNECT, DEFAULT_AUTO_RECONNECT);
     }
@@ -255,20 +342,40 @@ public class Settings {
         Editor editor = preferences.edit();
         editor.putBoolean(PREF_MUTED, muted || deafened);
         editor.putBoolean(PREF_DEAFENED, deafened);
-        editor.commit();
+        editor.apply();
     }
 
     public void setCertificatePath(String path) {
         Editor editor = preferences.edit();
         editor.putString(PREF_CERT, path);
-        editor.commit();
+        editor.apply();
     }
 
     public void setFirstRun(boolean run) {
-        preferences.edit().putBoolean(PREF_FIRST_RUN, run).commit();
+        preferences.edit().putBoolean(PREF_FIRST_RUN, run).apply();
     }
 
     public int getFramesPerPacket() {
-        return preferences.getInt(PREF_FRAMES_PER_PACKET, DEFAULT_FRAMES_PER_PACKET);
+        return Integer.parseInt(preferences.getString(PREF_FRAMES_PER_PACKET, DEFAULT_FRAMES_PER_PACKET));
+    }
+
+    public boolean isHalfDuplex() {
+        return preferences.getBoolean(PREF_HALF_DUPLEX, DEFAULT_HALF_DUPLEX);
+    }
+
+    public boolean isHandsetMode() {
+        return preferences.getBoolean(PREF_HANDSET_MODE, DEFAULT_HANDSET_MODE);
+    }
+
+    public boolean isPttSoundEnabled() {
+        return preferences.getBoolean(PREF_PTT_SOUND, DEFAULT_PTT_SOUND);
+    }
+
+    public boolean isPreprocessorEnabled() {
+        return preferences.getBoolean(PREF_PREPROCESSOR_ENABLED, DEFAULT_PREPROCESSOR_ENABLED);
+    }
+
+    public boolean shouldStayAwake() {
+        return preferences.getBoolean(PREF_STAY_AWAKE, DEFAULT_STAY_AWAKE);
     }
 }

@@ -52,7 +52,7 @@
                 android:layout_width="64dp"
                 android:layout_height="48dp"
                 android:src="@drawable/ic_action_add_light"
-                style="@style/Plumble.BorderlessButton"/>
+                android:background="?attr/selectableItemBackground"/>
         </LinearLayout>
 
 </LinearLayout>

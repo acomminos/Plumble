@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--Drawer pane-->
+  <string name="drawer_server">Сервер</string>
+  <string name="drawer_header_servers">Сервер</string>
+  <!--Chat formatting-->
+  <!--User menu-->
+  <!--Channel menu-->
+  <!--Comment Fragment-->
+  <!--Server Info Fragment-->
+  <!--Server matching-->
+  <!--Common-->
+  <string name="generateCert">Создать сертификат</string>
+  <string name="server">Сервер</string>
+  <string name="chat_notify_moved">%1$s перемещен(а) %3$s из %2$s.</string>
+  <string name="chat_notify_muted_deafened">Звук и микрофон отключен.</string>
+  <string name="chat_notify_muted">Микрофон отключен.</string>
+  <string name="chat_notify_unmuted">Микрофон включен.</string>
+  <string name="chat_notify_unmuted_undeafened">Микрофон и звук включен.</string>
+  <string name="chat_notify_now_muted_deafened">%s отключил(а) звук и микрофон.</string>
+  <string name="chat_notify_now_muted">%s выключил(а) микрофон.</string>
+  <string name="chat_notify_now_unmuted">%s включил(а) микрофон.</string>
+  <string name="chat_notify_now_unmuted_undeafened">%s включил(а) звук и микрофон.</string>
+  <string name="chat_notify_connected">%s соеденен(а).</string>
+  <string name="chat_notify_disconnected">%s отсоединен(а).</string>
+  <string name="status_notify_muted_and_deafened">Звук и микрофон отключен.</string>
+  <string name="status_notify_muted">Микрофон отключен.</string>
+  <string name="hint_ptt">Нажми чтобы говорить</string>
+  <string name="transmit_mode">Режим передачи</string>
+</resources>

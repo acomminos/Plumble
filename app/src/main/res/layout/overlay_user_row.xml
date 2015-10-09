@@ -23,14 +23,14 @@
     android:orientation="horizontal">
 
     <ImageView
-        android:id="@+id/userRowState"
+        android:id="@+id/user_row_state"
         android:layout_width="18dp"
         android:layout_height="match_parent"
         android:layout_marginLeft="8dp"
         android:src="@drawable/ic_talking_off" />
 
     <TextView
-        android:id="@+id/userRowName"
+        android:id="@+id/user_row_name"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

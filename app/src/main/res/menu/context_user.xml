@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/context_kick"
+        android:title="@string/user_menu_kick"
+        android:icon="@drawable/ic_action_delete_dark"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_ban"
+        android:title="@string/user_menu_ban"
+        android:icon="@drawable/ic_action_error"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_mute"
+        android:title="@string/user_menu_mute"
+        android:icon="@drawable/ic_action_microphone"
+        android:checkable="true"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_deafen"
+        android:title="@string/user_menu_deafen"
+        android:icon="@drawable/ic_action_headphones"
+        android:checkable="true"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_move"
+        android:title="@string/user_menu_move"
+        android:icon="@drawable/ic_action_move"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_priority"
+        android:title="@string/user_menu_priority_speaker"
+        android:icon="@drawable/ic_action_audio"
+        android:checkable="true"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_local_mute"
+        android:title="@string/user_menu_local_mute"
+        android:icon="@drawable/ic_action_audio_muted"
+        android:checkable="true"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_ignore_messages"
+        android:title="@string/user_menu_ignore_messages"
+        android:icon="@drawable/ic_action_bad"
+        android:checkable="true"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_view_comment"
+        android:title="@string/user_menu_view_comment"
+        android:icon="@drawable/ic_action_comment"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_change_comment"
+        android:title="@string/user_menu_change_comment"
+        android:icon="@drawable/ic_action_comment"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_reset_comment"
+        android:title="@string/user_menu_reset_comment"
+        android:icon="@drawable/ic_action_comment"
+        app:showAsAction="never"
+        />
+    <!--<item android:id="@+id/context_info"-->
+        <!--android:title="@string/user_menu_information"-->
+        <!--android:icon="@drawable/ic_action_info_dark"/>-->
+    <item android:id="@+id/context_register"
+        android:title="@string/user_menu_register"
+        android:icon="@drawable/ic_registered"
+        app:showAsAction="never"
+        />
+</menu>

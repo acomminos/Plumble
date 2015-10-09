@@ -15,26 +15,27 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android" tools:ignore="NewApi">
-    <style name="Plumble.BorderlessButton" parent="@android:style/Widget">
-        <item name="android:background">@drawable/selectable_background</item>
-    </style>
-
-    <style name="Plumble.Card" parent="@android:style/Widget">
-        <item name="android:background">?attr/cardBackground</item>
-        <item name="android:padding">2dp</item>
-    </style>
-
-    <style name="Plumble.HorizontalProgressBar" parent="@android:style/Widget.ProgressBar.Horizontal"></style>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:ignore="NewApi">
     
     <style name="Theme.Plumble" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="android:textColorPrimary">#000</item>
         <item name="android:textColorSecondary">#666</item>
         <item name="android:textColorPrimaryInverse">#FFF</item>
         <item name="android:textColorSecondaryInverse">#AAA</item>
-        <item name="highlightColor">#33b5e5</item>
-        <item name="secondaryBackground">#333333</item>
-        <item name="cardBackground">#FFFFFF</item>
+
+        <item name="android:actionBarStyle">@style/PlumbleDarkActionBar</item>
+        <item name="actionBarStyle">@style/PlumbleDarkActionBar</item>
+
+        <item name="colorPrimary">#454D5E</item>
+        <item name="colorPrimaryDark">#2F3440</item>
+        <item name="colorAccent">#454D5E</item>
+
+        <item name="cardStyle">@style/Theme.Plumble.CardView</item>
+    </style>
+
+    <style name="Theme.Plumble.CardView" parent="CardView">
     </style>
 
     <style name="Theme.Plumble.Dark" parent="@style/Theme.AppCompat">
@@ -44,8 +45,24 @@
         <item name="android:textColorSecondaryInverse">#AAA</item>
         <item name="android:windowBackground">@android:color/black</item>
         <item name="android:colorBackground">@android:color/black</item>
-        <item name="secondaryBackground">#000000</item>
-        <item name="cardBackground">#111111</item>
+
+        <item name="android:actionBarStyle">@style/PlumbleDarkActionBar</item>
+        <item name="actionBarStyle">@style/PlumbleDarkActionBar</item>
+
+        <item name="cardStyle">@style/Theme.Plumble.Dark.CardView</item>
+    </style>
+
+    <style name="PlumbleDarkActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="android:titleTextStyle">@style/PlumbleDarkActionBarText</item>
+        <item name="titleTextStyle">@style/PlumbleDarkActionBarText</item>
+    </style>
+
+    <style name="PlumbleDarkActionBarText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="Theme.Plumble.Dark.CardView" parent="CardView">
+        <item name="cardBackgroundColor">#333</item>
     </style>
 
     <!-- Solarized theme sets based off of Ethan Schoonover's work: http://ethanschoonover.com/solarized -->
@@ -63,9 +80,26 @@
         <item name="android:actionBarStyle">@style/SolarizedLightActionBar</item>
         <item name="actionBarStyle">@style/SolarizedLightActionBar</item>
 
-        <item name="highlightColor">@color/solarized_base2</item>
-        <item name="secondaryBackground">@color/solarized_base3</item>
-        <item name="cardBackground">@color/solarized_base2</item>
+        <item name="colorPrimary">@color/solarized_base2</item>
+        <item name="colorPrimaryDark">@color/solarized_base3</item>
+        <item name="colorAccent">@color/solarized_base2</item>
+
+        <item name="cardStyle">@style/Theme.Plumble.Solarized.Light.CardView</item>
+    </style>
+
+    <style name="SolarizedLightActionBar" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/solarized_base2</item>
+        <item name="background">@color/solarized_base2</item>
+        <item name="android:titleTextStyle">@style/SolarizedLightActionBarText</item>
+        <item name="titleTextStyle">@style/SolarizedLightActionBarText</item>
+    </style>
+
+    <style name="SolarizedLightActionBarText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/solarized_base00</item>
+    </style>
+
+    <style name="Theme.Plumble.Solarized.Light.CardView" parent="CardView">
+        <item name="cardBackgroundColor">@color/solarized_base2</item>
     </style>
 
     <style name="Theme.Plumble.Solarized.Dark" parent="@style/Theme.AppCompat">
@@ -81,20 +115,11 @@
         <item name="android:actionBarStyle">@style/SolarizedDarkActionBar</item>
         <item name="actionBarStyle">@style/SolarizedDarkActionBar</item>
 
-        <item name="highlightColor">@color/solarized_base02</item>
-        <item name="secondaryBackground">@color/solarized_base03</item>
-        <item name="cardBackground">@color/solarized_base02</item>
-    </style>
+        <item name="colorPrimary">@color/solarized_base02</item>
+        <item name="colorPrimaryDark">@color/solarized_base03</item>
+        <item name="colorAccent">@color/solarized_base02</item>
 
-    <style name="SolarizedLightActionBar" parent="@style/Widget.AppCompat.ActionBar">
-        <item name="android:background">@color/solarized_base2</item>
-        <item name="background">@color/solarized_base2</item>
-        <item name="android:titleTextStyle">@style/SolarizedLightActionBarText</item>
-        <item name="titleTextStyle">@style/SolarizedLightActionBarText</item>
-    </style>
-
-    <style name="SolarizedLightActionBarText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textColor">@color/solarized_base00</item>
+        <item name="cardStyle">@style/Theme.Plumble.Solarized.Dark.CardView</item>
     </style>
 
     <style name="SolarizedDarkActionBar" parent="@style/Widget.AppCompat.ActionBar">
@@ -106,5 +131,9 @@
 
     <style name="SolarizedDarkActionBarText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">@color/solarized_base0</item>
+    </style>
+
+    <style name="Theme.Plumble.Solarized.Dark.CardView" parent="CardView">
+        <item name="cardBackgroundColor">@color/solarized_base02</item>
     </style>
 </resources>

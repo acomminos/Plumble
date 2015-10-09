@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/context_channel_join"
+        android:title="@string/channel_join"
+        android:icon="@drawable/ic_action_move"
+        app:showAsAction="ifRoom"
+        />
+    <item android:id="@+id/context_channel_add"
+        android:title="@string/add"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_channel_edit"
+        android:title="@string/edit"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_channel_remove"
+        android:title="@string/remove"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_channel_view_description"
+        android:title="@string/channel_menu_view_description"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/context_channel_pin"
+        android:checkable="true"
+        android:title="@string/channel_menu_pin"
+        app:showAsAction="never"
+        />
+</menu>

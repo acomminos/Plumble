@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2014 Andrew Comminos
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!-- Here be constants. These resources do NOT need translation. -->
+<resources>
+    <string-array
+        name="audioInputNames">
+        <item>@string/inputMethodVoice</item>
+        <item>@string/inputMethodPtt</item>
+        <item>@string/inputMethodContinuous</item>
+    </string-array>
+
+    <string-array
+        name="audioInputValues">
+        <item>voiceActivity</item>
+        <item>ptt</item>
+        <item>continuous</item>
+    </string-array>
+
+    <string-array
+        name="audioSampleRateValues">
+        <!-- Experimental -->
+        <!--<item>128000</item>-->
+        <!--<item>96000</item>-->
+        <!--<item>72000</item>-->
+        <!-- Likely supported -->
+        <item>48000</item>
+        <item>44100</item>
+        <item>16000</item>
+        <item>8000</item>
+    </string-array>
+
+    <string-array name="themeNames">
+        <item>@string/theme_light</item>
+        <item>@string/theme_dark</item>
+        <item>@string/theme_solarized_light</item>
+        <item>@string/theme_solarized_dark</item>
+    </string-array>
+
+    <string-array
+        name="themeValues">
+        <item>lightDark</item>
+        <item>dark</item>
+        <item>solarizedLight</item>
+        <item>solarizedDark</item>
+    </string-array>
+
+    <string-array name="callModeNames">
+        <item>@string/call_mode_speakerphone</item>
+        <item>@string/call_mode_voice_call</item>
+    </string-array>
+
+    <string-array name="callModeValues">
+        <item>speakerphone</item>
+        <item>voice</item>
+    </string-array>
+
+    <string-array name="hotCornerNames">
+        <item>@string/hot_corner_none</item>
+        <item>@string/hot_corner_top_left</item>
+        <item>@string/hot_corner_bottom_left</item>
+        <item>@string/hot_corner_top_right</item>
+        <item>@string/hot_corner_bottom_right</item>
+    </string-array>
+
+    <string-array name="hotCornerValues">
+        <item>none</item>
+        <item>topLeft</item>
+        <item>bottomLeft</item>
+        <item>topRight</item>
+        <item>bottomRight</item>
+    </string-array>
+
+    <string-array name="audio_per_packet_names">
+        <item>10ms</item>
+        <item>20ms</item>
+        <item>40ms</item>
+        <item>60ms</item>
+    </string-array>
+
+    <string-array name="audio_per_packet_values">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+    </string-array>
+
+    <string name="copyright">Copyright &#169; Andrew Comminos 2014</string>
+    <string name="acknowledgements_link">https://github.com/Morlunk/Plumble/graphs/contributors</string>
+    <string name="license_gplv3">GNU General Public License v3.0</string>
+    <string name="license_gplv3_link">https://www.gnu.org/copyleft/gpl.html</string>
+    <string name="license_apache2">Apache License Version 2.0</string>
+    <string name="license_apache2_link">https://www.apache.org/licenses/LICENSE-2.0.html</string>
+
+</resources>
