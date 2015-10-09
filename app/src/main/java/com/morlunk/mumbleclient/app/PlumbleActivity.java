@@ -27,6 +27,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -335,6 +336,10 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 e.printStackTrace();
             }
         }
+
+        setVolumeControlStream(mSettings.isHandsetMode() ?
+                AudioManager.STREAM_VOICE_CALL : AudioManager.STREAM_MUSIC);
+
         if(mSettings.isFirstRun()) showSetupWizard();
     }
 
@@ -751,6 +756,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             }
         } else if (Settings.PREF_STAY_AWAKE.equals(key)) {
             setStayAwake(mSettings.shouldStayAwake());
+        } else if (Settings.PREF_HANDSET_MODE.equals(key)) {
+            setVolumeControlStream(mSettings.isHandsetMode() ?
+                    AudioManager.STREAM_VOICE_CALL : AudioManager.STREAM_MUSIC);
         }
     }
 
