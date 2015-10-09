@@ -385,6 +385,8 @@ public class PlumbleService extends JumbleService implements
                 break;
             case Settings.PREF_HANDSET_MODE:
                 setProximitySensorOn(isConnected() && mSettings.isHandsetMode());
+                changedExtras.putInt(JumbleService.EXTRAS_AUDIO_STREAM, mSettings.isHandsetMode() ?
+                                     AudioManager.STREAM_VOICE_CALL : AudioManager.STREAM_MUSIC);
                 break;
             case Settings.PREF_THRESHOLD:
                 changedExtras.putFloat(JumbleService.EXTRAS_DETECTION_THRESHOLD,
