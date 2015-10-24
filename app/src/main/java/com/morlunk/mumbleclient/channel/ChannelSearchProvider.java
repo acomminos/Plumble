@@ -31,6 +31,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.IUser;
@@ -54,7 +55,7 @@ public class ChannelSearchProvider extends ContentProvider {
 	private ServiceConnection mConn = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-			mService = (IJumbleService) service;
+			mService = ((JumbleService.JumbleBinder) service).getService();
             synchronized (mServiceLock) {
                 mServiceLock.notify();
             }
