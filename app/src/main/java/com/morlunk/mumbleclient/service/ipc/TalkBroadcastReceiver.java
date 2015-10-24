@@ -20,7 +20,6 @@ package com.morlunk.mumbleclient.service.ipc;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.RemoteException;
 
 import com.morlunk.jumble.IJumbleService;
 
@@ -42,22 +41,18 @@ public class TalkBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        try {
-            if (BROADCAST_TALK.equals(intent.getAction())) {
-                String status = intent.getStringExtra(EXTRA_TALK_STATUS);
-                if (status == null) status = TALK_STATUS_TOGGLE;
-                if (TALK_STATUS_ON.equals(status)) {
-                    mService.setTalkingState(true);
-                } else if (TALK_STATUS_OFF.equals(status)) {
-                    mService.setTalkingState(false);
-                } else if (TALK_STATUS_TOGGLE.equals(status)) {
-                    mService.setTalkingState(!mService.isTalking());
-                }
-            } else {
-                throw new UnsupportedOperationException();
+        if (BROADCAST_TALK.equals(intent.getAction())) {
+            String status = intent.getStringExtra(EXTRA_TALK_STATUS);
+            if (status == null) status = TALK_STATUS_TOGGLE;
+            if (TALK_STATUS_ON.equals(status)) {
+                mService.setTalkingState(true);
+            } else if (TALK_STATUS_OFF.equals(status)) {
+                mService.setTalkingState(false);
+            } else if (TALK_STATUS_TOGGLE.equals(status)) {
+                mService.setTalkingState(!mService.isTalking());
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        } else {
+            throw new UnsupportedOperationException();
         }
     }
 }

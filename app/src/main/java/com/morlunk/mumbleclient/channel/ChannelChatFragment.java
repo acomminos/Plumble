@@ -42,7 +42,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.IChannel;
@@ -50,6 +49,7 @@ import com.morlunk.jumble.model.IMessage;
 import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.Message;
 import com.morlunk.jumble.model.User;
+import com.morlunk.jumble.util.IJumbleObserver;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.service.IChatMessage;
@@ -72,27 +72,27 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
 	private IJumbleObserver mServiceObserver = new JumbleObserver() {
 
         @Override
-        public void onMessageLogged(IMessage message) throws RemoteException {
+        public void onMessageLogged(IMessage message) {
             addChatMessage(new IChatMessage.TextMessage(message), true);
         }
 
         @Override
-        public void onLogInfo(String message) throws RemoteException {
+        public void onLogInfo(String message) {
             addChatMessage(new IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.INFO, message), true);
         }
 
         @Override
-        public void onLogWarning(String message) throws RemoteException {
+        public void onLogWarning(String message) {
             addChatMessage(new IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.WARNING, message), true);
         }
 
         @Override
-        public void onLogError(String message) throws RemoteException {
+        public void onLogError(String message) {
             addChatMessage(new IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.ERROR, message), true);
         }
 
         @Override
-        public void onUserJoinedChannel(IUser user, IChannel newChannel, IChannel oldChannel) throws RemoteException {
+        public void onUserJoinedChannel(IUser user, IChannel newChannel, IChannel oldChannel) {
             if (user != null && getService().getSessionUser() != null &&
                     user.equals(getService().getSessionUser()) &&
                     mTargetProvider.getChatTarget() == null) {
@@ -184,11 +184,7 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
             }
         });
 
-        try {
-            updateChatTargetText(mTargetProvider.getChatTarget());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        updateChatTargetText(mTargetProvider.getChatTarget());
         return view;
 	}
 
@@ -270,7 +266,7 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
 	/**
 	 * Updates hint displaying chat target.
 	 */
-	public void updateChatTargetText(ChatTargetProvider.ChatTarget target) throws RemoteException {
+	public void updateChatTargetText(ChatTargetProvider.ChatTarget target) {
         if(getService() == null) return;
 
         String hint = null;
@@ -305,11 +301,7 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
 
     @Override
     public void onChatTargetSelected(ChatTargetProvider.ChatTarget target) {
-        try {
-            updateChatTargetText(target);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        updateChatTargetText(target);
     }
 
     private static class ChannelChatAdapter extends ArrayAdapter<IChatMessage> {
@@ -342,30 +334,25 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
                 public void visit(IChatMessage.TextMessage message) {
                     IMessage textMessage = message.getMessage();
                     String targetMessage = getContext().getString(R.string.unknown);
-                    boolean selfAuthored = false;
-                    try {
-                        selfAuthored = textMessage.getActor() == mService.getSession();
+                    boolean selfAuthored = textMessage.getActor() == mService.getSession();
 
-                        if (textMessage.getTargetChannels() != null && !textMessage.getTargetChannels().isEmpty()) {
-                            IChannel currentChannel = (IChannel) textMessage.getTargetChannels().get(0);
-                            if (currentChannel != null && currentChannel.getName() != null) {
-                                targetMessage = getContext().getString(R.string.chat_message_to, textMessage.getActorName(), currentChannel.getName());
-                            }
-                        } else if (textMessage.getTargetTrees() != null && !textMessage.getTargetTrees().isEmpty()) {
-                            IChannel currentChannel = (IChannel) textMessage.getTargetTrees().get(0);
-                            if (currentChannel != null && currentChannel.getName() != null) {
-                                targetMessage = getContext().getString(R.string.chat_message_to, textMessage.getActorName(), currentChannel.getName());
-                            }
-                        } else if (textMessage.getTargetUsers() != null && !textMessage.getTargetUsers().isEmpty()) {
-                            User user = (User) textMessage.getTargetUsers().get(0);
-                            if (user != null && user.getName() != null) {
-                                targetMessage = getContext().getString(R.string.chat_message_to, textMessage.getActorName(), user.getName());
-                            }
-                        } else {
-                            targetMessage = textMessage.getActorName();
+                    if (textMessage.getTargetChannels() != null && !textMessage.getTargetChannels().isEmpty()) {
+                        IChannel currentChannel = (IChannel) textMessage.getTargetChannels().get(0);
+                        if (currentChannel != null && currentChannel.getName() != null) {
+                            targetMessage = getContext().getString(R.string.chat_message_to, textMessage.getActorName(), currentChannel.getName());
                         }
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+                    } else if (textMessage.getTargetTrees() != null && !textMessage.getTargetTrees().isEmpty()) {
+                        IChannel currentChannel = (IChannel) textMessage.getTargetTrees().get(0);
+                        if (currentChannel != null && currentChannel.getName() != null) {
+                            targetMessage = getContext().getString(R.string.chat_message_to, textMessage.getActorName(), currentChannel.getName());
+                        }
+                    } else if (textMessage.getTargetUsers() != null && !textMessage.getTargetUsers().isEmpty()) {
+                        User user = (User) textMessage.getTargetUsers().get(0);
+                        if (user != null && user.getName() != null) {
+                            targetMessage = getContext().getString(R.string.chat_message_to, textMessage.getActorName(), user.getName());
+                        }
+                    } else {
+                        targetMessage = textMessage.getActorName();
                     }
 
                     int gravity = selfAuthored ? Gravity.RIGHT : Gravity.LEFT;

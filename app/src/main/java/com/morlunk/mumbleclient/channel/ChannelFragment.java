@@ -37,9 +37,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.User;
+import com.morlunk.jumble.util.IJumbleObserver;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
@@ -65,7 +65,7 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
 
     private JumbleObserver mObserver = new JumbleObserver() {
         @Override
-        public void onUserTalkStateUpdated(IUser user) throws RemoteException {
+        public void onUserTalkStateUpdated(IUser user) {
             if (user != null && user.getSession() == getService().getSession()) {
                 // Manually set button selection colour when we receive a talk state update.
                 // This allows representation of talk state when using hot corners and PTT toggle.
@@ -113,17 +113,13 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                try {
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            getService().onTalkKeyDown();
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            getService().onTalkKeyUp();
-                            break;
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        getService().onTalkKeyDown();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        getService().onTalkKeyUp();
+                        break;
                 }
                 return true;
             }

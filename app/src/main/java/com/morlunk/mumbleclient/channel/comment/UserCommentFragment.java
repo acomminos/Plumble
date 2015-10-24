@@ -33,7 +33,7 @@ public class UserCommentFragment extends AbstractCommentFragment {
     public void requestComment(final IJumbleService service) throws RemoteException {
         service.registerObserver(new JumbleObserver() {
             @Override
-            public void onUserStateUpdated(IUser user) throws RemoteException {
+            public void onUserStateUpdated(IUser user) {
                 if(user.getSession() == getSession() &&
                         user.getComment() != null) {
                     loadComment(user.getComment());

@@ -78,7 +78,7 @@ public class ServerInfoFragment extends JumbleServiceFragment {
      */
     public void updateData() throws RemoteException {
         if(getService() == null
-                || getService().getConnectionState() != JumbleService.STATE_CONNECTED)
+                || !getService().isSynchronized())
             return;
 
         mProtocolView.setText(getString(R.string.server_info_protocol, getService().getServerRelease()));
@@ -88,7 +88,7 @@ public class ServerInfoFragment extends JumbleServiceFragment {
         mHostView.setText(getString(R.string.server_info_host, getService().getConnectedServer().getHost(), getService().getConnectedServer().getPort()));
 
         String codecName;
-        JumbleUDPMessageType codecType = JumbleUDPMessageType.values()[getService().getCodec()];
+        JumbleUDPMessageType codecType = getService().getCodec();
         switch (codecType) {
             case UDPVoiceOpus:
                 codecName = "Opus";

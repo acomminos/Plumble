@@ -48,23 +48,23 @@ public class PlumbleOverlay {
 
     private JumbleObserver mObserver = new JumbleObserver() {
         @Override
-        public void onUserTalkStateUpdated(IUser user) throws RemoteException {
+        public void onUserTalkStateUpdated(IUser user) {
             mChannelAdapter.notifyDataSetChanged();
         }
 
         @Override
-        public void onUserStateUpdated(IUser user) throws RemoteException {
+        public void onUserStateUpdated(IUser user) {
             if(user.getChannel() != null &&
-                    user.getChannel().equals(mService.getBinder().getSessionChannel()))
+                    user.getChannel().equals(mService.getSessionChannel()))
                 mChannelAdapter.notifyDataSetChanged();
         }
 
         @Override
-        public void onUserJoinedChannel(IUser user, IChannel newChannel, IChannel oldChannel) throws RemoteException {
-            if(user.getSession() == mService.getBinder().getSession()) // Session user has changed channels
-                mChannelAdapter.setChannel(mService.getBinder().getSessionChannel());
-            else if(newChannel.getId() == mService.getBinder().getSessionChannel().getId() ||
-                    oldChannel.getId() == mService.getBinder().getSessionChannel().getId())
+        public void onUserJoinedChannel(IUser user, IChannel newChannel, IChannel oldChannel) {
+            if(user.getSession() == mService.getSession()) // Session user has changed channels
+                mChannelAdapter.setChannel(mService.getSessionChannel());
+            else if(newChannel.getId() == mService.getSessionChannel().getId() ||
+                    oldChannel.getId() == mService.getSessionChannel().getId())
                 mChannelAdapter.notifyDataSetChanged();
         }
     };
@@ -160,16 +160,12 @@ public class PlumbleOverlay {
         mTalkButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                try {
-                    if(MotionEvent.ACTION_DOWN == event.getAction()) {
-                        mService.getBinder().setTalkingState(true);
-                        return true;
-                    } else if(MotionEvent.ACTION_UP == event.getAction()) {
-                        mService.getBinder().setTalkingState(false);
-                        return true;
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+                if(MotionEvent.ACTION_DOWN == event.getAction()) {
+                    mService.setTalkingState(true);
+                    return true;
+                } else if(MotionEvent.ACTION_UP == event.getAction()) {
+                    mService.setTalkingState(false);
+                    return true;
                 }
                 return false;
             }
@@ -206,30 +202,22 @@ public class PlumbleOverlay {
         if(mShown)
             return;
         mShown = true;
-        try {
-            mChannelAdapter = new ChannelAdapter(mService, mService.getBinder().getSessionChannel());
-            mOverlayList.setAdapter(mChannelAdapter);
-            mService.getBinder().registerObserver(mObserver);
-            WindowManager windowManager = (WindowManager) mService.getSystemService(Context.WINDOW_SERVICE);
-            windowManager.addView(mOverlayView, mOverlayParams);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
+        mChannelAdapter = new ChannelAdapter(mService, mService.getSessionChannel());
+        mOverlayList.setAdapter(mChannelAdapter);
+        mService.registerObserver(mObserver);
+        WindowManager windowManager = (WindowManager) mService.getSystemService(Context.WINDOW_SERVICE);
+        windowManager.addView(mOverlayView, mOverlayParams);
     }
 
     public void hide() {
         if(!mShown)
             return;
         mShown = false;
+        mService.unregisterObserver(mObserver);
+        mOverlayList.setAdapter(null);
         try {
-            mService.getBinder().unregisterObserver(mObserver);
-            mOverlayList.setAdapter(null);
             WindowManager windowManager = (WindowManager) mService.getSystemService(Context.WINDOW_SERVICE);
             windowManager.removeView(mOverlayView);
-        } catch (RemoteException e) {
-            e.printStackTrace();
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }

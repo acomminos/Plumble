@@ -55,7 +55,7 @@ import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.util.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.jumble.util.MumbleURLParser;
-import com.morlunk.jumble.util.ParcelableByteArray;
+import com.morlunk.mumbleclient.BuildConfig;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.channel.AccessTokenFragment;
@@ -100,7 +100,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
      */
     public static final String EXTRA_DRAWER_FRAGMENT = "drawer_fragment";
 
-    private PlumbleService.PlumbleBinder mService;
+    private PlumbleService mService;
     private PlumbleDatabase mDatabase;
     private Settings mSettings;
 
@@ -119,7 +119,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mService = (PlumbleService.PlumbleBinder) service;
+            mService = (PlumbleService)((JumbleService.JumbleBinder) service).getService();
             try {
                 mService.registerObserver(mObserver);
                 mService.clearChatNotifications(); // Clear chat notifications on resume.
@@ -132,15 +132,11 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 fragment.setServiceBound(true);
 
             // Re-show server list if we're showing a fragment that depends on the service.
-            try {
-                if(getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof JumbleServiceFragment &&
-                        mService.getConnectionState() != JumbleService.STATE_CONNECTED) {
-                    loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
-                }
-                updateConnectionState(getService());
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            if(getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof JumbleServiceFragment &&
+                    mService.getConnectionState() != JumbleService.ConnectionState.CONNECTED) {
+                loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
             }
+            updateConnectionState(getService());
         }
 
         @Override
@@ -151,7 +147,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
     private JumbleObserver mObserver = new JumbleObserver() {
         @Override
-        public void onConnected() throws RemoteException {
+        public void onConnected() {
             loadDrawerFragment(DrawerAdapter.ITEM_SERVER);
             mDrawerAdapter.notifyDataSetChanged();
             supportInvalidateOptionsMenu();
@@ -160,12 +156,12 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         }
 
         @Override
-        public void onConnecting() throws RemoteException {
+        public void onConnecting() {
             updateConnectionState(getService());
         }
 
         @Override
-        public void onDisconnected(JumbleException e) throws RemoteException {
+        public void onDisconnected(JumbleException e) {
             // Re-show server list if we're showing a fragment that depends on the service.
             if(getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof JumbleServiceFragment) {
                 loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
@@ -177,13 +173,14 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         }
 
         @Override
-        public void onTLSHandshakeFailed(ParcelableByteArray cert) throws RemoteException {
-            byte[] certBytes = cert.getBytes();
+        public void onTLSHandshakeFailed(X509Certificate[] chain) {
             final Server lastServer = getService().getConnectedServer();
 
+            if (chain.length == 0)
+                return;
+
             try {
-                CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-                final X509Certificate x509 = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(certBytes));
+                final X509Certificate x509 = chain[0];
 
                 AlertDialog.Builder adb = new AlertDialog.Builder(PlumbleActivity.this);
                 adb.setTitle(R.string.untrusted_certificate);
@@ -226,7 +223,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         }
 
         @Override
-        public void onPermissionDenied(String reason) throws RemoteException {
+        public void onPermissionDenied(String reason) {
             AlertDialog.Builder adb = new AlertDialog.Builder(PlumbleActivity.this);
             adb.setTitle(R.string.perm_denied);
             adb.setMessage(reason);
@@ -264,16 +261,11 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             @Override
             public void onDrawerStateChanged(int newState) {
                 super.onDrawerStateChanged(newState);
-
-                try {
-                    // Prevent push to talk from getting stuck on when the drawer is opened.
-                    if (getService() != null
-                            && getService().getConnectionState() == JumbleService.STATE_CONNECTED
-                            && getService().isTalking() && !mSettings.isPushToTalkToggle()) {
-                        getService().setTalkingState(false);
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+                // Prevent push to talk from getting stuck on when the drawer is opened.
+                if (getService() != null
+                        && getService().isSynchronized()
+                        && getService().isTalking() && !mSettings.isPushToTalkToggle()) {
+                    getService().setTalkingState(false);
                 }
             }
 
@@ -298,14 +290,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         dadb.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                try {
-                    if(mService != null
-                            && mService.getConnectionState() == JumbleService.STATE_CONNECTED)
-                        mService.disconnect();
-                    loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                if(mService != null && mService.isSynchronized())
+                    mService.disconnect();
+                loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
             }
         });
         dadb.setNegativeButton(android.R.string.cancel, null);
@@ -364,14 +351,12 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         if (mConnectingDialog != null)
             mConnectingDialog.dismiss();
 
-        if(mService != null)
-            try {
-                for(JumbleServiceFragment fragment : mServiceFragments)
-                    fragment.setServiceBound(false);
-                mService.unregisterObserver(mObserver);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+        if(mService != null) {
+            for (JumbleServiceFragment fragment : mServiceFragments) {
+                fragment.setServiceBound(false);
             }
+            mService.unregisterObserver(mObserver);
+        }
         unbindService(mConnection);
     }
 
@@ -386,12 +371,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem disconnectButton = menu.findItem(R.id.action_disconnect);
-        try {
-            disconnectButton.setVisible(mService != null &&
-                    mService.getConnectionState() == JumbleService.STATE_CONNECTED);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        disconnectButton.setVisible(mService != null && mService.isSynchronized());
 
         // Color the action bar icons to the primary text color of the theme.
         int foregroundColor = getSupportActionBar().getThemedContext()
@@ -422,11 +402,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
         switch (item.getItemId()) {
             case R.id.action_disconnect:
-                try {
-                    getService().disconnect();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                getService().disconnect();
                 return true;
         }
 
@@ -442,11 +418,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (mService != null && keyCode == mSettings.getPushToTalkKey()) {
-            try {
-                mService.onTalkKeyDown();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            mService.onTalkKeyDown();
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -455,11 +427,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (mService != null && keyCode == mSettings.getPushToTalkKey()) {
-            try {
-                mService.onTalkKeyUp();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            mService.onTalkKeyUp();
             return true;
         }
         return super.onKeyUp(keyCode, event);
@@ -467,14 +435,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
     @Override
     public void onBackPressed() {
-        try {
-            if(mService != null &&
-                    mService.getConnectionState() == JumbleService.STATE_CONNECTED) {
-                mDisconnectPromptBuilder.show();
-                return;
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if(mService != null && mService.isSynchronized()) {
+            mDisconnectPromptBuilder.show();
+            return;
         }
         super.onBackPressed();
     }
@@ -531,12 +494,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 break;
             case DrawerAdapter.ITEM_ACCESS_TOKENS:
                 fragmentClass = AccessTokenFragment.class;
-                try {
-                    args.putLong("server", mService.getConnectedServer().getId());
-                    args.putStringArrayList("access_tokens", (ArrayList<String>) mDatabase.getAccessTokens(mService.getConnectedServer().getId()));
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                args.putLong("server", mService.getConnectedServer().getId());
+                args.putStringArrayList("access_tokens", (ArrayList<String>) mDatabase.getAccessTokens(mService.getConnectedServer().getId()));
                 break;
             case DrawerAdapter.ITEM_PINNED_CHANNELS:
                 fragmentClass = ChannelFragment.class;
@@ -565,35 +524,26 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
     public void connectToServer(final Server server) {
         // Check if we're already connected to a server; if so, inform user.
-        try {
-            if(mService != null &&
-                    mService.getConnectionState() == JumbleService.STATE_CONNECTED) {
-                AlertDialog.Builder adb = new AlertDialog.Builder(this);
-                adb.setMessage(R.string.reconnect_dialog_message);
-                adb.setPositiveButton(R.string.connect, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            // Register an observer to reconnect to the new server once disconnected.
-                            mService.registerObserver(new JumbleObserver() {
-                                @Override
-                                public void onDisconnected(JumbleException e) throws RemoteException {
-                                    connectToServer(server);
-                                    mService.unregisterObserver(this);
-                                }
-                            });
-                            mService.disconnect();
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
+        if(mService != null && mService.isConnectionEstablished()) {
+            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb.setMessage(R.string.reconnect_dialog_message);
+            adb.setPositiveButton(R.string.connect, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // Register an observer to reconnect to the new server once disconnected.
+                    mService.registerObserver(new JumbleObserver() {
+                        @Override
+                        public void onDisconnected(JumbleException e) {
+                            connectToServer(server);
+                            mService.unregisterObserver(this);
                         }
-                    }
-                });
-                adb.setNegativeButton(android.R.string.cancel, null);
-                adb.show();
-                return;
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+                    });
+                    mService.disconnect();
+                }
+            });
+            adb.setNegativeButton(android.R.string.cancel, null);
+            adb.show();
+            return;
         }
 
         // Prompt to start Orbot if enabled but not running
@@ -651,14 +601,14 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
      * connection state updates.
      * @param service A bound IJumbleService.
      */
-    private void updateConnectionState(IJumbleService service) throws RemoteException {
+    private void updateConnectionState(IJumbleService service) {
         if (mConnectingDialog != null)
             mConnectingDialog.dismiss();
         if (mErrorDialog != null)
             mErrorDialog.dismiss();
 
         switch (mService.getConnectionState()) {
-            case JumbleService.STATE_CONNECTING:
+            case CONNECTING:
                 Server server = service.getConnectedServer();
                 mConnectingDialog = new ProgressDialog(this);
                 mConnectingDialog.setIndeterminate(true);
@@ -666,20 +616,16 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 mConnectingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
-                        try {
-                            mService.disconnect();
-                            Toast.makeText(PlumbleActivity.this, R.string.cancelled,
-                                    Toast.LENGTH_SHORT).show();
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
+                        mService.disconnect();
+                        Toast.makeText(PlumbleActivity.this, R.string.cancelled,
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
                 mConnectingDialog.setMessage(getString(R.string.connecting_to_server, server.getHost(),
                         server.getPort()));
                 mConnectingDialog.show();
                 break;
-            case JumbleService.STATE_CONNECTION_LOST:
+            case CONNECTION_LOST:
                 // Only bother the user if the error hasn't already been shown.
                 if (!getService().isErrorShown()) {
                     JumbleException error = getService().getConnectionError();
@@ -691,12 +637,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (getService() != null) {
-                                    try {
-                                        getService().cancelReconnect();
-                                        getService().markErrorShown();
-                                    } catch (RemoteException e) {
-                                        e.printStackTrace();
-                                    }
+                                    getService().cancelReconnect();
+                                    getService().markErrorShown();
                                 }
                             }
                         });
@@ -724,7 +666,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
      */
 
     @Override
-    public PlumbleService.PlumbleBinder getService() {
+    public PlumbleService getService() {
         return mService;
     }
 
@@ -764,27 +706,18 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
     @Override
     public boolean isConnected() {
-        try {
-            return mService != null
-                    && mService.getConnectionState() == JumbleService.STATE_CONNECTED;
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return mService != null && mService.isSynchronized();
     }
 
     @Override
     public String getConnectedServerName() {
-        try {
-            if(mService != null
-                    && mService.getConnectionState() == JumbleService.STATE_CONNECTED) {
-                Server server = mService.getConnectedServer();
-                return server.getName().equals("") ? server.getHost() : server.getName();
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if(mService != null && mService.isSynchronized()) {
+            Server server = mService.getConnectedServer();
+            return server.getName().equals("") ? server.getHost() : server.getName();
         }
-        return null;
+        if (BuildConfig.DEBUG)
+            throw new RuntimeException("getConnectedServerName should only be called if connected!");
+        return "";
     }
 
     @Override

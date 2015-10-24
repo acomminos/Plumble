@@ -48,25 +48,25 @@ import java.util.List;
 public class UserMenuProvider implements View.OnClickListener, PopupMenu.OnMenuItemClickListener, PopupMenu.OnDismissListener {
     private final Context mContext;
     private final IUser mUser;
-    private final PlumbleService.PlumbleBinder mService;
+    private final PlumbleService mService;
     private final FragmentManager mFragmentManager;
     private final Listener mListener;
     private final JumbleObserver mPermissionObserver = new JumbleObserver() {
         @Override
-        public void onUserStateUpdated(IUser user) throws RemoteException {
+        public void onUserStateUpdated(IUser user) {
             if (user.getSession() == mUser.getSession())
                 configureMenu(mMenu);
         }
 
         @Override
-        public void onChannelPermissionsUpdated(IChannel channel) throws RemoteException {
+        public void onChannelPermissionsUpdated(IChannel channel) {
             if (mMenu != null)
                 configureMenu(mMenu);
         }
     };
     private Menu mMenu;
 
-    public UserMenuProvider(Context context, IUser user, PlumbleService.PlumbleBinder service,
+    public UserMenuProvider(Context context, IUser user, PlumbleService service,
                             FragmentManager fragmentManager, Listener listener) {
         mContext = context;
         mUser = user;
@@ -83,18 +83,14 @@ public class UserMenuProvider implements View.OnClickListener, PopupMenu.OnMenuI
         menu.setOnDismissListener(this);
         mMenu = menu.getMenu();
 
-        try {
-            // Observer permissions changes, configure menu when we receive an update
-            mService.registerObserver(mPermissionObserver);
-            // Request permissions update from server, if we don't have channel permissions
-            IChannel channel = mUser.getChannel();
-            if (channel != null && channel.getPermissions() == 0) {
-                mService.requestPermissions(channel.getId());
-            } else {
-                configureMenu(mMenu);
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        // Observer permissions changes, configure menu when we receive an update
+        mService.registerObserver(mPermissionObserver);
+        // Request permissions update from server, if we don't have channel permissions
+        IChannel channel = mUser.getChannel();
+        if (channel != null && channel.getPermissions() == 0) {
+            mService.requestPermissions(channel.getId());
+        } else {
+            configureMenu(mMenu);
         }
 
         menu.show();
@@ -105,52 +101,48 @@ public class UserMenuProvider implements View.OnClickListener, PopupMenu.OnMenuI
      * @param menu A menu inflated from R.menu.context_user.
      */
     public void configureMenu(Menu menu) {
-        try {
-            // Use permission data to determine the actions available.
-            boolean self = mUser.getSession() == mService.getSession();
-            int perms = mService.getPermissions();
-            IChannel channel = mUser.getChannel();
-            int channelPerms = channel.getId() != 0 ? channel.getPermissions() : perms;
+        // Use permission data to determine the actions available.
+        boolean self = mUser.getSession() == mService.getSession();
+        int perms = mService.getPermissions();
+        IChannel channel = mUser.getChannel();
+        int channelPerms = channel.getId() != 0 ? channel.getPermissions() : perms;
 
-            menu.findItem(R.id.context_kick).setVisible(
-                    !self && (perms & (Permissions.Kick | Permissions.Ban | Permissions.Write)) > 0);
-            menu.findItem(R.id.context_ban).setVisible(
-                    !self && (perms & (Permissions.Ban | Permissions.Write)) > 0);
-            menu.findItem(R.id.context_mute).setVisible(
-                    ((channelPerms & (Permissions.Write | Permissions.MuteDeafen)) > 0 &&
-                            (!self || mUser.isMuted() || mUser.isSuppressed())));
-            menu.findItem(R.id.context_deafen).setVisible(
-                    ((channelPerms & (Permissions.Write | Permissions.MuteDeafen)) > 0 &&
-                            (!self || mUser.isDeafened())));
-            menu.findItem(R.id.context_priority).setVisible(
-                    ((channelPerms & (Permissions.Write | Permissions.MuteDeafen)) > 0));
-            menu.findItem(R.id.context_move).setVisible(
-                    !self && (perms & Permissions.Move) > 0);
-            menu.findItem(R.id.context_change_comment).setVisible(self);
-            menu.findItem(R.id.context_reset_comment).setVisible(
-                    !self && mUser.getCommentHash() != null &&
-                            (perms & (Permissions.Move | Permissions.Write)) > 0);
-            menu.findItem(R.id.context_view_comment).setVisible(
-                    (mUser.getComment() != null && !mUser.getComment().isEmpty()) ||
-                            (mUser.getCommentHash() != null));
-            menu.findItem(R.id.context_register).setVisible(mUser.getUserId() < 0 &&
-                    (mUser.getHash() != null && !mUser.getHash().isEmpty()) &&
-                    (perms & ((self ? Permissions.SelfRegister : Permissions.Register) | Permissions.Write)) > 0);
-            menu.findItem(R.id.context_local_mute).setVisible(!self);
-            menu.findItem(R.id.context_ignore_messages).setVisible(!self);
+        menu.findItem(R.id.context_kick).setVisible(
+                !self && (perms & (Permissions.Kick | Permissions.Ban | Permissions.Write)) > 0);
+        menu.findItem(R.id.context_ban).setVisible(
+                !self && (perms & (Permissions.Ban | Permissions.Write)) > 0);
+        menu.findItem(R.id.context_mute).setVisible(
+                ((channelPerms & (Permissions.Write | Permissions.MuteDeafen)) > 0 &&
+                        (!self || mUser.isMuted() || mUser.isSuppressed())));
+        menu.findItem(R.id.context_deafen).setVisible(
+                ((channelPerms & (Permissions.Write | Permissions.MuteDeafen)) > 0 &&
+                        (!self || mUser.isDeafened())));
+        menu.findItem(R.id.context_priority).setVisible(
+                ((channelPerms & (Permissions.Write | Permissions.MuteDeafen)) > 0));
+        menu.findItem(R.id.context_move).setVisible(
+                !self && (perms & Permissions.Move) > 0);
+        menu.findItem(R.id.context_change_comment).setVisible(self);
+        menu.findItem(R.id.context_reset_comment).setVisible(
+                !self && mUser.getCommentHash() != null &&
+                        (perms & (Permissions.Move | Permissions.Write)) > 0);
+        menu.findItem(R.id.context_view_comment).setVisible(
+                (mUser.getComment() != null && !mUser.getComment().isEmpty()) ||
+                        (mUser.getCommentHash() != null));
+        menu.findItem(R.id.context_register).setVisible(mUser.getUserId() < 0 &&
+                (mUser.getHash() != null && !mUser.getHash().isEmpty()) &&
+                (perms & ((self ? Permissions.SelfRegister : Permissions.Register) | Permissions.Write)) > 0);
+        menu.findItem(R.id.context_local_mute).setVisible(!self);
+        menu.findItem(R.id.context_ignore_messages).setVisible(!self);
 
-            // TODO info
+        // TODO info
 //            informationItem.enabled = (((perms & (Permissions.Write | Permissions.Register))) > 0 || (channelPermissions & (Permissions.Write | Permissions.Enter)) > 0 || (mUser.getSession() == mService.getSession()));
 
-            // Highlight toggles
-            menu.findItem(R.id.context_mute).setChecked(mUser.isMuted() || mUser.isSuppressed());
-            menu.findItem(R.id.context_deafen).setChecked(mUser.isDeafened());
-            menu.findItem(R.id.context_priority).setChecked(mUser.isPrioritySpeaker());
-            menu.findItem(R.id.context_local_mute).setChecked(mUser.isLocalMuted());
-            menu.findItem(R.id.context_ignore_messages).setChecked(mUser.isLocalIgnored());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        // Highlight toggles
+        menu.findItem(R.id.context_mute).setChecked(mUser.isMuted() || mUser.isSuppressed());
+        menu.findItem(R.id.context_deafen).setChecked(mUser.isDeafened());
+        menu.findItem(R.id.context_priority).setChecked(mUser.isPrioritySpeaker());
+        menu.findItem(R.id.context_local_mute).setChecked(mUser.isLocalMuted());
+        menu.findItem(R.id.context_ignore_messages).setChecked(mUser.isLocalIgnored());
     }
 
     private void showUserComment(final boolean edit) throws RemoteException {
@@ -174,11 +166,7 @@ public class UserMenuProvider implements View.OnClickListener, PopupMenu.OnMenuI
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 IChannel channel = channels.get(which);
-                try {
-                    mService.moveUserToChannel(mUser.getSession(), channel.getId());
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                mService.moveUserToChannel(mUser.getSession(), channel.getId());
             }
         });
         adb.show();
@@ -198,12 +186,8 @@ public class UserMenuProvider implements View.OnClickListener, PopupMenu.OnMenuI
                     alertBuilder.setPositiveButton(R.string.user_menu_kick, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            try {
-                                mService.kickBanUser(mUser.getSession(),
-                                        reasonField.getText().toString(), menuItem.getItemId() == R.id.context_ban);
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                            }
+                            mService.kickBanUser(mUser.getSession(),
+                                    reasonField.getText().toString(), menuItem.getItemId() == R.id.context_ban);
                         }
                     });
                     alertBuilder.setNegativeButton(android.R.string.cancel, null);
@@ -241,11 +225,7 @@ public class UserMenuProvider implements View.OnClickListener, PopupMenu.OnMenuI
                             .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    try {
-                                        mService.setUserComment(mUser.getSession(), "");
-                                    } catch (RemoteException e) {
-                                        e.printStackTrace();
-                                    }
+                                    mService.setUserComment(mUser.getSession(), "");
                                 }
                             })
                             .setNegativeButton(android.R.string.cancel, null)
@@ -267,11 +247,7 @@ public class UserMenuProvider implements View.OnClickListener, PopupMenu.OnMenuI
 
     @Override
     public void onDismiss(PopupMenu popupMenu) {
-        try {
-            mService.unregisterObserver(mPermissionObserver);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        mService.unregisterObserver(mPermissionObserver);
     }
 
     public interface Listener {

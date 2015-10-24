@@ -113,18 +113,14 @@ public class AccessTokenFragment extends JumbleServiceFragment {
 
         mTokenField.setText("");
 		
-		Log.i(Constants.TAG, "Adding token: "+tokenText);
+		Log.i(Constants.TAG, "Adding token: " + tokenText);
 		
 		mTokens.add(tokenText);
 		mTokenAdapter.notifyDataSetChanged();
 
 		mTokenList.smoothScrollToPosition(mTokens.size() - 1);
         mProvider.getDatabase().addAccessToken(getServerId(), tokenText);
-        try {
-            getService().sendAccessTokens(mTokens);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+		getService().sendAccessTokens(mTokens);
     }
 
     private long getServerId() {
@@ -162,11 +158,7 @@ public class AccessTokenFragment extends JumbleServiceFragment {
                     mTokens.remove(position);
 					notifyDataSetChanged();
                     mProvider.getDatabase().removeAccessToken(getServerId(), token);
-                    try {
-                        getService().sendAccessTokens(mTokens);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
+					getService().sendAccessTokens(mTokens);
                 }
 			});
 

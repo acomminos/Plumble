@@ -33,6 +33,7 @@ import android.view.WindowManager;
 
 import com.morlunk.jumble.Constants;
 import com.morlunk.jumble.JumbleService;
+import com.morlunk.jumble.exception.AudioException;
 import com.morlunk.jumble.model.IMessage;
 import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.TalkState;
@@ -63,7 +64,6 @@ public class PlumbleService extends JumbleService implements
     public static final int TTS_THRESHOLD = 250; // Maximum number of characters to read
     public static final int RECONNECT_DELAY = 10000;
 
-    private PlumbleBinder mBinder = new PlumbleBinder();
     private Settings mSettings;
     private PlumbleNotification mNotification;
     private PlumbleReconnectNotification mReconnectNotification;
@@ -96,20 +96,12 @@ public class PlumbleService extends JumbleService implements
     private PlumbleHotCorner.PlumbleHotCornerListener mHotCornerListener = new PlumbleHotCorner.PlumbleHotCornerListener() {
         @Override
         public void onHotCornerDown() {
-            try {
-                mBinder.onTalkKeyDown();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            onTalkKeyDown();
         }
 
         @Override
         public void onHotCornerUp() {
-            try {
-                mBinder.onTalkKeyUp();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            onTalkKeyUp();
         }
     };
 
@@ -118,7 +110,7 @@ public class PlumbleService extends JumbleService implements
     private JumbleObserver mObserver = new JumbleObserver() {
 
         @Override
-        public void onConnecting() throws RemoteException {
+        public void onConnecting() {
             // Remove old notification left from reconnect,
             if (mReconnectNotification != null) {
                 mReconnectNotification.hide();
@@ -133,7 +125,7 @@ public class PlumbleService extends JumbleService implements
         }
 
         @Override
-        public void onConnected() throws RemoteException {
+        public void onConnected() {
             if (mNotification != null) {
                 mNotification.setCustomTicker(getString(R.string.plumbleConnected));
                 mNotification.setCustomContentText(getString(R.string.connected));
@@ -143,7 +135,7 @@ public class PlumbleService extends JumbleService implements
         }
 
         @Override
-        public void onDisconnected(JumbleException e) throws RemoteException {
+        public void onDisconnected(JumbleException e) {
             if (mNotification != null) {
                 mNotification.hide();
                 mNotification = null;
@@ -151,23 +143,23 @@ public class PlumbleService extends JumbleService implements
             if (e != null) {
                 mReconnectNotification =
                         PlumbleReconnectNotification.show(PlumbleService.this, e.getMessage(),
-                                getBinder().isReconnecting(),
+                                isReconnecting(),
                                 PlumbleService.this);
             }
         }
 
         @Override
-        public void onUserConnected(IUser user) throws RemoteException {
+        public void onUserConnected(IUser user) {
             if (user.getTextureHash() != null &&
                     user.getTexture() == null) {
                 // Request avatar data if available.
-                getBinder().requestAvatar(user.getSession());
+                requestAvatar(user.getSession());
             }
         }
 
         @Override
-        public void onUserStateUpdated(IUser user) throws RemoteException {
-            if(user.getSession() == mBinder.getSession()) {
+        public void onUserStateUpdated(IUser user) {
+            if(user.getSession() == getSession()) {
                 mSettings.setMutedAndDeafened(user.isSelfMuted(), user.isSelfDeafened()); // Update settings mute/deafen state
                 if(mNotification != null) {
                     String contentText;
@@ -185,12 +177,12 @@ public class PlumbleService extends JumbleService implements
             if (user.getTextureHash() != null &&
                     user.getTexture() == null) {
                 // Update avatar data if available.
-                getBinder().requestAvatar(user.getSession());
+                requestAvatar(user.getSession());
             }
         }
 
         @Override
-        public void onMessageLogged(IMessage message) throws RemoteException {
+        public void onMessageLogged(IMessage message) {
             // Split on / strip all HTML tags.
             Document parsedMessage = Jsoup.parseBodyFragment(message.getMessage());
             String strippedMessage = parsedMessage.text();
@@ -220,8 +212,8 @@ public class PlumbleService extends JumbleService implements
             if(mSettings.isTextToSpeechEnabled() &&
                     mTTS != null &&
                     formattedTtsMessage.length() <= TTS_THRESHOLD &&
-                    getBinder().getSessionUser() != null &&
-                    !getBinder().getSessionUser().isSelfDeafened()) {
+                    getSessionUser() != null &&
+                    !getSessionUser().isSelfDeafened()) {
                 mTTS.speak(formattedTtsMessage, TextToSpeech.QUEUE_ADD, null);
             }
 
@@ -229,22 +221,22 @@ public class PlumbleService extends JumbleService implements
         }
 
         @Override
-        public void onLogInfo(String message) throws RemoteException {
+        public void onLogInfo(String message) {
             mMessageLog.add(new IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.INFO, message));
         }
 
         @Override
-        public void onLogWarning(String message) throws RemoteException {
+        public void onLogWarning(String message) {
             mMessageLog.add(new IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.WARNING, message));
         }
 
         @Override
-        public void onLogError(String message) throws RemoteException {
+        public void onLogError(String message) {
             mMessageLog.add(new IChatMessage.InfoMessage(IChatMessage.InfoMessage.Type.ERROR, message));
         }
 
         @Override
-        public void onPermissionDenied(String reason) throws RemoteException {
+        public void onPermissionDenied(String reason) {
             if(mSettings.isChatNotifyEnabled() &&
                     mNotification != null) {
                 mNotification.setCustomTicker(reason);
@@ -253,10 +245,10 @@ public class PlumbleService extends JumbleService implements
         }
 
         @Override
-        public void onUserTalkStateUpdated(IUser user) throws RemoteException {
-            if (isConnected() &&
-                    mBinder.getSession() == user.getSession() &&
-                    mBinder.getTransmitMode() == Constants.TRANSMIT_PUSH_TO_TALK &&
+        public void onUserTalkStateUpdated(IUser user) {
+            if (isConnectionEstablished() &&
+                    getSession() == user.getSession() &&
+                    getTransmitMode() == Constants.TRANSMIT_PUSH_TO_TALK &&
                     user.getTalkState() == TalkState.TALKING &&
                     mPTTSoundEnabled) {
                 AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -268,11 +260,7 @@ public class PlumbleService extends JumbleService implements
     @Override
     public void onCreate() {
         super.onCreate();
-        try {
-            getBinder().registerObserver(mObserver);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        registerObserver(mObserver);
 
         // Register for preference changes
         mSettings = Settings.getInstance(this);
@@ -293,7 +281,7 @@ public class PlumbleService extends JumbleService implements
         if(mSettings.isTextToSpeechEnabled())
             mTTS = new TextToSpeech(this, mTTSInitListener);
 
-        mTalkReceiver = new TalkBroadcastReceiver(getBinder());
+        mTalkReceiver = new TalkBroadcastReceiver(this);
         mMessageLog = new ArrayList<>();
     }
 
@@ -316,11 +304,7 @@ public class PlumbleService extends JumbleService implements
             e.printStackTrace();
         }
 
-        try {
-            getBinder().unregisterObserver(mObserver);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        unregisterObserver(mObserver);
         if(mTTS != null) mTTS.shutdown();
         mMessageLog = null;
         super.onDestroy();
@@ -332,11 +316,7 @@ public class PlumbleService extends JumbleService implements
 
         // Restore mute/deafen state
         if(mSettings.isMuted() || mSettings.isDeafened()) {
-            try {
-                getBinder().setSelfMuteDeafState(mSettings.isMuted(), mSettings.isDeafened());
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            setSelfMuteDeafState(mSettings.isMuted(), mSettings.isDeafened());
         }
 
         registerReceiver(mTalkReceiver, new IntentFilter(TalkBroadcastReceiver.BROADCAST_TALK));
@@ -384,7 +364,7 @@ public class PlumbleService extends JumbleService implements
                 mChannelOverlay.setPushToTalkShown(inputMethod == Constants.TRANSMIT_PUSH_TO_TALK);
                 break;
             case Settings.PREF_HANDSET_MODE:
-                setProximitySensorOn(isConnected() && mSettings.isHandsetMode());
+                setProximitySensorOn(isConnectionEstablished() && mSettings.isHandsetMode());
                 changedExtras.putInt(JumbleService.EXTRAS_AUDIO_STREAM, mSettings.isHandsetMode() ?
                                      AudioManager.STREAM_VOICE_CALL : AudioManager.STREAM_MUSIC);
                 break;
@@ -394,7 +374,7 @@ public class PlumbleService extends JumbleService implements
                 break;
             case Settings.PREF_HOT_CORNER_KEY:
                 mHotCorner.setGravity(mSettings.getHotCornerGravity());
-                mHotCorner.setShown(isConnected() && mSettings.isHotCornerEnabled());
+                mHotCorner.setShown(isConnectionEstablished() && mSettings.isHotCornerEnabled());
                 break;
             case Settings.PREF_USE_TTS:
                 if (mTTS == null && mSettings.isTextToSpeechEnabled())
@@ -443,13 +423,13 @@ public class PlumbleService extends JumbleService implements
         if (changedExtras.size() > 0) {
             try {
                 // Reconfigure the service appropriately.
-                requiresReconnect |= mBinder.reconfigure(changedExtras);
-            } catch (RemoteException e) {
+                requiresReconnect |= configureExtras(changedExtras);
+            } catch (AudioException e) {
                 e.printStackTrace();
             }
         }
 
-        if (requiresReconnect && isConnected()) {
+        if (requiresReconnect && isConnectionEstablished()) {
             AlertDialog ad = new AlertDialog.Builder(this)
                     .setTitle(R.string.information)
                     .setMessage(R.string.change_requires_reconnect)
@@ -472,38 +452,20 @@ public class PlumbleService extends JumbleService implements
     }
 
     @Override
-    public PlumbleBinder getBinder() {
-        return mBinder;
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-
-    @Override
     public void onMuteToggled() {
-        try {
-            IUser user = mBinder.getSessionUser();
-            if (isConnected() && user != null) {
-                boolean muted = !user.isSelfMuted();
-                boolean deafened = user.isSelfDeafened() && muted;
-                mBinder.setSelfMuteDeafState(muted, deafened);
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        IUser user = getSessionUser();
+        if (isConnectionEstablished() && user != null) {
+            boolean muted = !user.isSelfMuted();
+            boolean deafened = user.isSelfDeafened() && muted;
+            setSelfMuteDeafState(muted, deafened);
         }
     }
 
     @Override
     public void onDeafenToggled() {
-        try {
-            IUser user = mBinder.getSessionUser();
-            if (isConnected() && user != null) {
-                mBinder.setSelfMuteDeafState(!user.isSelfDeafened(), !user.isSelfDeafened());
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        IUser user = getSessionUser();
+        if (isConnectionEstablished() && user != null) {
+            setSelfMuteDeafState(!user.isSelfDeafened(), !user.isSelfDeafened());
         }
     }
 
@@ -528,87 +490,73 @@ public class PlumbleService extends JumbleService implements
 
     @Override
     public void cancelReconnect() {
-        try {
-            mBinder.cancelReconnect();
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if (mReconnectNotification != null) {
+            mReconnectNotification.hide();
+            mReconnectNotification = null;
+        }
+        super.cancelReconnect();
+    }
+
+    public void setOverlayShown(boolean showOverlay) {
+        if(!mChannelOverlay.isShown()) {
+            mChannelOverlay.show();
+        } else {
+            mChannelOverlay.hide();
+        }
+    }
+
+    public boolean isOverlayShown() {
+        return mChannelOverlay.isShown();
+    }
+
+    public void clearChatNotifications() throws RemoteException {
+        if (mNotification != null) {
+            mNotification.clearMessages();
+            mNotification.show();
+        }
+    }
+
+    public void markErrorShown() {
+        mErrorShown = true;
+    }
+
+    public boolean isErrorShown() {
+        return mErrorShown;
+    }
+
+    /**
+     * Called when a user presses a talk key down (i.e. when they want to talk).
+     * Accounts for talk logic if toggle PTT is on.
+     */
+    public void onTalkKeyDown() {
+        if(isConnectionEstablished()
+                && Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod())) {
+            if (!mSettings.isPushToTalkToggle() && !isTalking()) {
+                setTalkingState(true); // Start talking
+            }
         }
     }
 
     /**
-     * An extension of JumbleBinder to add Plumble-specific functionality.
+     * Called when a user releases a talk key (i.e. when they do not want to talk).
+     * Accounts for talk logic if toggle PTT is on.
      */
-    public class PlumbleBinder extends JumbleBinder {
-        public void setOverlayShown(boolean showOverlay) {
-            if(!mChannelOverlay.isShown()) {
-                mChannelOverlay.show();
-            } else {
-                mChannelOverlay.hide();
+    public void onTalkKeyUp() {
+        if(isConnectionEstablished()
+                && Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod())) {
+            if (mSettings.isPushToTalkToggle()) {
+                setTalkingState(!isTalking()); // Toggle talk state
+            } else if (isTalking()) {
+                setTalkingState(false); // Stop talking
             }
         }
+    }
 
-        public boolean isOverlayShown() {
-            return mChannelOverlay.isShown();
-        }
+    public List<IChatMessage> getMessageLog() {
+        return Collections.unmodifiableList(mMessageLog);
+    }
 
-        public void clearChatNotifications() throws RemoteException {
-            if (mNotification != null) {
-                mNotification.clearMessages();
-                mNotification.show();
-            }
-        }
-
-        public void markErrorShown() {
-            mErrorShown = true;
-        }
-
-        public boolean isErrorShown() {
-            return mErrorShown;
-        }
-
-        public void cancelReconnect() throws RemoteException {
-            if (mReconnectNotification != null) {
-                mReconnectNotification.hide();
-                mReconnectNotification = null;
-            }
-
-            super.cancelReconnect();
-        }
-
-        /**
-         * Called when a user presses a talk key down (i.e. when they want to talk).
-         * Accounts for talk logic if toggle PTT is on.
-         */
-        public void onTalkKeyDown() throws RemoteException {
-            if(isConnected()
-                    && Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod())) {
-                if (!mSettings.isPushToTalkToggle() && !isTalking()) {
-                    setTalkingState(true); // Start talking
-                }
-            }
-        }
-
-        /**
-         * Called when a user releases a talk key (i.e. when they do not want to talk).
-         * Accounts for talk logic if toggle PTT is on.
-         */
-        public void onTalkKeyUp() throws RemoteException {
-            if(isConnected()
-                    && Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod())) {
-                if (mSettings.isPushToTalkToggle()) {
-                    setTalkingState(!isTalking()); // Toggle talk state
-                } else if (isTalking()) {
-                    setTalkingState(false); // Stop talking
-                }
-            }
-        }
-
-        public List<IChatMessage> getMessageLog() {
-            return Collections.unmodifiableList(mMessageLog);
-        }
-
-        public void clearMessageLog() {
-            mMessageLog.clear();
-        }
+    public void clearMessageLog() {
+        mMessageLog.clear();
     }
 }

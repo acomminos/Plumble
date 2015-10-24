@@ -66,18 +66,14 @@ public class ChannelEditFragment extends DialogFragment {
         mPositionField = (TextView) view.findViewById(R.id.channel_edit_position);
         mTemporaryBox = (CheckBox) view.findViewById(R.id.channel_edit_temporary);
 
-        try {
-            // If we can only make temporary channels, remove the option.
-            IChannel parentChannel = mServiceProvider.getService().getChannel(getParent());
-            int combinedPermissions = mServiceProvider.getService().getPermissions() | parentChannel.getPermissions();
-            boolean canMakeChannel = (combinedPermissions & Permissions.MakeChannel) > 0;
-            boolean canMakeTempChannel = (combinedPermissions & Permissions.MakeTempChannel) > 0;
-            boolean onlyTemp = canMakeTempChannel && !canMakeChannel;
-            mTemporaryBox.setChecked(onlyTemp);
-            mTemporaryBox.setEnabled(!onlyTemp);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        // If we can only make temporary channels, remove the option.
+        IChannel parentChannel = mServiceProvider.getService().getChannel(getParent());
+        int combinedPermissions = mServiceProvider.getService().getPermissions() | parentChannel.getPermissions();
+        boolean canMakeChannel = (combinedPermissions & Permissions.MakeChannel) > 0;
+        boolean canMakeTempChannel = (combinedPermissions & Permissions.MakeTempChannel) > 0;
+        boolean onlyTemp = canMakeTempChannel && !canMakeChannel;
+        mTemporaryBox.setChecked(onlyTemp);
+        mTemporaryBox.setEnabled(!onlyTemp);
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle(isAdding() ? R.string.channel_add : R.string.channel_edit)
@@ -85,18 +81,14 @@ public class ChannelEditFragment extends DialogFragment {
                 .setPositiveButton(isAdding() ? R.string.add : R.string.save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            if(isAdding()) {
-                                mServiceProvider.getService().createChannel(getParent(),
-                                        mNameField.getText().toString(),
-                                        mDescriptionField.getText().toString(),
-                                        Integer.parseInt(mPositionField.getText().toString()), // We can guarantee this to be an int. InputType is numberSigned.
-                                        mTemporaryBox.isChecked());
-                            } else {
-                                // TODO
-                            }
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
+                        if(isAdding()) {
+                            mServiceProvider.getService().createChannel(getParent(),
+                                    mNameField.getText().toString(),
+                                    mDescriptionField.getText().toString(),
+                                    Integer.parseInt(mPositionField.getText().toString()), // We can guarantee this to be an int. InputType is numberSigned.
+                                    mTemporaryBox.isChecked());
+                        } else {
+                            // TODO
                         }
                     }
                 })

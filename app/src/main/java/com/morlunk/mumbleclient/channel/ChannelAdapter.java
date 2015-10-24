@@ -26,7 +26,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.IUser;
@@ -50,33 +49,19 @@ public class ChannelAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        try {
-            return mChannel.getUsers().size();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            return 0;
-        }
+        return mChannel.getUsers().size();
     }
 
     @Override
     public Object getItem(int position) {
-        try {
-            return mChannel.getUsers().get(position);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return mChannel.getUsers().get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        try {
-            IUser user = (IUser) mChannel.getUsers().get(position);
-            if (user != null)
-                return user.getUserId();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        IUser user = mChannel.getUsers().get(position);
+        if (user != null)
+            return user.getUserId();
         return -1;
     }
 

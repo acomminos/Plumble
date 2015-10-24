@@ -61,22 +61,12 @@ public interface IChatMessage {
 
         @Override
         public String getBody() {
-            try {
-                return mMessage.getMessage();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                return null;
-            }
+            return mMessage.getMessage();
         }
 
         @Override
         public long getReceivedTime() {
-            try {
-                return mMessage.getReceivedTime();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                return 0;
-            }
+            return mMessage.getReceivedTime();
         }
 
         @Override

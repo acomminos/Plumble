@@ -78,38 +78,30 @@ public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
         TintedMenuInflater inflater = new TintedMenuInflater(mContext, actionMode.getMenuInflater());
         inflater.inflate(R.menu.context_channel, menu);
 
-        try {
-            actionMode.setTitle(mChannel.getName());
-            actionMode.setSubtitle(R.string.current_chat_target);
-            // Request permissions update from server, if we don't have channel permissions
-            if(mChannel.getPermissions() == 0)
-                mService.requestPermissions(mChannel.getId());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        actionMode.setTitle(mChannel.getName());
+        actionMode.setSubtitle(R.string.current_chat_target);
+        // Request permissions update from server, if we don't have channel permissions
+        if(mChannel.getPermissions() == 0)
+            mService.requestPermissions(mChannel.getId());
         return true;
     }
 
     @Override
     public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-        try {
-            int perms = mChannel.getPermissions();
+        int perms = mChannel.getPermissions();
 
-            // This breaks uMurmur ACL. Put in a fix based on server version perhaps?
-            //menu.getMenu().findItem(R.id.menu_channel_add)
-            // .setVisible((permissions & (Permissions.MakeChannel | Permissions.MakeTempChannel)) > 0);
-            menu.findItem(R.id.context_channel_edit).setVisible((perms & Permissions.Write) > 0);
-            menu.findItem(R.id.context_channel_remove).setVisible((perms & Permissions.Write) > 0);
-            menu.findItem(R.id.context_channel_view_description)
-                    .setVisible(mChannel.getDescription() != null ||
-                            mChannel.getDescriptionHash() != null);
-            Server server = mService.getConnectedServer();
-            if(server != null) {
-                menu.findItem(R.id.context_channel_pin)
-                        .setChecked(mDatabase.isChannelPinned(server.getId(), mChannel.getId()));
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        // This breaks uMurmur ACL. Put in a fix based on server version perhaps?
+        //menu.getMenu().findItem(R.id.menu_channel_add)
+        // .setVisible((permissions & (Permissions.MakeChannel | Permissions.MakeTempChannel)) > 0);
+        menu.findItem(R.id.context_channel_edit).setVisible((perms & Permissions.Write) > 0);
+        menu.findItem(R.id.context_channel_remove).setVisible((perms & Permissions.Write) > 0);
+        menu.findItem(R.id.context_channel_view_description)
+                .setVisible(mChannel.getDescription() != null ||
+                        mChannel.getDescriptionHash() != null);
+        Server server = mService.getConnectedServer();
+        if(server != null) {
+            menu.findItem(R.id.context_channel_pin)
+                    .setChecked(mDatabase.isChannelPinned(server.getId(), mChannel.getId()));
         }
 
         return false;
@@ -120,26 +112,18 @@ public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
         boolean adding = false;
         switch(menuItem.getItemId()) {
             case R.id.context_channel_join:
-                try {
-                    mService.joinChannel(mChannel.getId());
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                mService.joinChannel(mChannel.getId());
                 break;
             case R.id.context_channel_add:
                 adding = true;
             case R.id.context_channel_edit:
-                try {
-                    ChannelEditFragment addFragment = new ChannelEditFragment();
-                    Bundle args = new Bundle();
-                    if (adding) args.putInt("parent", mChannel.getId());
-                    else args.putInt("channel", mChannel.getId());
-                    args.putBoolean("adding", adding);
-                    addFragment.setArguments(args);
-                    addFragment.show(mFragmentManager, "ChannelAdd");
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                ChannelEditFragment addFragment = new ChannelEditFragment();
+                Bundle args = new Bundle();
+                if (adding) args.putInt("parent", mChannel.getId());
+                else args.putInt("channel", mChannel.getId());
+                args.putBoolean("adding", adding);
+                addFragment.setArguments(args);
+                addFragment.show(mFragmentManager, "ChannelAdd");
                 break;
             case R.id.context_channel_remove:
                 AlertDialog.Builder adb = new AlertDialog.Builder(mContext);
@@ -148,38 +132,26 @@ public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
                 adb.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            mService.removeChannel(mChannel.getId());
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
+                        mService.removeChannel(mChannel.getId());
                     }
                 });
                 adb.setNegativeButton(android.R.string.cancel, null);
                 adb.show();
                 break;
             case R.id.context_channel_view_description:
-                try {
-                    Bundle commentArgs = new Bundle();
-                    commentArgs.putInt("channel", mChannel.getId());
-                    commentArgs.putString("comment", mChannel.getDescription());
-                    commentArgs.putBoolean("editing", false);
-                    DialogFragment commentFragment = (DialogFragment) Fragment.instantiate(mContext,
-                            ChannelDescriptionFragment.class.getName(), commentArgs);
-                    commentFragment.show(mFragmentManager, ChannelDescriptionFragment.class.getName());
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                Bundle commentArgs = new Bundle();
+                commentArgs.putInt("channel", mChannel.getId());
+                commentArgs.putString("comment", mChannel.getDescription());
+                commentArgs.putBoolean("editing", false);
+                DialogFragment commentFragment = (DialogFragment) Fragment.instantiate(mContext,
+                        ChannelDescriptionFragment.class.getName(), commentArgs);
+                commentFragment.show(mFragmentManager, ChannelDescriptionFragment.class.getName());
                 break;
             case R.id.context_channel_pin:
-                try {
-                    long serverId = mService.getConnectedServer().getId();
-                    boolean pinned = mDatabase.isChannelPinned(serverId, mChannel.getId());
-                    if(!pinned) mDatabase.addPinnedChannel(serverId, mChannel.getId());
-                    else mDatabase.removePinnedChannel(serverId, mChannel.getId());
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                long serverId = mService.getConnectedServer().getId();
+                boolean pinned = mDatabase.isChannelPinned(serverId, mChannel.getId());
+                if(!pinned) mDatabase.addPinnedChannel(serverId, mChannel.getId());
+                else mDatabase.removePinnedChannel(serverId, mChannel.getId());
                 break;
         }
         actionMode.finish();

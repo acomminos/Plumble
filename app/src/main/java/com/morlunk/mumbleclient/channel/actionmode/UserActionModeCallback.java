@@ -62,12 +62,8 @@ public class UserActionModeCallback extends ChatTargetActionModeCallback {
     @Override
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
         super.onCreateActionMode(actionMode, menu);
-        try {
-            actionMode.setTitle(mUser.getName());
-            actionMode.setSubtitle(R.string.current_chat_target);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        actionMode.setTitle(mUser.getName());
+        actionMode.setSubtitle(R.string.current_chat_target);
 
         return true;
     }

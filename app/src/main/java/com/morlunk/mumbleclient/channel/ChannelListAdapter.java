@@ -116,86 +116,74 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         final Node node = mNodes.get(position);
-        try {
-            if (node.isChannel()) {
-                final IChannel channel = node.getChannel();
-                ChannelViewHolder cvh = (ChannelViewHolder) viewHolder;
-                cvh.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (mChannelClickListener != null) {
-                            mChannelClickListener.onChannelClick(channel);
-                        }
+        if (node.isChannel()) {
+            final IChannel channel = node.getChannel();
+            ChannelViewHolder cvh = (ChannelViewHolder) viewHolder;
+            cvh.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mChannelClickListener != null) {
+                        mChannelClickListener.onChannelClick(channel);
                     }
-                });
-
-                final boolean expandUsable = channel.getSubchannels().size() > 0 ||
-                        channel.getSubchannelUserCount() > 0;
-                cvh.mChannelExpandToggle.setImageResource(node.isExpanded() ?
-                        R.drawable.ic_action_expanded : R.drawable.ic_action_collapsed);
-                cvh.mChannelExpandToggle.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        try {
-                            mExpandedChannels.put(channel.getId(), !node.isExpanded());
-                            updateChannels(); // FIXME: very inefficient.
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                        notifyDataSetChanged();
-                    }
-                });
-                // Dim channel expand toggle when no subchannels exist
-                cvh.mChannelExpandToggle.setEnabled(expandUsable);
-                cvh.mChannelExpandToggle.setVisibility(expandUsable ? View.VISIBLE : View.INVISIBLE);
-
-                cvh.mChannelName.setText(channel.getName());
-
-                int userCount = channel.getSubchannelUserCount();
-                cvh.mChannelUserCount.setText(String.format("%d", userCount));
-
-                // Pad the view depending on channel's nested level.
-                DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
-                float margin = node.getDepth() * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25, metrics);
-                cvh.mChannelHolder.setPadding((int) margin,
-                        cvh.mChannelHolder.getPaddingTop(),
-                        cvh.mChannelHolder.getPaddingRight(),
-                        cvh.mChannelHolder.getPaddingBottom());
-            } else if (node.isUser()) {
-                final IUser user = node.getUser();
-                UserViewHolder uvh = (UserViewHolder) viewHolder;
-                uvh.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (mUserClickListener != null) {
-                            mUserClickListener.onUserClick(user);
-                        }
-                    }
-                });
-
-                uvh.mUserName.setText(user.getName());
-                try {
-                    uvh.mUserName.setTypeface(null, user.getSession() == mService.getSession() ? Typeface.BOLD : Typeface.NORMAL);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
                 }
+            });
 
-                uvh.mUserTalkHighlight.setImageDrawable(getTalkStateDrawable(user));
+            final boolean expandUsable = channel.getSubchannels().size() > 0 ||
+                    channel.getSubchannelUserCount() > 0;
+            cvh.mChannelExpandToggle.setImageResource(node.isExpanded() ?
+                    R.drawable.ic_action_expanded : R.drawable.ic_action_collapsed);
+            cvh.mChannelExpandToggle.setOnClickListener(new View.OnClickListener() {
 
-                // Pad the view depending on channel's nested level.
-                DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
-                float margin = (node.getDepth() + 1) * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25, metrics);
-                uvh.mUserHolder.setPadding((int) margin,
-                        uvh.mUserHolder.getPaddingTop(),
-                        uvh.mUserHolder.getPaddingRight(),
-                        uvh.mUserHolder.getPaddingBottom());
+                @Override
+                public void onClick(View v) {
+                    mExpandedChannels.put(channel.getId(), !node.isExpanded());
+                    updateChannels(); // FIXME: very inefficient.
+                    notifyDataSetChanged();
+                }
+            });
+            // Dim channel expand toggle when no subchannels exist
+            cvh.mChannelExpandToggle.setEnabled(expandUsable);
+            cvh.mChannelExpandToggle.setVisibility(expandUsable ? View.VISIBLE : View.INVISIBLE);
 
-                uvh.mMoreButton.setOnClickListener(new UserMenuProvider(mContext, user,
-                        (PlumbleService.PlumbleBinder) mService, mFragmentManager, this));
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            cvh.mChannelName.setText(channel.getName());
+
+            int userCount = channel.getSubchannelUserCount();
+            cvh.mChannelUserCount.setText(String.format("%d", userCount));
+
+            // Pad the view depending on channel's nested level.
+            DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
+            float margin = node.getDepth() * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25, metrics);
+            cvh.mChannelHolder.setPadding((int) margin,
+                    cvh.mChannelHolder.getPaddingTop(),
+                    cvh.mChannelHolder.getPaddingRight(),
+                    cvh.mChannelHolder.getPaddingBottom());
+        } else if (node.isUser()) {
+            final IUser user = node.getUser();
+            UserViewHolder uvh = (UserViewHolder) viewHolder;
+            uvh.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mUserClickListener != null) {
+                        mUserClickListener.onUserClick(user);
+                    }
+                }
+            });
+
+            uvh.mUserName.setText(user.getName());
+            uvh.mUserName.setTypeface(null, user.getSession() == mService.getSession() ? Typeface.BOLD : Typeface.NORMAL);
+
+            uvh.mUserTalkHighlight.setImageDrawable(getTalkStateDrawable(user));
+
+            // Pad the view depending on channel's nested level.
+            DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
+            float margin = (node.getDepth() + 1) * TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25, metrics);
+            uvh.mUserHolder.setPadding((int) margin,
+                    uvh.mUserHolder.getPaddingTop(),
+                    uvh.mUserHolder.getPaddingRight(),
+                    uvh.mUserHolder.getPaddingBottom());
+
+            uvh.mMoreButton.setOnClickListener(new UserMenuProvider(mContext, user,
+                    (PlumbleService) mService, mFragmentManager, this));
         }
     }
 
@@ -230,7 +218,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
      * Updates the channel tree model.
      * To be used after any channel tree modifications.
      */
-    public void updateChannels() throws RemoteException {
+    public void updateChannels() {
         mNodes.clear();
         for (int cid : mRootChannels) {
             IChannel channel = mService.getChannel(cid);
@@ -245,7 +233,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
      * @param user The user to update.
      * @param view The view containing this adapter.
      */
-    public void animateUserStateUpdate(IUser user, RecyclerView view) throws RemoteException {
+    public void animateUserStateUpdate(IUser user, RecyclerView view) {
         long itemId = user.getSession() | USER_ID_MASK;
         UserViewHolder uvh = (UserViewHolder) view.findViewHolderForItemId(itemId);
         if (uvh != null) {
@@ -266,7 +254,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
         }
     }
 
-    private Drawable getTalkStateDrawable(IUser user) throws RemoteException {
+    private Drawable getTalkStateDrawable(IUser user) {
         Resources resources = mContext.getResources();
         if (user.isSelfDeafened()) {
             return resources.getDrawable(R.drawable.outline_circle_deafened);
@@ -341,7 +329,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
      * @param nodes An accumulator to store generated nodes into.
      */
     private void constructNodes(Node parent, IChannel channel, int depth,
-                                List<Node> nodes) throws RemoteException {
+                                List<Node> nodes) {
         Node channelNode = new Node(parent, depth, channel);
         nodes.add(channelNode);
 
@@ -366,9 +354,8 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
     /**
      * Changes the service backing the adapter. Updates the list as well.
      * @param service The new service to retrieve channels from.
-     * @throws RemoteException
      */
-    public void setService(IJumbleService service) throws RemoteException {
+    public void setService(IJumbleService service) {
         mService = service;
         updateChannels();
         notifyDataSetChanged();
@@ -376,36 +363,27 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
 
     @Override
     public void onLocalUserStateUpdated(final IUser user) {
-        try {
-            notifyDataSetChanged();
+        notifyDataSetChanged();
 
-            // Add or remove registered user from local mute history
-            final Server server = mService.getConnectedServer();
+        // Add or remove registered user from local mute history
+        final Server server = mService.getConnectedServer();
 
-            if (user.getUserId() >= 0 && server.isSaved()) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // TODO: use dedicated database worker thread?
-                        try {
-                            if (user.isLocalMuted()) {
-                                mDatabase.addLocalMutedUser(server.getId(), user.getUserId());
-                            } else {
-                                mDatabase.removeLocalMutedUser(server.getId(), user.getUserId());
-                            }
-                            if (user.isLocalIgnored()) {
-                                mDatabase.addLocalIgnoredUser(server.getId(), user.getUserId());
-                            } else {
-                                mDatabase.removeLocalIgnoredUser(server.getId(), user.getUserId());
-                            }
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
+        if (user.getUserId() >= 0 && server.isSaved()) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (user.isLocalMuted()) {
+                        mDatabase.addLocalMutedUser(server.getId(), user.getUserId());
+                    } else {
+                        mDatabase.removeLocalMutedUser(server.getId(), user.getUserId());
                     }
-                }).start();
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
+                    if (user.isLocalIgnored()) {
+                        mDatabase.addLocalIgnoredUser(server.getId(), user.getUserId());
+                    } else {
+                        mDatabase.removeLocalIgnoredUser(server.getId(), user.getUserId());
+                    }
+                }
+            }).start();
         }
     }
 

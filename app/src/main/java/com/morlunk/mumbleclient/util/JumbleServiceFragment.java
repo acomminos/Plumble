@@ -24,8 +24,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
-import com.morlunk.jumble.IJumbleObserver;
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.util.IJumbleObserver;
 import com.morlunk.mumbleclient.service.PlumbleService;
 
 /**
@@ -78,24 +78,16 @@ public abstract class JumbleServiceFragment extends Fragment {
 
     private void onServiceAttached(IJumbleService service) {
         mBound = true;
-        try {
-            if(getServiceObserver() != null)
-                service.registerObserver(getServiceObserver());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        if(getServiceObserver() != null)
+            service.registerObserver(getServiceObserver());
 
         onServiceBound(service);
     }
 
     private void onServiceDetached(IJumbleService service) {
         mBound = false;
-        try {
-            if(getServiceObserver() != null)
-                service.unregisterObserver(getServiceObserver());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        if(getServiceObserver() != null)
+            service.unregisterObserver(getServiceObserver());
 
         onServiceUnbound();
     }
@@ -107,7 +99,7 @@ public abstract class JumbleServiceFragment extends Fragment {
             onServiceDetached(mServiceProvider.getService());
     }
 
-    public PlumbleService.PlumbleBinder getService() {
+    public PlumbleService getService() {
         return mServiceProvider.getService();
     }
 }
