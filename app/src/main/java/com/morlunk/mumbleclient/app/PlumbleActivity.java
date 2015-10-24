@@ -120,12 +120,8 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mService = (PlumbleService)((JumbleService.JumbleBinder) service).getService();
-            try {
-                mService.registerObserver(mObserver);
-                mService.clearChatNotifications(); // Clear chat notifications on resume.
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            mService.registerObserver(mObserver);
+            mService.clearChatNotifications(); // Clear chat notifications on resume.
             mDrawerAdapter.notifyDataSetChanged();
 
             for(JumbleServiceFragment fragment : mServiceFragments)
@@ -133,7 +129,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
             // Re-show server list if we're showing a fragment that depends on the service.
             if(getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof JumbleServiceFragment &&
-                    mService.getConnectionState() != JumbleService.ConnectionState.CONNECTED) {
+                    mService.isSynchronized()) {
                 loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
             }
             updateConnectionState(getService());
@@ -290,7 +286,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         dadb.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(mService != null && mService.isSynchronized())
+                if(mService != null && mService.isConnectionEstablished())
                     mService.disconnect();
                 loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
             }

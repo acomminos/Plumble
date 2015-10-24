@@ -76,11 +76,7 @@ public abstract class AbstractCommentFragment extends DialogFragment {
 
         if(mComment == null) {
             mCommentView.loadData("Loading...", null, null);
-            try {
-                requestComment(mProvider.getService());
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            requestComment(mProvider.getService());
         } else {
             loadComment(mComment);
         }
@@ -117,11 +113,7 @@ public abstract class AbstractCommentFragment extends DialogFragment {
             adb.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    try {
-                        editComment(mProvider.getService(), mCommentEdit.getText().toString());
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
+                    editComment(mProvider.getService(), mCommentEdit.getText().toString());
                 }
             });
         }
@@ -144,12 +136,12 @@ public abstract class AbstractCommentFragment extends DialogFragment {
      * This method is expected to set a callback that will call {@link com.morlunk.mumbleclient.channel.comment.AbstractCommentFragment#loadComment(String comment)}.
      * @param service The bound Jumble service to use for remote calls.
      */
-    public abstract void requestComment(IJumbleService service) throws RemoteException;
+    public abstract void requestComment(IJumbleService service);
 
     /**
      * Asks the service to replace the comment.
      * @param service The bound Jumble service to use for remote calls.
      * @param comment The comment the user has defined.
      */
-    public abstract void editComment(IJumbleService service, String comment) throws RemoteException;
+    public abstract void editComment(IJumbleService service, String comment);
 }

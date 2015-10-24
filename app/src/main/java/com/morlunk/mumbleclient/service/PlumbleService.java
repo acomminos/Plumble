@@ -509,7 +509,7 @@ public class PlumbleService extends JumbleService implements
         return mChannelOverlay.isShown();
     }
 
-    public void clearChatNotifications() throws RemoteException {
+    public void clearChatNotifications() {
         if (mNotification != null) {
             mNotification.clearMessages();
             mNotification.show();
