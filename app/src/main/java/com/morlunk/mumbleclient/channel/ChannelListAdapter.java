@@ -217,6 +217,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
     /**
      * Updates the channel tree model.
      * To be used after any channel tree modifications.
+     * @throws IllegalStateException if the service is not synchronized when calling this.
      */
     public void updateChannels() {
         mNodes.clear();

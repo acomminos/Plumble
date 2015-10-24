@@ -102,6 +102,11 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
 
         @Override
         public void onUserRemoved(IUser user, String reason) {
+            // If we are the user being removed, don't update the channel list.
+            // We won't be in a synchronized state.
+            if (!getService().isSynchronized())
+                return;
+
             mChannelListAdapter.updateChannels();
             mChannelListAdapter.notifyDataSetChanged();
         }
