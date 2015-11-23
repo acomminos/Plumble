@@ -42,21 +42,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.morlunk.jumble.IJumbleService;
-import com.morlunk.jumble.JumbleService;
-import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.IUser;
-import com.morlunk.jumble.model.Server;
-import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.IJumbleObserver;
 import com.morlunk.jumble.util.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
-import com.morlunk.mumbleclient.Settings;
-import com.morlunk.mumbleclient.channel.actionmode.ChannelActionModeCallback;
-import com.morlunk.mumbleclient.channel.actionmode.UserActionModeCallback;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
-import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 
 public class ChannelListFragment extends JumbleServiceFragment implements OnChannelClickListener, OnUserClickListener {
@@ -335,9 +327,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
             // Dismiss action mode if double pressed. FIXME: use list view selection instead?
             mActionMode.finish();
         } else {
-            ActionMode.Callback cb = new ChannelActionModeCallback(getActivity(),
-                    getService(), channel, mTargetProvider, mDatabaseProvider.getDatabase(),
-                    getChildFragmentManager()) {
+            ActionMode.Callback cb = new ChatTargetActionModeCallback(mTargetProvider, new ChatTargetProvider.ChatTarget(channel)) {
                 @Override
                 public void onDestroyActionMode(ActionMode actionMode) {
                     super.onDestroyActionMode(actionMode);
@@ -356,7 +346,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
             // Dismiss action mode if double pressed. FIXME: use list view selection instead?
             mActionMode.finish();
         } else {
-            ActionMode.Callback cb = new UserActionModeCallback(user, mTargetProvider) {
+            ActionMode.Callback cb = new ChatTargetActionModeCallback(mTargetProvider, new ChatTargetProvider.ChatTarget(user)) {
                 @Override
                 public void onDestroyActionMode(ActionMode actionMode) {
                     super.onDestroyActionMode(actionMode);

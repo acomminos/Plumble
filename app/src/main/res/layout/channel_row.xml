@@ -51,4 +51,14 @@
         android:text="10"
         android:textStyle="bold"
         android:padding="10dp"/>
+
+    <ImageView
+        android:id="@+id/channel_row_more"
+        android:layout_width="32dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_more_vert_black_24dp"
+        android:layout_gravity="center"
+        android:paddingLeft="8dp"
+        android:tint="?android:textColorSecondary"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
 </LinearLayout>

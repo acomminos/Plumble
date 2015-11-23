@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.morlunk.mumbleclient.channel.actionmode;
+package com.morlunk.mumbleclient.channel;
 
 import android.support.v7.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuItem;
 
+import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.channel.ChatTargetProvider;
 
 /**
@@ -27,17 +29,31 @@ import com.morlunk.mumbleclient.channel.ChatTargetProvider;
  * to the user's current channel).
  * Created by andrew on 26/06/14.
  */
-public abstract class ChatTargetActionModeCallback implements ActionMode.Callback {
-    private ChatTargetProvider mProvider;
+public class ChatTargetActionModeCallback implements ActionMode.Callback {
+    private final ChatTargetProvider mProvider;
+    private final ChatTargetProvider.ChatTarget mChatTarget;
 
-    public ChatTargetActionModeCallback(ChatTargetProvider provider) {
+    public ChatTargetActionModeCallback(ChatTargetProvider provider, ChatTargetProvider.ChatTarget target) {
         mProvider = provider;
+        mChatTarget = target;
     }
 
     @Override
     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+        actionMode.setTitle(mChatTarget.getName());
+        actionMode.setSubtitle(R.string.current_chat_target);
         mProvider.setChatTarget(getChatTarget());
         return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+        return false;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+        return false;
     }
 
     @Override
@@ -45,5 +61,7 @@ public abstract class ChatTargetActionModeCallback implements ActionMode.Callbac
         mProvider.setChatTarget(null);
     }
 
-    public abstract ChatTargetProvider.ChatTarget getChatTarget();
+    public ChatTargetProvider.ChatTarget getChatTarget() {
+        return mChatTarget;
+    }
 }

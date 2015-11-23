@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Andrew Comminos
+ * Copyright (C) 2015 Andrew Comminos <andrew@comminos.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,86 +15,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.morlunk.mumbleclient.channel.actionmode;
+package com.morlunk.mumbleclient.channel;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.TypedArray;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.view.ActionMode;
+import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.morlunk.jumble.IJumbleService;
-import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.net.Permissions;
 import com.morlunk.mumbleclient.R;
-import com.morlunk.mumbleclient.channel.ChannelEditFragment;
-import com.morlunk.mumbleclient.channel.ChatTargetProvider;
 import com.morlunk.mumbleclient.channel.comment.ChannelDescriptionFragment;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
-import com.morlunk.mumbleclient.util.TintedMenuInflater;
 
 /**
- * Contextual action mode for channels.
- * When the action mode is activated, the user is set to the current chat target.
- * Upon dismissal, the chat target is reset (usually to the current channel).
- * Created by andrew on 24/06/14.
+ * Created by andrew on 22/11/15.
  */
-public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
-    private Context mContext;
-    private IJumbleService mService;
-    private IChannel mChannel;
-    private PlumbleDatabase mDatabase;
-    private FragmentManager mFragmentManager;
+public class ChannelMenu implements PermissionsPopupMenu.IOnMenuPrepareListener, PopupMenu.OnMenuItemClickListener {
+    private final Context mContext;
+    private final IChannel mChannel;
+    private final IJumbleService mService;
+    private final PlumbleDatabase mDatabase;
+    private final FragmentManager mFragmentManager;
 
-    public ChannelActionModeCallback(Context context,
-                                     IJumbleService service,
-                                     IChannel channel,
-                                     ChatTargetProvider chatTargetProvider,
-                                     PlumbleDatabase database,
-                                     FragmentManager fragmentManager) {
-        super(chatTargetProvider);
+    public ChannelMenu(Context context, IChannel channel, IJumbleService service,
+                       PlumbleDatabase database, FragmentManager fragmentManager) {
         mContext = context;
-        mService = service;
         mChannel = channel;
+        mService = service;
         mDatabase = database;
         mFragmentManager = fragmentManager;
     }
 
     @Override
-    public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-        super.onCreateActionMode(actionMode, menu);
-        TintedMenuInflater inflater = new TintedMenuInflater(mContext, actionMode.getMenuInflater());
-        inflater.inflate(R.menu.context_channel, menu);
-
-        actionMode.setTitle(mChannel.getName());
-        actionMode.setSubtitle(R.string.current_chat_target);
-        // Request permissions update from server, if we don't have channel permissions
-        if(mChannel.getPermissions() == 0)
-            mService.requestPermissions(mChannel.getId());
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-        int perms = mChannel.getPermissions();
-
+    public void onMenuPrepare(Menu menu, int permissions) {
         // This breaks uMurmur ACL. Put in a fix based on server version perhaps?
         //menu.getMenu().findItem(R.id.menu_channel_add)
         // .setVisible((permissions & (Permissions.MakeChannel | Permissions.MakeTempChannel)) > 0);
-        menu.findItem(R.id.context_channel_edit).setVisible((perms & Permissions.Write) > 0);
-        menu.findItem(R.id.context_channel_remove).setVisible((perms & Permissions.Write) > 0);
+        menu.findItem(R.id.context_channel_edit).setVisible((permissions & Permissions.Write) > 0);
+        menu.findItem(R.id.context_channel_remove).setVisible((permissions & Permissions.Write) > 0);
         menu.findItem(R.id.context_channel_view_description)
                 .setVisible(mChannel.getDescription() != null ||
                         mChannel.getDescriptionHash() != null);
@@ -103,14 +73,12 @@ public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
             menu.findItem(R.id.context_channel_pin)
                     .setChecked(mDatabase.isChannelPinned(server.getId(), mChannel.getId()));
         }
-
-        return false;
     }
 
     @Override
-    public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+    public boolean onMenuItemClick(MenuItem item) {
         boolean adding = false;
-        switch(menuItem.getItemId()) {
+        switch(item.getItemId()) {
             case R.id.context_channel_join:
                 mService.joinChannel(mChannel.getId());
                 break;
@@ -153,18 +121,15 @@ public class ChannelActionModeCallback extends ChatTargetActionModeCallback {
                 if(!pinned) mDatabase.addPinnedChannel(serverId, mChannel.getId());
                 else mDatabase.removePinnedChannel(serverId, mChannel.getId());
                 break;
+            default:
+                return false;
         }
-        actionMode.finish();
         return true;
     }
 
-    @Override
-    public void onDestroyActionMode(ActionMode actionMode) {
-        super.onDestroyActionMode(actionMode);
-    }
-
-    @Override
-    public ChatTargetProvider.ChatTarget getChatTarget() {
-        return new ChatTargetProvider.ChatTarget(mChannel);
+    public void showPopup(View anchor) {
+        PermissionsPopupMenu popupMenu = new PermissionsPopupMenu(mContext, anchor,
+                R.menu.context_channel, this, this, mChannel, mService);
+        popupMenu.show();
     }
 }

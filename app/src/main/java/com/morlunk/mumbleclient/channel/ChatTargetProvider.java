@@ -21,6 +21,7 @@ import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.User;
+import com.morlunk.mumbleclient.BuildConfig;
 
 public interface ChatTargetProvider {
 
@@ -45,6 +46,16 @@ public interface ChatTargetProvider {
 
         public IUser getUser() {
             return mUser;
+        }
+
+        public String getName() {
+            if (mUser != null)
+                return mUser.getName();
+            if (mChannel != null)
+                return mChannel.getName();
+            if (BuildConfig.DEBUG)
+                throw new RuntimeException();
+            return "Unknown";
         }
     }
 

@@ -55,7 +55,7 @@ import java.util.List;
 /**
  * Created by andrew on 31/07/13.
  */
-public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenuProvider.Listener {
+public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu.IUserLocalStateListener {
     // Set particular bits to make the integer-based model item ids unique.
     public static final long CHANNEL_ID_MASK = (0x1L << 32);
     public static final long USER_ID_MASK = (0x1L << 33);
@@ -157,6 +157,14 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
                     cvh.mChannelHolder.getPaddingTop(),
                     cvh.mChannelHolder.getPaddingRight(),
                     cvh.mChannelHolder.getPaddingBottom());
+
+            cvh.mMoreButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ChannelMenu menu = new ChannelMenu(mContext, channel, mService, mDatabase, mFragmentManager);
+                    menu.showPopup(v);
+                }
+            });
         } else if (node.isUser()) {
             final IUser user = node.getUser();
             UserViewHolder uvh = (UserViewHolder) viewHolder;
@@ -182,8 +190,14 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
                     uvh.mUserHolder.getPaddingRight(),
                     uvh.mUserHolder.getPaddingBottom());
 
-            uvh.mMoreButton.setOnClickListener(new UserMenuProvider(mContext, user,
-                    (PlumbleService) mService, mFragmentManager, this));
+            uvh.mMoreButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    UserMenu menu = new UserMenu(mContext, user, (PlumbleService) mService,
+                            mFragmentManager, ChannelListAdapter.this);
+                    menu.showPopup(v);
+                }
+            });
         }
     }
 
@@ -409,6 +423,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
         public ImageView mChannelExpandToggle;
         public TextView mChannelName;
         public TextView mChannelUserCount;
+        public ImageView mMoreButton;
 
         public ChannelViewHolder(View itemView) {
             super(itemView);
@@ -416,6 +431,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
             mChannelExpandToggle = (ImageView) itemView.findViewById(R.id.channel_row_expand);
             mChannelName = (TextView) itemView.findViewById(R.id.channel_row_name);
             mChannelUserCount = (TextView) itemView.findViewById(R.id.channel_row_count);
+            mMoreButton = (ImageView) itemView.findViewById(R.id.channel_row_more);
         }
     }
 

@@ -36,15 +36,15 @@ public class ModelUtils {
      * @param channel The root channel to flatten from.
      * @return A list of channels.
      */
-    public static List<IChannel> getChannelList(IChannel channel) throws RemoteException {
+    public static List<IChannel> getChannelList(IChannel channel) {
         LinkedList<IChannel> channels = new LinkedList<IChannel>();
         getChannelList(channel, channels);
         return channels;
     }
 
-    private static void getChannelList(IChannel channel, List<IChannel> channels) throws RemoteException {
+    private static void getChannelList(IChannel channel, List<IChannel> channels) {
         channels.add(channel);
-        for (IChannel subc : (List<IChannel>)channel.getSubchannels()) {
+        for (IChannel subc : channel.getSubchannels()) {
             if (subc != null) {
                 getChannelList(subc, channels);
             }
