@@ -118,7 +118,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
         final Node node = mNodes.get(position);
         if (node.isChannel()) {
             final IChannel channel = node.getChannel();
-            ChannelViewHolder cvh = (ChannelViewHolder) viewHolder;
+            final ChannelViewHolder cvh = (ChannelViewHolder) viewHolder;
             cvh.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -165,9 +165,17 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
                     menu.showPopup(v);
                 }
             });
+
+            cvh.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    cvh.mMoreButton.performClick();
+                    return true;
+                }
+            });
         } else if (node.isUser()) {
             final IUser user = node.getUser();
-            UserViewHolder uvh = (UserViewHolder) viewHolder;
+            final UserViewHolder uvh = (UserViewHolder) viewHolder;
             uvh.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -196,6 +204,14 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
                     UserMenu menu = new UserMenu(mContext, user, (PlumbleService) mService,
                             mFragmentManager, ChannelListAdapter.this);
                     menu.showPopup(v);
+                }
+            });
+
+            uvh.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    uvh.mMoreButton.performClick();
+                    return true;
                 }
             });
         }
