@@ -17,5 +17,11 @@
   -->
 
 <resources>
-    <attr name="cardStyle" format="reference" />
+  <attr name="cardStyle" format="reference" />
+  <declare-styleable name="TalkingIndicatorView">
+    <attr name="arcColor" format="color" />
+    <attr name="arcWidth" format="dimension" />
+    <attr name="arcLength" format="dimension" />
+    <attr name="cyclePeriod" format="integer" />
+  </declare-styleable>
 </resources>
