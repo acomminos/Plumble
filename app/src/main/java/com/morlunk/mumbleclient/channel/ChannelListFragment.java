@@ -111,7 +111,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
 
         @Override
         public void onUserTalkStateUpdated(IUser user) {
-            mChannelListAdapter.animateUserStateUpdate(user, mChannelView);
+            mChannelListAdapter.animateUserTalkStateUpdate(user, mChannelView);
         }
 	};
 

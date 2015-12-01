@@ -17,6 +17,9 @@
 
 package com.morlunk.mumbleclient.util;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -28,15 +31,20 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AnticipateOvershootInterpolator;
 import android.view.animation.OvershootInterpolator;
 
 import com.morlunk.mumbleclient.R;
+
+import java.util.Objects;
 
 /**
  * Created by andrew on 30/11/15.
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class TalkingIndicatorView extends View implements ValueAnimator.AnimatorUpdateListener {
+    private static final float OVERSHOOT_TENSION = 3.5f;
+
     /** The offset of the arc from the origin, mod 360. */
     private float mArcOffset;
     /** The length of the arc, in radians. */
@@ -64,13 +72,13 @@ public class TalkingIndicatorView extends View implements ValueAnimator.Animator
         mArcPaint.setStrokeWidth(mArcWidth);
         mArcPaint.setStyle(Paint.Style.STROKE);
 
-        ValueAnimator animator = new ValueAnimator();
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.setDuration(style.getInteger(3, 1000));
-        animator.setFloatValues(0, 360);
-        animator.setInterpolator(new OvershootInterpolator());
-        animator.addUpdateListener(this);
-        animator.start();
+        ValueAnimator cycleAnimator = new ValueAnimator();
+        cycleAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        cycleAnimator.setDuration(style.getInteger(3, 1000));
+        cycleAnimator.setFloatValues(0, 360);
+        cycleAnimator.setInterpolator(new OvershootInterpolator(OVERSHOOT_TENSION));
+        cycleAnimator.addUpdateListener(this);
+        cycleAnimator.start();
 
         style.recycle();
     }
@@ -93,5 +101,9 @@ public class TalkingIndicatorView extends View implements ValueAnimator.Animator
     public void onAnimationUpdate(ValueAnimator animation) {
         mArcOffset = (float) animation.getAnimatedValue();
         invalidate();
+    }
+
+    public float getStrokeWidth() {
+        return mArcWidth;
     }
 }

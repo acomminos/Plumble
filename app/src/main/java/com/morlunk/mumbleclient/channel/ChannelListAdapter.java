@@ -17,6 +17,9 @@
 
 package com.morlunk.mumbleclient.channel;
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -32,8 +35,11 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
@@ -46,6 +52,7 @@ import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.drawable.CircleDrawable;
 import com.morlunk.mumbleclient.drawable.FlipDrawable;
 import com.morlunk.mumbleclient.service.PlumbleService;
+import com.morlunk.mumbleclient.util.TalkingIndicatorView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -189,6 +196,10 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
             uvh.mUserName.setTypeface(null, user.getSession() == mService.getSession() ? Typeface.BOLD : Typeface.NORMAL);
 
             uvh.mUserTalkHighlight.setImageDrawable(getTalkStateDrawable(user));
+            uvh.mTalkingIndicator.setAlpha(
+                    (user.getTalkState() == TalkState.TALKING ||
+                     user.getTalkState() == TalkState.WHISPERING ||
+                     user.getTalkState() == TalkState.SHOUTING) ? 1 : 0);
 
             // Pad the view depending on channel's nested level.
             DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
@@ -272,16 +283,37 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
             Drawable oldState = uvh.mUserTalkHighlight.getDrawable().getCurrent();
 
             if (!newState.getConstantState().equals(oldState.getConstantState())) {
-                if (Build.VERSION.SDK_INT >= 12) {
-                    // "Flip" in new talking state.
-                    FlipDrawable drawable = new FlipDrawable(oldState, newState);
-                    uvh.mUserTalkHighlight.setImageDrawable(drawable);
-                    drawable.start(FLIP_DURATION);
-                } else {
-                    // If we're on a platform without ValueAnimator, simply set the state image.
-                    uvh.mUserTalkHighlight.setImageDrawable(newState);
-                }
+                // "Flip" in new talking state.
+                FlipDrawable drawable = new FlipDrawable(oldState, newState);
+                uvh.mUserTalkHighlight.setImageDrawable(drawable);
+                drawable.start(FLIP_DURATION);
             }
+        }
+    }
+
+    /**
+     * Updates the user's talking indicator.
+     * @param user The user to update.
+     * @param view The view containing this adapter.
+     */
+    public void animateUserTalkStateUpdate(IUser user, RecyclerView view) {
+        long itemId = user.getSession() | USER_ID_MASK;
+        final UserViewHolder uvh = (UserViewHolder) view.findViewHolderForItemId(itemId);
+        if (uvh != null) {
+            boolean talking = user.getTalkState() == TalkState.TALKING ||
+                    user.getTalkState() == TalkState.WHISPERING ||
+                    user.getTalkState() == TalkState.SHOUTING;
+            float strokeWidth = uvh.mTalkingIndicator.getStrokeWidth();
+            float width = uvh.mUserTalkHighlight.getWidth();
+            // Scale down the user's avatar to show the talking indicator.
+            float scale = talking ? (1 - (strokeWidth * 2)/width) : 1;
+            uvh.mTalkingIndicator.animate()
+                    .alpha(talking ? 1 : 0)
+                    .setDuration(200);
+            uvh.mUserTalkHighlight.animate()
+                    .scaleX(scale)
+                    .scaleY(scale)
+                    .setDuration(200);
         }
     }
 
@@ -297,11 +329,6 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
             return resources.getDrawable(R.drawable.outline_circle_server_muted);
         } else if (user.isSuppressed()) {
             return resources.getDrawable(R.drawable.outline_circle_suppressed);
-        } else if (user.getTalkState() == TalkState.TALKING ||
-                user.getTalkState() == TalkState.SHOUTING ||
-                user.getTalkState() == TalkState.WHISPERING) {
-            // TODO: add whisper and shouting resources
-            return resources.getDrawable(R.drawable.outline_circle_talking_on);
         } else {
             // Passive drawables
             if (user.getTexture() != null) {
@@ -424,6 +451,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
 //        public ImageView mUserAvatar;
         public ImageView mUserTalkHighlight;
         public ImageView mMoreButton;
+        public TalkingIndicatorView mTalkingIndicator;
 
         public UserViewHolder(View itemView) {
             super(itemView);
@@ -431,6 +459,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
             mUserTalkHighlight = (ImageView) itemView.findViewById(R.id.user_row_talk_highlight);
             mUserName = (TextView) itemView.findViewById(R.id.user_row_name);
             mMoreButton = (ImageView) itemView.findViewById(R.id.user_row_more);
+            mTalkingIndicator = (TalkingIndicatorView) itemView.findViewById(R.id.user_row_talk_indicator);
         }
     }
 
