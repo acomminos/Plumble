@@ -59,7 +59,7 @@ android {
     buildToolsVersion "21.1.1"
 
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion 12
         targetSdkVersion 21
         applicationId "com.morlunk.mumbleclient"
         versionCode 72
