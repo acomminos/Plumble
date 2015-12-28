@@ -32,6 +32,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AnticipateOvershootInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 
 import com.morlunk.mumbleclient.R;
@@ -76,7 +77,7 @@ public class TalkingIndicatorView extends View implements ValueAnimator.Animator
         cycleAnimator.setRepeatCount(ValueAnimator.INFINITE);
         cycleAnimator.setDuration(style.getInteger(3, 1000));
         cycleAnimator.setFloatValues(0, 360);
-        cycleAnimator.setInterpolator(new OvershootInterpolator(OVERSHOOT_TENSION));
+        cycleAnimator.setInterpolator(new LinearInterpolator());
         cycleAnimator.addUpdateListener(this);
         cycleAnimator.start();
 
