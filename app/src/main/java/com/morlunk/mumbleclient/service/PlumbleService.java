@@ -414,7 +414,6 @@ public class PlumbleService extends JumbleService implements
             case Settings.PREF_CERT_PASSWORD:
             case Settings.PREF_FORCE_TCP:
             case Settings.PREF_USE_TOR:
-            case Settings.PREF_CHAT_NOTIFY:
             case Settings.PREF_DISABLE_OPUS:
                 // These are settings we flag as 'requiring reconnect'.
                 requiresReconnect = true;
