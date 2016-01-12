@@ -53,4 +53,26 @@ public interface PlumbleDatabase {
     public List<Integer> getLocalIgnoredUsers(long serverId);
     public void addLocalIgnoredUser(long serverId, int userId);
     public void removeLocalIgnoredUser(long serverId, int userId);
+
+    /**
+     * Adds the given certificate binary blob to the database.
+     * @param name The user-readable certificate name.
+     * @param certificate A PKCS12 binary blob.
+     * @return A handle for the newly craeted certificate.
+     */
+    DatabaseCertificate addCertificate(String name, byte[] certificate);
+    List<DatabaseCertificate> getCertificates();
+
+    /**
+     * Obtains the certificate data associated with the given certificate ID.
+     * @param id The certificate ID to fetch the data of.
+     * @return A binary representation of a PKCS12 certificate.
+     */
+    byte[] getCertificateData(long id);
+
+    /**
+     * Removes the certificate with the given ID.
+     * @param id The certificate's identifier.
+     */
+    void removeCertificate(long id);
 }

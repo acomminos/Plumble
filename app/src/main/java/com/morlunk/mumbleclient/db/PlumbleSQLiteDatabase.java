@@ -97,12 +97,23 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
             + "CONSTRAINT server_user UNIQUE(" + LOCAL_IGNORE_SERVER + "," + LOCAL_IGNORE_USER + ")"
             + ");";
 
+    public static final String TABLE_CERTIFICATES = "certificates";
+    public static final String COLUMN_CERTIFICATES_ID = "_id";
+    public static final String COLUMN_CERTIFICATES_DATA = "data";
+    public static final String COLUMN_CERTIFICATES_NAME = "name";
+    public static final String TABLE_CERTIFICATES_CREATE_SQL = "CREATE TABLE IF NOT EXISTS " + TABLE_CERTIFICATES + " ("
+            + "`" + COLUMN_CERTIFICATES_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + "`" + COLUMN_CERTIFICATES_DATA + "` BLOB NOT NULL,"
+            + "`" + COLUMN_CERTIFICATES_NAME + "` TEXT NOT NULL"
+            + ");";
+
     public static final Integer PRE_FAVOURITES_DB_VERSION = 2;
     public static final Integer PRE_TOKENS_DB_VERSION = 3;
     public static final Integer PRE_COMMENTS_DB_VERSION = 4;
     public static final Integer PRE_LOCAL_MUTE_DB_VERSION = 5;
     public static final Integer PRE_LOCAL_IGNORE_DB_VERSION = 6;
-    public static final Integer CURRENT_DB_VERSION = 7;
+    public static final Integer PRE_CERTIFICATES_DB_VERSION = 7;
+    public static final Integer CURRENT_DB_VERSION = 8;
 
     public PlumbleSQLiteDatabase(Context context) {
         super(context, DATABASE_NAME, null, CURRENT_DB_VERSION);
@@ -120,6 +131,7 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
         db.execSQL(TABLE_COMMENTS_CREATE_SQL);
         db.execSQL(TABLE_LOCAL_MUTE_CREATE_SQL);
         db.execSQL(TABLE_LOCAL_IGNORE_CREATE_SQL);
+        db.execSQL(TABLE_CERTIFICATES_CREATE_SQL);
     }
 
     @Override
@@ -146,6 +158,10 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
 
         if (oldVersion <= PRE_LOCAL_IGNORE_DB_VERSION) {
             db.execSQL(TABLE_LOCAL_IGNORE_CREATE_SQL);
+        }
+
+        if (oldVersion <= PRE_CERTIFICATES_DB_VERSION) {
+            db.execSQL(TABLE_CERTIFICATES_CREATE_SQL);
         }
     }
 
@@ -224,7 +240,7 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
         getWritableDatabase().delete(TABLE_LOCAL_MUTE, LOCAL_MUTE_SERVER + "=?",
                 new String[] { String.valueOf(server.getId()) });
         getWritableDatabase().delete(TABLE_LOCAL_IGNORE, LOCAL_IGNORE_SERVER + "=?",
-                new String[] { String.valueOf(server.getId()) });
+                new String[]{String.valueOf(server.getId())});
     }
 
     public List<Integer> getPinnedChannels(long serverId) {
@@ -363,6 +379,50 @@ public class PlumbleSQLiteDatabase extends SQLiteOpenHelper implements PlumbleDa
         getWritableDatabase().delete(TABLE_LOCAL_IGNORE,
                 LOCAL_IGNORE_SERVER + "=? AND " + LOCAL_IGNORE_USER + "=?",
                 new String[] { String.valueOf(serverId), String.valueOf(userId) });
+    }
+
+    @Override
+    public DatabaseCertificate addCertificate(String name, byte[] certificate) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_CERTIFICATES_NAME, name);
+        values.put(COLUMN_CERTIFICATES_DATA, certificate);
+        long id = getWritableDatabase().insert(TABLE_CERTIFICATES, null, values);
+        return new DatabaseCertificate(id, name);
+    }
+
+    @Override
+    public List<DatabaseCertificate> getCertificates() {
+        Cursor cursor = getReadableDatabase().query(TABLE_CERTIFICATES,
+                new String[] { COLUMN_CERTIFICATES_ID, COLUMN_CERTIFICATES_NAME },
+                null, null, null, null, null);
+        List<DatabaseCertificate> certificates = new ArrayList<>();
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            certificates.add(new DatabaseCertificate(cursor.getLong(0), cursor.getString(1)));
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return certificates;
+    }
+
+    @Override
+    public byte[] getCertificateData(long id) {
+        Cursor cursor = getReadableDatabase().query(TABLE_CERTIFICATES,
+                new String[] { COLUMN_CERTIFICATES_DATA },
+                COLUMN_CERTIFICATES_ID + "=?",
+                new String[] { String.valueOf(id) }, null, null, null);
+        if (!cursor.moveToFirst())
+            return null;
+        byte[] data = cursor.getBlob(0);
+        cursor.close();
+        return data;
+    }
+
+    @Override
+    public void removeCertificate(long id) {
+        getWritableDatabase().delete(TABLE_CERTIFICATES,
+                COLUMN_CERTIFICATES_ID + "=?",
+                new String[] { String.valueOf(id) });
     }
 
     @Override
