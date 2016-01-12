@@ -93,8 +93,16 @@ public class Settings {
     public static final String ARRAY_THEME_SOLARIZED_LIGHT = "solarizedLight";
     public static final String ARRAY_THEME_SOLARIZED_DARK = "solarizedDark";
 
-    public static final String PREF_CERT = "certificatePath";
-    public static final String PREF_CERT_PASSWORD = "certificatePassword";
+    /** @deprecated use {@link #PREF_CERT_ID } */
+    public static final String PREF_CERT_DEPRECATED = "certificatePath";
+    /** @deprecated use {@link #PREF_CERT_ID } */
+    public static final String PREF_CERT_PASSWORD_DEPRECATED = "certificatePassword";
+
+    /**
+     * The DB identifier for the default certificate.
+     * @see com.morlunk.mumbleclient.db.DatabaseCertificate
+     */
+    public static final String PREF_CERT_ID = "certificateId";
 
     public static final String PREF_DEFAULT_USERNAME = "defaultUsername";
     public static final String DEFAULT_DEFAULT_USERNAME = "Plumble_User"; // funny var name
@@ -257,29 +265,12 @@ public class Settings {
     }
 
     /**
-     * Attempts to read the certificate from the path specified in settings.
-     * @return The parsed bytes of the certificate, or null otherwise.
+     * Returns a database identifier for the default certificate, or a negative number if there is
+     * no default certificate set.
+     * @return The default certificate's ID, or a negative integer if not set.
      */
-    public byte[] getCertificate() {
-        try {
-            FileInputStream inputStream = new FileInputStream(preferences.getString(PREF_CERT, ""));
-            byte[] buffer = new byte[inputStream.available()];
-            inputStream.read(buffer);
-            return buffer;
-        } catch (FileNotFoundException e) {
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public boolean isUsingCertificate() {
-        return preferences.contains(PREF_CERT);
-    }
-
-    public String getCertificatePassword() {
-        return preferences.getString(PREF_CERT_PASSWORD, "");
+    public long getDefaultCertificate() {
+        return preferences.getLong(PREF_CERT_ID, -1);
     }
 
     public String getDefaultUsername() {
@@ -342,12 +333,6 @@ public class Settings {
         Editor editor = preferences.edit();
         editor.putBoolean(PREF_MUTED, muted || deafened);
         editor.putBoolean(PREF_DEAFENED, deafened);
-        editor.apply();
-    }
-
-    public void setCertificatePath(String path) {
-        Editor editor = preferences.edit();
-        editor.putString(PREF_CERT, path);
         editor.apply();
     }
 
