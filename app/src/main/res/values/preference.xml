@@ -47,10 +47,6 @@
 
 	<string name="authentication">Authentication</string>
 	<string name="authenticationSum">Manage and create certificates</string>
-	<string name="certificateFile">Certificate File</string>
-	<string name="certificateFileSum">The path of the P12 certificate you wish to use, placed in the \&quot;Plumble\&quot; folder on external storage.</string>
-	<string name="certificatePassword">Certificate Password</string>
-	<string name="certificatePasswordSum">The password for your PKCS12 certificate. (optional)</string>
 	<string name="audioInput">Audio Input</string>
 	<string name="audioInputMethodSum">The method of audio input.</string>
 	<string name="audioInputMethod">Transmit Mode</string>
@@ -125,4 +121,10 @@
     <string name="audio_per_packet_sum">The length of audio per voice packet.</string>
     <string name="stay_awake">Stay Awake</string>
     <string name="stay_awake_sum">When Plumble is open, the screen will not be turned off.</string>
+    <string name="pref_certificate_title">Certificate</string>
+    <string name="pref_certificate_summary">The default certificate to use when connecting to a server.</string>
+    <string name="pref_import_certificate_title">Import Certificate</string>
+    <string name="pref_import_certificate_summary">Import a certificate from external storage.</string>
+    <string name="pref_export_certificate_title">Export Certificate</string>
+    <string name="pref_export_certificate_summary">Exports a certificate to external storage.</string>
 </resources>

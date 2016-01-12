@@ -23,6 +23,7 @@ import com.morlunk.jumble.net.JumbleCertificateGenerator;
 
 import org.spongycastle.operator.OperatorCreationException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -42,23 +43,15 @@ import java.util.Locale;
 public class PlumbleCertificateManager {
 
 	private static final String CERTIFICATE_FOLDER = "Plumble";
-	private static final String CERTIFICATE_FORMAT = "plumble-%s.p12";
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 	
 	/**
 	 * Generates a new X.509 passwordless certificate in PKCS12 format for connection to a Mumble server.
-	 * This certificate is stored in the {@value #CERTIFICATE_FOLDER} folder on the external storage, in the format {@value #CERTIFICATE_FORMAT} where the timestamp is substituted in.
 	 * @return The path of the generated certificate if the operation was a success. Otherwise, null.
 	 */
-    public static File generateCertificate() throws NoSuchAlgorithmException, OperatorCreationException, CertificateException, KeyStoreException, NoSuchProviderException, IOException {
-        File certificateDirectory = getCertificateDirectory();
-
-        String date = DATE_FORMAT.format(new Date());
-        String certificateName = String.format(Locale.US, CERTIFICATE_FORMAT, date);
-        File certificateFile = new File(certificateDirectory, certificateName);
-        FileOutputStream outputStream = new FileOutputStream(certificateFile);
-        JumbleCertificateGenerator.generateCertificate(outputStream);
-        return certificateFile;
+    public static byte[] generateCertificate() throws NoSuchAlgorithmException, OperatorCreationException, CertificateException, KeyStoreException, NoSuchProviderException, IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JumbleCertificateGenerator.generateCertificate(baos);
+        return baos.toByteArray();
     }
 
     /**

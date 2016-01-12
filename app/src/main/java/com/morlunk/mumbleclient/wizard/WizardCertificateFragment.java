@@ -66,9 +66,10 @@ public class WizardCertificateFragment extends Fragment {
         final Settings settings = Settings.getInstance(getActivity());
         PlumbleCertificateGenerateTask task = new PlumbleCertificateGenerateTask(getActivity()) {
             @Override
-            protected void onPostExecute(File result) {
+            protected void onPostExecute(byte[] result) {
                 super.onPostExecute(result);
-                settings.setCertificatePath(result.getAbsolutePath());
+                // FIXME(acomminos)
+//                settings.setCertificatePath(result.getAbsolutePath());
                 mGenerateButton.setEnabled(false);
                 mNavigation.next();
             }

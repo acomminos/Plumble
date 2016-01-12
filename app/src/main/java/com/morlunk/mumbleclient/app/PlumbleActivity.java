@@ -450,13 +450,15 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
      */
     private void showSetupWizard() {
         // Prompt the user to generate a certificate, FIXME
-        if(mSettings.isUsingCertificate()) return;
+        // FIXME(acomminos)
+//        if(mSettings.isUsingCertificate()) return;
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle(R.string.first_run_generate_certificate_title);
         adb.setMessage(R.string.first_run_generate_certificate);
         adb.setPositiveButton(R.string.generate, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                /*
                 PlumbleCertificateGenerateTask generateTask = new PlumbleCertificateGenerateTask(PlumbleActivity.this) {
                     @Override
                     protected void onPostExecute(File result) {
@@ -465,6 +467,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     }
                 };
                 generateTask.execute();
+                */
             }
         });
         adb.show();

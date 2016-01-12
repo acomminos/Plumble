@@ -28,7 +28,7 @@ import com.morlunk.mumbleclient.R;
 
 import java.io.File;
 
-public class PlumbleCertificateGenerateTask extends AsyncTask<Void, Void, File> {
+public class PlumbleCertificateGenerateTask extends AsyncTask<Void, Void, byte[]> {
 	
 	private Context context;
 	private ProgressDialog loadingDialog;
@@ -55,7 +55,7 @@ public class PlumbleCertificateGenerateTask extends AsyncTask<Void, Void, File> 
 		loadingDialog.show();
 	}
 	@Override
-	protected File doInBackground(Void... params) {
+	protected byte[] doInBackground(Void... params) {
 		try {
 			return PlumbleCertificateManager.generateCertificate();
 		} catch (Exception e) {
@@ -65,11 +65,9 @@ public class PlumbleCertificateGenerateTask extends AsyncTask<Void, Void, File> 
 	}
 	
 	@Override
-	protected void onPostExecute(File result) {
+	protected void onPostExecute(byte[] result) {
 		super.onPostExecute(result);
-		if(result != null) {
-			Toast.makeText(context, context.getString(R.string.generateCertSuccess, result.getName()), Toast.LENGTH_SHORT).show();
-		} else {
+		if(result == null) {
 			Toast.makeText(context, R.string.generateCertFailure, Toast.LENGTH_SHORT).show();
 		}
 		

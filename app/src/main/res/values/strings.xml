@@ -248,4 +248,10 @@
     <string name="cancel_reconnect">Cancel reconnect</string>
     <string name="attempting_reconnect">Error: %s.\n\nAttempting to reconnect.</string>
     <string name="change_requires_reconnect">A reconnect is required for this change to take effect.</string>
+    <string name="no_certificate">No Certificate</string>
+    <string name="certificates">Certificates</string>
+    <string name="decrypt_certificate">Decrypt Certificate</string>
+    <string name="password">Password</string>
+    <string name="invalid_certificate">Invalid certificate, could not load.</string>
+    <string name="certificate_load_failed">Failed to store certificate!</string>
 </resources>

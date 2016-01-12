@@ -363,4 +363,12 @@ public class Settings {
     public boolean shouldStayAwake() {
         return preferences.getBoolean(PREF_STAY_AWAKE, DEFAULT_STAY_AWAKE);
     }
+
+    public void setDefaultCertificateId(long defaultCertificateId) {
+        preferences.edit().putLong(PREF_CERT_ID, defaultCertificateId).apply();
+    }
+
+    public void disableCertificate() {
+        preferences.edit().putLong(PREF_CERT_ID, -1).apply();
+    }
 }

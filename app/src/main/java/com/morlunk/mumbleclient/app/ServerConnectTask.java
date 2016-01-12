@@ -74,8 +74,9 @@ public class ServerConnectTask extends AsyncTask<Server, Void, Intent> {
         connectIntent.putExtra(JumbleService.EXTRAS_TRANSMIT_MODE, inputMethod);
         connectIntent.putExtra(JumbleService.EXTRAS_DETECTION_THRESHOLD, mSettings.getDetectionThreshold());
         connectIntent.putExtra(JumbleService.EXTRAS_AMPLITUDE_BOOST, mSettings.getAmplitudeBoostMultiplier());
-        connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE, mSettings.getCertificate());
-        connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE_PASSWORD, mSettings.getCertificatePassword());
+        // FIXME(acomminos)
+//        connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE, mSettings.getCertificate());
+//        connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE_PASSWORD, mSettings.getCertificatePassword());
         connectIntent.putExtra(JumbleService.EXTRAS_AUTO_RECONNECT, mSettings.isAutoReconnectEnabled());
         connectIntent.putExtra(JumbleService.EXTRAS_AUTO_RECONNECT_DELAY, PlumbleService.RECONNECT_DELAY);
         connectIntent.putExtra(JumbleService.EXTRAS_USE_OPUS, !mSettings.isOpusDisabled());
@@ -98,6 +99,13 @@ public class ServerConnectTask extends AsyncTask<Server, Void, Intent> {
             connectIntent.putExtra(JumbleService.EXTRAS_LOCAL_MUTE_HISTORY, muteHistory);
             connectIntent.putExtra(JumbleService.EXTRAS_LOCAL_IGNORE_HISTORY, ignoreHistory);
         }
+
+
+        long certificateId = mSettings.getDefaultCertificate();
+        byte[] certificate = mDatabase.getCertificateData(certificateId);
+        if (certificate != null)
+            connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE, certificate);
+
         connectIntent.setAction(JumbleService.ACTION_CONNECT);
         return connectIntent;
     }

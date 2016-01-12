@@ -410,8 +410,7 @@ public class PlumbleService extends JumbleService implements
             case Settings.PREF_FRAMES_PER_PACKET:
                 changedExtras.putInt(EXTRAS_FRAMES_PER_PACKET, mSettings.getFramesPerPacket());
                 break;
-            case Settings.PREF_CERT:
-            case Settings.PREF_CERT_PASSWORD:
+            case Settings.PREF_CERT_ID:
             case Settings.PREF_FORCE_TCP:
             case Settings.PREF_USE_TOR:
             case Settings.PREF_DISABLE_OPUS:
