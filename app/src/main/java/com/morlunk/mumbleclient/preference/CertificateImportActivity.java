@@ -103,7 +103,7 @@ public class CertificateImportActivity extends Activity {
         try {
             keyStore = KeyStore.getInstance("PKCS12");
             keyStore.load(input, password);
-        } catch (IOException e) {
+        } catch (CertificateException e) {
             // A problem occurred when reading the stream; interpret this as a password being
             // required. Request a password from the user and reattempt decryption.
             // FIXME(acomminos): examine p12 file's SafeBags to determine the presence of a password
@@ -127,7 +127,7 @@ public class CertificateImportActivity extends Activity {
             });
             promptBuilder.show();
             return;
-        } catch (KeyStoreException|CertificateException|NoSuchAlgorithmException e) {
+        } catch (KeyStoreException|IOException|NoSuchAlgorithmException e) {
             e.printStackTrace();
             Toast.makeText(this, R.string.invalid_certificate, Toast.LENGTH_LONG).show();
             finish();
@@ -147,6 +147,9 @@ public class CertificateImportActivity extends Activity {
         PlumbleDatabase database = new PlumbleSQLiteDatabase(this);
         database.addCertificate(fileName, output.toByteArray());
         database.close();
+
+        Toast.makeText(this, getString(R.string.certificate_import_success, fileName),
+                       Toast.LENGTH_LONG).show();
         finish();
     }
 }

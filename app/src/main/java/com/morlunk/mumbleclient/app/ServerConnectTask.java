@@ -74,9 +74,6 @@ public class ServerConnectTask extends AsyncTask<Server, Void, Intent> {
         connectIntent.putExtra(JumbleService.EXTRAS_TRANSMIT_MODE, inputMethod);
         connectIntent.putExtra(JumbleService.EXTRAS_DETECTION_THRESHOLD, mSettings.getDetectionThreshold());
         connectIntent.putExtra(JumbleService.EXTRAS_AMPLITUDE_BOOST, mSettings.getAmplitudeBoostMultiplier());
-        // FIXME(acomminos)
-//        connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE, mSettings.getCertificate());
-//        connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE_PASSWORD, mSettings.getCertificatePassword());
         connectIntent.putExtra(JumbleService.EXTRAS_AUTO_RECONNECT, mSettings.isAutoReconnectEnabled());
         connectIntent.putExtra(JumbleService.EXTRAS_AUTO_RECONNECT_DELAY, PlumbleService.RECONNECT_DELAY);
         connectIntent.putExtra(JumbleService.EXTRAS_USE_OPUS, !mSettings.isOpusDisabled());
