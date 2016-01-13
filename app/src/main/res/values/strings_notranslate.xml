@@ -22,4 +22,5 @@
     <string name="default_server_port">64738</string>
     <string name="notification_message">%1$s: %2$s</string>
     <string name="certificate_export_format">plumble_%s.p12</string>
+    <string name="package_name">com.morlunk.mumbleclient</string>
 </resources>

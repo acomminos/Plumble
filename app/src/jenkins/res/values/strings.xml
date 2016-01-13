@@ -18,4 +18,5 @@
 
 <resources>
     <string name="app_name">Plumble Nightly</string>
+  <string name="package_name">com.morlunk.mumbleclient.jenkins</string>
 </resources>
