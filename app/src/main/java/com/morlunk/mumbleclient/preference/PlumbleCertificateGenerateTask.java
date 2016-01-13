@@ -22,11 +22,13 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.morlunk.jumble.net.JumbleCertificateGenerator;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.db.DatabaseCertificate;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.db.PlumbleSQLiteDatabase;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -54,15 +56,14 @@ public class PlumbleCertificateGenerateTask extends AsyncTask<Void, Void, Databa
 	@Override
 	protected DatabaseCertificate doInBackground(Void... params) {
 		try {
-			byte[] certificate =  PlumbleCertificateManager.generateCertificate();
-			if (certificate == null)
-				return null;
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			JumbleCertificateGenerator.generateCertificate(baos);
 
 			SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
 			String fileName = context.getString(R.string.certificate_export_format, dateFormat.format(new Date()));
 
 			PlumbleDatabase database = new PlumbleSQLiteDatabase(context);
-			DatabaseCertificate dc = database.addCertificate(fileName, certificate);
+			DatabaseCertificate dc = database.addCertificate(fileName, baos.toByteArray());
 			database.close();
 			return dc;
 		} catch (Exception e) {
