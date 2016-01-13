@@ -36,19 +36,18 @@ import java.util.List;
  * Created by andrew on 11/01/16.
  */
 public class CertificateSelectActivity extends Activity implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
-    private Settings mSettings;
     private List<ICertificateItem> mCertificates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mSettings = Settings.getInstance(this);
+        Settings settings = Settings.getInstance(this);
         mCertificates = new ArrayList<>();
-        mCertificates.add(new NoCertificateItem(getString(R.string.no_certificate), mSettings));
+        mCertificates.add(new NoCertificateItem(getString(R.string.no_certificate), settings));
         PlumbleDatabase database = new PlumbleSQLiteDatabase(this);
         for (DatabaseCertificate certificate : database.getCertificates()) {
-            mCertificates.add(new CertificateItem(certificate, mSettings));
+            mCertificates.add(new CertificateItem(certificate, settings));
         }
         database.close();
 

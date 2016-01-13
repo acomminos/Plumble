@@ -22,13 +22,23 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.media.AudioManager;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
+import android.widget.Toast;
 
 import com.morlunk.jumble.Constants;
+import com.morlunk.mumbleclient.db.DatabaseCertificate;
+import com.morlunk.mumbleclient.db.PlumbleSQLiteDatabase;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -161,6 +171,50 @@ public class Settings {
 
     private Settings(Context ctx) {
         preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+
+        // TODO(acomminos): Settings migration infra.
+        if (preferences.contains(PREF_CERT_DEPRECATED)) {
+            // Perform legacy certificate migration into PlumbleSQLiteDatabase.
+            Toast.makeText(ctx, R.string.migration_certificate_begin, Toast.LENGTH_LONG).show();
+            String certPath = preferences.getString(PREF_CERT_DEPRECATED, "");
+            String certPassword = preferences.getString(PREF_CERT_PASSWORD_DEPRECATED, "");
+
+            Log.d(com.morlunk.mumbleclient.Constants.TAG, "Migrating certificate from " + certPath);
+            try {
+                File certFile = new File(certPath);
+                FileInputStream certInput = new FileInputStream(certFile);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                KeyStore oldStore = KeyStore.getInstance("PKCS12");
+                oldStore.load(certInput, certPassword.toCharArray());
+                oldStore.store(outputStream, new char[0]);
+
+                PlumbleSQLiteDatabase database = new PlumbleSQLiteDatabase(ctx);
+                DatabaseCertificate certificate =
+                        database.addCertificate(certFile.getName(), outputStream.toByteArray());
+                database.close();
+
+                setDefaultCertificateId(certificate.getId());
+
+                Toast.makeText(ctx, R.string.migration_certificate_success, Toast.LENGTH_LONG).show();
+            } catch (KeyStoreException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                // We can safely ignore this; the only case in which we might still want to recover
+                // would be if the user's external storage is removed.
+            } catch (CertificateException e) {
+                // Likely caused due to stored password being incorrect.
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                preferences.edit()
+                        .remove(PREF_CERT_DEPRECATED)
+                        .remove(PREF_CERT_PASSWORD_DEPRECATED)
+                        .apply();
+            }
+
+        }
     }
 
     public String getInputMethod() {
