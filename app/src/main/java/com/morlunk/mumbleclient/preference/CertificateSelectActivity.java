@@ -59,6 +59,7 @@ public class CertificateSelectActivity extends Activity implements DialogInterfa
     public void onClick(DialogInterface dialog, int which) {
         ICertificateItem certificate = mCertificates.get(which);
         certificate.onActivate();
+        finish();
     }
 
     private void showCertificateSelectionDialog() {
@@ -75,7 +76,7 @@ public class CertificateSelectActivity extends Activity implements DialogInterfa
         dialogBuilder.setSingleChoiceItems(
                 new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice, mCertificates),
                 defaultCertificatePosition, this);
-        dialogBuilder.setPositiveButton(R.string.confirm, null);
+        dialogBuilder.setNegativeButton(android.R.string.cancel, null);
         AlertDialog dialog = dialogBuilder.show();
         dialog.setOnDismissListener(this);
     }
@@ -131,7 +132,7 @@ public class CertificateSelectActivity extends Activity implements DialogInterfa
 
         @Override
         public boolean isDefault() {
-            return mSettings.isUsingCertificate();
+            return !mSettings.isUsingCertificate();
         }
 
         @Override

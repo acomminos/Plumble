@@ -373,6 +373,6 @@ public class Settings {
     }
 
     public boolean isUsingCertificate() {
-        return getDefaultCertificate() < 0;
+        return getDefaultCertificate() >= 0;
     }
 }
