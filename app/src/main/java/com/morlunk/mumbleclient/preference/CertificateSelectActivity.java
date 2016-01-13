@@ -29,6 +29,7 @@ import com.morlunk.mumbleclient.db.DatabaseCertificate;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.db.PlumbleSQLiteDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,15 +37,19 @@ import java.util.List;
  */
 public class CertificateSelectActivity extends Activity implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
     private Settings mSettings;
-    private List<DatabaseCertificate> mCertificates;
+    private List<ICertificateItem> mCertificates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mSettings = Settings.getInstance(this);
+        mCertificates = new ArrayList<>();
+        mCertificates.add(new NoCertificateItem(getString(R.string.no_certificate), mSettings));
         PlumbleDatabase database = new PlumbleSQLiteDatabase(this);
-        mCertificates = database.getCertificates();
+        for (DatabaseCertificate certificate : database.getCertificates()) {
+            mCertificates.add(new CertificateItem(certificate, mSettings));
+        }
         database.close();
 
         showCertificateSelectionDialog();
@@ -52,16 +57,14 @@ public class CertificateSelectActivity extends Activity implements DialogInterfa
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        DatabaseCertificate certificate = mCertificates.get(which);
-        mSettings.setDefaultCertificateId(certificate.getId());
+        ICertificateItem certificate = mCertificates.get(which);
+        certificate.onActivate();
     }
 
     private void showCertificateSelectionDialog() {
-
-        long defaultCertificateId = mSettings.getDefaultCertificate();
         int defaultCertificatePosition = -1;
         for (int i = 0; i < mCertificates.size(); i++) {
-            if (mCertificates.get(i).getId() == defaultCertificateId) {
+            if (mCertificates.get(i).isDefault()) {
                 defaultCertificatePosition = i;
                 break;
             }
@@ -73,12 +76,6 @@ public class CertificateSelectActivity extends Activity implements DialogInterfa
                 new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice, mCertificates),
                 defaultCertificatePosition, this);
         dialogBuilder.setPositiveButton(R.string.confirm, null);
-        dialogBuilder.setNegativeButton(R.string.no_certificate, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mSettings.disableCertificate();
-            }
-        });
         AlertDialog dialog = dialogBuilder.show();
         dialog.setOnDismissListener(this);
     }
@@ -86,5 +83,60 @@ public class CertificateSelectActivity extends Activity implements DialogInterfa
     @Override
     public void onDismiss(DialogInterface dialog) {
         finish();
+    }
+
+    private interface ICertificateItem {
+        void onActivate();
+        boolean isDefault();
+    }
+
+    private static class CertificateItem implements ICertificateItem {
+        private final DatabaseCertificate mCertificate;
+        private final Settings mSettings;
+
+        public CertificateItem(DatabaseCertificate certificate, Settings settings) {
+            mCertificate = certificate;
+            mSettings = settings;
+        }
+
+        @Override
+        public void onActivate() {
+            mSettings.setDefaultCertificateId(mCertificate.getId());
+        }
+
+        @Override
+        public boolean isDefault() {
+            return mSettings.getDefaultCertificate() == mCertificate.getId();
+        }
+
+        @Override
+        public String toString() {
+            return mCertificate.getName();
+        }
+    }
+
+    private static class NoCertificateItem implements ICertificateItem {
+        private final String mText;
+        private final Settings mSettings;
+
+        public NoCertificateItem(String text, Settings settings) {
+            mText = text;
+            mSettings = settings;
+        }
+
+        @Override
+        public void onActivate() {
+            mSettings.disableCertificate();
+        }
+
+        @Override
+        public boolean isDefault() {
+            return mSettings.isUsingCertificate();
+        }
+
+        @Override
+        public String toString() {
+            return mText;
+        }
     }
 }

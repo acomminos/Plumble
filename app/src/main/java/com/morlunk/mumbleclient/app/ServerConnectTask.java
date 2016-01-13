@@ -97,11 +97,13 @@ public class ServerConnectTask extends AsyncTask<Server, Void, Intent> {
             connectIntent.putExtra(JumbleService.EXTRAS_LOCAL_IGNORE_HISTORY, ignoreHistory);
         }
 
-
-        long certificateId = mSettings.getDefaultCertificate();
-        byte[] certificate = mDatabase.getCertificateData(certificateId);
-        if (certificate != null)
-            connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE, certificate);
+        if (mSettings.isUsingCertificate()) {
+            long certificateId = mSettings.getDefaultCertificate();
+            byte[] certificate = mDatabase.getCertificateData(certificateId);
+            if (certificate != null)
+                connectIntent.putExtra(JumbleService.EXTRAS_CERTIFICATE, certificate);
+            // TODO(acomminos): handle the case where a certificate's data is unavailable.
+        }
 
         connectIntent.setAction(JumbleService.ACTION_CONNECT);
         return connectIntent;

@@ -371,4 +371,8 @@ public class Settings {
     public void disableCertificate() {
         preferences.edit().putLong(PREF_CERT_ID, -1).apply();
     }
+
+    public boolean isUsingCertificate() {
+        return getDefaultCertificate() < 0;
+    }
 }
