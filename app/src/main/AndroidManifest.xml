@@ -101,10 +101,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".preference.CertificateSelectActivity" />
-        <activity android:name=".preference.CertificateImportActivity" />
-        <activity android:name=".preference.CertificateExportActivity" />
-        <activity android:name=".preference.CertificateGenerateActivity" />
+        <activity android:name=".preference.CertificateSelectActivity" android:theme="@style/Base.Theme.AppCompat.Light.Dialog" />
+        <activity android:name=".preference.CertificateImportActivity" android:theme="@style/Base.Theme.AppCompat.Light.Dialog"/>
+        <activity android:name=".preference.CertificateExportActivity" android:theme="@style/Base.Theme.AppCompat.Light.Dialog"/>
+        <activity android:name=".preference.CertificateGenerateActivity" android:theme="@style/Base.Theme.AppCompat.Light.Dialog"/>
     </application>
 
 </manifest>
