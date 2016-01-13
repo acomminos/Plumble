@@ -19,17 +19,21 @@ package com.morlunk.mumbleclient.preference;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.db.DatabaseCertificate;
+import com.morlunk.mumbleclient.db.PlumbleDatabase;
+import com.morlunk.mumbleclient.db.PlumbleSQLiteDatabase;
 
-import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
-public class PlumbleCertificateGenerateTask extends AsyncTask<Void, Void, byte[]> {
-	
+public class PlumbleCertificateGenerateTask extends AsyncTask<Void, Void, DatabaseCertificate> {
+	private static final String DATE_FORMAT = "yyyy-MM-dd-HH-mm-ss";
+
 	private Context context;
 	private ProgressDialog loadingDialog;
 	
@@ -44,20 +48,23 @@ public class PlumbleCertificateGenerateTask extends AsyncTask<Void, Void, byte[]
 		loadingDialog = new ProgressDialog(context);
 		loadingDialog.setIndeterminate(true);
 		loadingDialog.setMessage(context.getString(R.string.generateCertProgress));
-		loadingDialog.setOnCancelListener(new OnCancelListener() {
-			
-			@Override
-			public void onCancel(DialogInterface arg0) {
-				cancel(true);
-				
-			}
-		});
+		loadingDialog.setCancelable(false);
 		loadingDialog.show();
 	}
 	@Override
-	protected byte[] doInBackground(Void... params) {
+	protected DatabaseCertificate doInBackground(Void... params) {
 		try {
-			return PlumbleCertificateManager.generateCertificate();
+			byte[] certificate =  PlumbleCertificateManager.generateCertificate();
+			if (certificate == null)
+				return null;
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
+			String fileName = context.getString(R.string.certificate_export_format, dateFormat.format(new Date()));
+
+			PlumbleDatabase database = new PlumbleSQLiteDatabase(context);
+			DatabaseCertificate dc = database.addCertificate(fileName, certificate);
+			database.close();
+			return dc;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -65,7 +72,7 @@ public class PlumbleCertificateGenerateTask extends AsyncTask<Void, Void, byte[]
 	}
 	
 	@Override
-	protected void onPostExecute(byte[] result) {
+	protected void onPostExecute(DatabaseCertificate result) {
 		super.onPostExecute(result);
 		if(result == null) {
 			Toast.makeText(context, R.string.generateCertFailure, Toast.LENGTH_SHORT).show();

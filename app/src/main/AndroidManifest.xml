@@ -104,6 +104,7 @@
         <activity android:name=".preference.CertificateSelectActivity" />
         <activity android:name=".preference.CertificateImportActivity" />
         <activity android:name=".preference.CertificateExportActivity" />
+        <activity android:name=".preference.CertificateGenerateActivity" />
     </application>
 
 </manifest>

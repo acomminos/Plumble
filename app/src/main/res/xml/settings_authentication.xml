@@ -21,7 +21,11 @@
     <Preference
         android:key="certificateGenerate"
         android:summary="@string/certificateGenerateSum"
-        android:title="@string/certificateGenerate" />
+        android:title="@string/certificateGenerate">
+        <intent
+            android:targetPackage="com.morlunk.mumbleclient"
+            android:targetClass="com.morlunk.mumbleclient.preference.CertificateGenerateActivity"/>
+    </Preference>
 
     <Preference
         android:summary="@string/pref_certificate_summary"

@@ -27,6 +27,7 @@ import android.widget.Button;
 
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
+import com.morlunk.mumbleclient.db.DatabaseCertificate;
 import com.morlunk.mumbleclient.preference.PlumbleCertificateGenerateTask;
 
 import java.io.File;
@@ -66,7 +67,7 @@ public class WizardCertificateFragment extends Fragment {
         final Settings settings = Settings.getInstance(getActivity());
         PlumbleCertificateGenerateTask task = new PlumbleCertificateGenerateTask(getActivity()) {
             @Override
-            protected void onPostExecute(byte[] result) {
+            protected void onPostExecute(DatabaseCertificate result) {
                 super.onPostExecute(result);
                 // FIXME(acomminos)
 //                settings.setCertificatePath(result.getAbsolutePath());

@@ -61,6 +61,7 @@ import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.channel.AccessTokenFragment;
 import com.morlunk.mumbleclient.channel.ChannelFragment;
 import com.morlunk.mumbleclient.channel.ServerInfoFragment;
+import com.morlunk.mumbleclient.db.DatabaseCertificate;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.db.PlumbleSQLiteDatabase;
@@ -449,25 +450,22 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
      * Will do nothing if it isn't the first launch.
      */
     private void showSetupWizard() {
-        // Prompt the user to generate a certificate, FIXME
-        // FIXME(acomminos)
-//        if(mSettings.isUsingCertificate()) return;
+        // Prompt the user to generate a certificate.
+        if(mSettings.isUsingCertificate()) return;
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle(R.string.first_run_generate_certificate_title);
         adb.setMessage(R.string.first_run_generate_certificate);
         adb.setPositiveButton(R.string.generate, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                /*
                 PlumbleCertificateGenerateTask generateTask = new PlumbleCertificateGenerateTask(PlumbleActivity.this) {
                     @Override
-                    protected void onPostExecute(File result) {
+                    protected void onPostExecute(DatabaseCertificate result) {
                         super.onPostExecute(result);
-                        if(result != null) mSettings.setCertificatePath(result.getAbsolutePath());
+                        if(result != null) mSettings.setDefaultCertificateId(result.getId());
                     }
                 };
                 generateTask.execute();
-                */
             }
         });
         adb.show();
