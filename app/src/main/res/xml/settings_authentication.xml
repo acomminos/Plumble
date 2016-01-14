@@ -22,39 +22,33 @@
         android:key="certificateGenerate"
         android:summary="@string/certificateGenerateSum"
         android:title="@string/certificateGenerate">
-        <intent
-            android:targetPackage="com.morlunk.mumbleclient"
-            android:targetClass="com.morlunk.mumbleclient.preference.CertificateGenerateActivity"/>
+        <intent android:action="com.morlunk.mumbleclient.app.CERTIFICATE_GENERATE" />
     </Preference>
 
     <Preference
         android:summary="@string/pref_certificate_summary"
         android:title="@string/pref_certificate_title">
-        <intent
-            android:targetPackage="com.morlunk.mumbleclient"
-            android:targetClass="com.morlunk.mumbleclient.preference.CertificateSelectActivity"/>
+        <intent android:action="com.morlunk.mumbleclient.app.CERTIFICATE_SELECT" />
     </Preference>
 
     <Preference
         android:summary="@string/pref_import_certificate_summary"
         android:title="@string/pref_import_certificate_title">
-        <intent
-            android:targetPackage="com.morlunk.mumbleclient"
-            android:targetClass="com.morlunk.mumbleclient.preference.CertificateImportActivity" />
+        <intent android:action="com.morlunk.mumbleclient.app.CERTIFICATE_IMPORT" />
     </Preference>
 
     <Preference
         android:summary="@string/pref_export_certificate_summary"
         android:title="@string/pref_export_certificate_title">
-        <intent
-            android:targetPackage="com.morlunk.mumbleclient"
-            android:targetClass="com.morlunk.mumbleclient.preference.CertificateExportActivity" />
+        <intent android:action="com.morlunk.mumbleclient.app.CERTIFICATE_EXPORT" />
     </Preference>
 
     <Preference
         android:key="clearTrust"
         android:title="@string/clearServerCertificates"
-        android:summary="@string/clearServerCertificatesSum"/>
+        android:summary="@string/clearServerCertificatesSum">
+        <intent android:action="com.morlunk.mumbleclient.app.CLEAR_SERVER_CERTIFICATES" />
+    </Preference>
 
     <EditTextPreference
         android:key="defaultUsername"

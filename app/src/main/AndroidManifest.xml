@@ -101,10 +101,41 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".preference.CertificateSelectActivity" android:theme="@style/Base.Theme.AppCompat.Light.Dialog" />
-        <activity android:name=".preference.CertificateImportActivity" android:theme="@style/Base.Theme.AppCompat.Light.Dialog"/>
-        <activity android:name=".preference.CertificateExportActivity" android:theme="@style/Base.Theme.AppCompat.Light.Dialog"/>
-        <activity android:name=".preference.CertificateGenerateActivity" android:theme="@style/Base.Theme.AppCompat.Light.Dialog"/>
+        <activity android:name=".preference.CertificateSelectActivity"
+                  android:theme="@style/Base.Theme.AppCompat.Light.Dialog">
+            <intent-filter>
+                <action android:name="com.morlunk.mumbleclient.app.CERTIFICATE_SELECT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".preference.CertificateImportActivity"
+                  android:theme="@style/Base.Theme.AppCompat.Light.Dialog">
+            <intent-filter>
+                <action android:name="com.morlunk.mumbleclient.app.CERTIFICATE_IMPORT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".preference.CertificateExportActivity"
+                  android:theme="@style/Base.Theme.AppCompat.Light.Dialog">
+            <intent-filter>
+                <action android:name="com.morlunk.mumbleclient.app.CERTIFICATE_EXPORT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".preference.CertificateGenerateActivity"
+                  android:theme="@style/Base.Theme.AppCompat.Light.Dialog">
+            <intent-filter>
+                <action android:name="com.morlunk.mumbleclient.app.CERTIFICATE_GENERATE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".preference.ServerCertificateClearActivity"
+                  android:theme="@style/Base.Theme.AppCompat.Light.Dialog">
+            <intent-filter>
+                <action android:name="com.morlunk.mumbleclient.app.CLEAR_SERVER_CERTIFICATES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
