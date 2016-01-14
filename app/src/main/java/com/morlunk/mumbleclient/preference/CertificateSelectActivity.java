@@ -73,7 +73,7 @@ public class CertificateSelectActivity extends Activity implements DialogInterfa
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder.setTitle(R.string.pref_certificate_title);
         dialogBuilder.setSingleChoiceItems(
-                new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice, mCertificates),
+                new ArrayAdapter<>(this, R.layout.list_certificate_item, mCertificates),
                 defaultCertificatePosition, this);
         dialogBuilder.setNegativeButton(android.R.string.cancel, null);
         AlertDialog dialog = dialogBuilder.show();
