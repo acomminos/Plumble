@@ -23,7 +23,7 @@
         android:summary="@string/certificateGenerateSum"
         android:title="@string/certificateGenerate">
         <intent
-            android:targetPackage="@string/package_name"
+            android:targetPackage="com.morlunk.mumbleclient"
             android:targetClass="com.morlunk.mumbleclient.preference.CertificateGenerateActivity"/>
     </Preference>
 
@@ -31,7 +31,7 @@
         android:summary="@string/pref_certificate_summary"
         android:title="@string/pref_certificate_title">
         <intent
-            android:targetPackage="@string/package_name"
+            android:targetPackage="com.morlunk.mumbleclient"
             android:targetClass="com.morlunk.mumbleclient.preference.CertificateSelectActivity"/>
     </Preference>
 
@@ -39,7 +39,7 @@
         android:summary="@string/pref_import_certificate_summary"
         android:title="@string/pref_import_certificate_title">
         <intent
-            android:targetPackage="@string/package_name"
+            android:targetPackage="com.morlunk.mumbleclient"
             android:targetClass="com.morlunk.mumbleclient.preference.CertificateImportActivity" />
     </Preference>
 
@@ -47,7 +47,7 @@
         android:summary="@string/pref_export_certificate_summary"
         android:title="@string/pref_export_certificate_title">
         <intent
-            android:targetPackage="@string/package_name"
+            android:targetPackage="com.morlunk.mumbleclient"
             android:targetClass="com.morlunk.mumbleclient.preference.CertificateExportActivity" />
     </Preference>
 

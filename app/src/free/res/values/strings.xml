@@ -18,5 +18,4 @@
 
 <resources>
     <string name="app_name">Plumble Free</string>
-    <string name="package_name">com.morlunk.mumbleclient.free</string>
 </resources>
