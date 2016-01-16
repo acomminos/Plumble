@@ -39,6 +39,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,6 +53,7 @@ import android.widget.Toast;
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Server;
+import com.morlunk.jumble.protobuf.Mumble;
 import com.morlunk.jumble.util.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.jumble.util.MumbleURLParser;
@@ -637,6 +639,37 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                                     getService().cancelReconnect();
                                     getService().markErrorShown();
                                 }
+                            }
+                        });
+                    } else if (error.getReason() == JumbleException.JumbleDisconnectReason.REJECT &&
+                               (error.getReject().getType() == Mumble.Reject.RejectType.WrongUserPW ||
+                                error.getReject().getType() == Mumble.Reject.RejectType.WrongServerPW)) {
+                        // FIXME(acomminos): Long conditional.
+                        final EditText passwordField = new EditText(this);
+                        passwordField.setInputType(InputType.TYPE_CLASS_TEXT |
+                                InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        passwordField.setHint(R.string.password);
+                        ab.setTitle(R.string.invalid_password);
+                        ab.setMessage(error.getMessage());
+                        ab.setView(passwordField);
+                        ab.setPositiveButton(R.string.reconnect, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Server server = getService().getConnectedServer();
+                                if (server == null)
+                                    return;
+                                String password = passwordField.getText().toString();
+                                server.setPassword(password);
+                                if (server.isSaved())
+                                    mDatabase.updateServer(server);
+                                connectToServer(server);
+                            }
+                        });
+                        ab.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (getService() != null)
+                                    getService().markErrorShown();
                             }
                         });
                     } else {
