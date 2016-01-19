@@ -5,9 +5,12 @@ android:
     - build-tools-19.1.0
     - android-21
 before_install:
+  # Fetch the NDK.
   - wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin
   - chmod +x ndk.bin
   - ./ndk.bin -y > /dev/null
+  # Recursively fetch submodules before building codecs.
+  - git submodule update --init --recursive
 script:
   - ./android-ndk-r10e/ndk-build -C libraries/Jumble/src/main/jni/
   - ./gradlew assembleNightly
