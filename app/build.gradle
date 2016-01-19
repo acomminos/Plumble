@@ -32,8 +32,6 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
-apply from: '../libraries/Leeroy-Gradle/leeroy.gradle'
-
 repositories {
     mavenCentral()
 }
@@ -68,8 +66,6 @@ android {
         buildConfigField "boolean", "DONATE_NAG", "false"
     }
 
-    setupLeeroy("../libraries/Leeroy-Gradle", ".*\\.apk")
-
     productFlavors {
 
         official {
@@ -81,17 +77,17 @@ android {
             buildConfigField "boolean", "DONATE_NAG", "true"
         }
 
-        jenkins {
-            // Abuse Jenkins environment variables. Neat.
+        nightly {
+            // Abuse Travis environment variables. Neat.
             def env = System.getenv()
-            if (env.containsKey("BUILD_NUMBER") && env.containsKey("BUILD_DISPLAY_NAME")) {
-                versionCode Integer.parseInt(env.get("BUILD_NUMBER"))
-                versionName env.get("BUILD_DISPLAY_NAME")
+            if (env.get("TRAVIS")) {
+                versionCode Integer.parseInt(env.get("TRAVIS_BUILD_NUMBER"))
+                versionName env.get("TRAVIS_COMMIT")
             } else {
                 versionCode 0
                 versionName "Unknown Nightly"
             }
-            applicationId "com.morlunk.mumbleclient.jenkins"
+            applicationId "com.morlunk.mumbleclient.nightly"
         }
     }
 
