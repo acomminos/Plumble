@@ -53,6 +53,14 @@
         android:padding="10dp"/>
 
     <ImageView
+        android:id="@+id/channel_row_join"
+        android:layout_width="32dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_action_move"
+        android:tint="?android:attr/textColorSecondary"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
+
+    <ImageView
         android:id="@+id/channel_row_more"
         android:layout_width="32dp"
         android:layout_height="match_parent"

@@ -165,6 +165,13 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
                     cvh.mChannelHolder.getPaddingRight(),
                     cvh.mChannelHolder.getPaddingBottom());
 
+            cvh.mJoinButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mService.joinChannel(channel.getId());
+                }
+            });
+
             cvh.mMoreButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -468,6 +475,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
         public ImageView mChannelExpandToggle;
         public TextView mChannelName;
         public TextView mChannelUserCount;
+        public ImageView mJoinButton;
         public ImageView mMoreButton;
 
         public ChannelViewHolder(View itemView) {
@@ -476,6 +484,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
             mChannelExpandToggle = (ImageView) itemView.findViewById(R.id.channel_row_expand);
             mChannelName = (TextView) itemView.findViewById(R.id.channel_row_name);
             mChannelUserCount = (TextView) itemView.findViewById(R.id.channel_row_count);
+            mJoinButton = (ImageView) itemView.findViewById(R.id.channel_row_join);
             mMoreButton = (ImageView) itemView.findViewById(R.id.channel_row_more);
         }
     }
