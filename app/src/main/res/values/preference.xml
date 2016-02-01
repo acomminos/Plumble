@@ -127,4 +127,6 @@
     <string name="pref_import_certificate_summary">Import a certificate from external storage.</string>
     <string name="pref_export_certificate_title">Export Certificate</string>
     <string name="pref_export_certificate_summary">Exports a certificate to external storage.</string>
+    <string name="pref_show_user_count">Show Channel User Count</string>
+    <string name="pref_show_user_count_summary">Show a counter with the number of users in a channel subtree.</string>
 </resources>

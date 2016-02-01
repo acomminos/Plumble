@@ -23,11 +23,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.CursorWrapper;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
@@ -48,10 +50,11 @@ import com.morlunk.jumble.util.IJumbleObserver;
 import com.morlunk.jumble.util.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
+import com.morlunk.mumbleclient.Settings;
 import com.morlunk.mumbleclient.db.DatabaseProvider;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 
-public class ChannelListFragment extends JumbleServiceFragment implements OnChannelClickListener, OnUserClickListener {
+public class ChannelListFragment extends JumbleServiceFragment implements OnChannelClickListener, OnUserClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
 	private IJumbleObserver mServiceObserver = new JumbleObserver() {
         @Override
@@ -128,6 +131,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
     private ChatTargetProvider mTargetProvider;
     private DatabaseProvider mDatabaseProvider;
     private ActionMode mActionMode;
+    private Settings mSettings;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -148,6 +152,9 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString()+" must implement DatabaseProvider");
         }
+        mSettings = Settings.getInstance(activity);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        preferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -171,6 +178,13 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
     public void onDetach() {
         getActivity().unregisterReceiver(mBluetoothReceiver);
         super.onDetach();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        preferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -294,7 +308,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
     private void setupChannelList() throws RemoteException {
         mChannelListAdapter = new ChannelListAdapter(getActivity(), getService(),
                 mDatabaseProvider.getDatabase(), getChildFragmentManager(),
-                isShowingPinnedChannels());
+                isShowingPinnedChannels(), mSettings.shouldShowUserCount());
         mChannelListAdapter.setOnChannelClickListener(this);
         mChannelListAdapter.setOnUserClickListener(this);
         mChannelView.setAdapter(mChannelListAdapter);
@@ -354,6 +368,13 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
                 }
             };
             mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(cb);
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (Settings.PREF_SHOW_USER_COUNT.equals(key) && mChannelListAdapter != null) {
+            mChannelListAdapter.setShowChannelUserCount(mSettings.shouldShowUserCount());
         }
     }
 }

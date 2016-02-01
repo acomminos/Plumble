@@ -156,6 +156,9 @@ public class Settings {
     public static final String PREF_STAY_AWAKE = "stay_awake";
     public static final boolean DEFAULT_STAY_AWAKE = false;
 
+    public static final String PREF_SHOW_USER_COUNT = "show_user_count";
+    public static final boolean DEFAULT_SHOW_USER_COUNT = false;
+
     static {
         ARRAY_INPUT_METHODS = new HashSet<String>();
         ARRAY_INPUT_METHODS.add(ARRAY_INPUT_METHOD_VOICE);
@@ -428,5 +431,12 @@ public class Settings {
 
     public boolean isUsingCertificate() {
         return getDefaultCertificate() >= 0;
+    }
+
+    /**
+     * @return true if the user count should be shown next to channels.
+     */
+    public boolean shouldShowUserCount() {
+        return preferences.getBoolean(PREF_SHOW_USER_COUNT, DEFAULT_SHOW_USER_COUNT);
     }
 }

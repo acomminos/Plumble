@@ -25,6 +25,12 @@
         android:key="theme"
         android:summary="@string/themeSum"
         android:title="@string/theme" />
+
+    <CheckBoxPreference
+        android:key="show_user_count"
+        android:defaultValue="false"
+        android:title="@string/pref_show_user_count"
+        android:summary="@string/pref_show_user_count_summary" />
     <!--
     <ListPreference
         android:defaultValue="35"

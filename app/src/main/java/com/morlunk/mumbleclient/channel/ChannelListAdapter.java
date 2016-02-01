@@ -84,15 +84,18 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
     private HashMap<Integer, Boolean> mExpandedChannels;
     private OnUserClickListener mUserClickListener;
     private OnChannelClickListener mChannelClickListener;
+    private boolean mShowChannelUserCount;
     private final FragmentManager mFragmentManager;
 
     public ChannelListAdapter(Context context, IJumbleService service, PlumbleDatabase database,
-                              FragmentManager fragmentManager, boolean showPinnedOnly) throws RemoteException {
+                              FragmentManager fragmentManager, boolean showPinnedOnly,
+                              boolean showChannelUserCount) throws RemoteException {
         setHasStableIds(true);
         mContext = context;
         mService = service;
         mDatabase = database;
         mFragmentManager = fragmentManager;
+        mShowChannelUserCount = showChannelUserCount;
 
         mRootChannels = new ArrayList<Integer>();
         if(showPinnedOnly) {
@@ -154,8 +157,13 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
 
             cvh.mChannelName.setText(channel.getName());
 
-            int userCount = channel.getSubchannelUserCount();
-            cvh.mChannelUserCount.setText(String.format("%d", userCount));
+            if (mShowChannelUserCount) {
+                cvh.mChannelUserCount.setVisibility(View.VISIBLE);
+                int userCount = channel.getSubchannelUserCount();
+                cvh.mChannelUserCount.setText(String.format("%d", userCount));
+            } else {
+                cvh.mChannelUserCount.setVisibility(View.GONE);
+            }
 
             // Pad the view depending on channel's nested level.
             DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
@@ -384,6 +392,14 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
 
     public void setOnChannelClickListener(OnChannelClickListener listener) {
         mChannelClickListener = listener;
+    }
+
+    /**
+     * Sets whether to show the channel user count in a channel row.
+     */
+    public void setShowChannelUserCount(boolean showUserCount) {
+        mShowChannelUserCount = showUserCount;
+        notifyDataSetChanged();
     }
 
     /**
