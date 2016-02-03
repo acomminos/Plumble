@@ -50,7 +50,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import info.guardianproject.onionkit.ui.OrbotHelper;
+import info.guardianproject.netcipher.proxy.OrbotHelper;
 
 /**
  * This entire class is a mess.
@@ -106,9 +106,8 @@ public class Preferences extends PreferenceActivity {
     }
 
     private static void configureOrbotPreferences(PreferenceScreen screen) {
-        OrbotHelper orbotHelper = new OrbotHelper(screen.getContext());
         Preference useOrbotPreference = screen.findPreference(USE_TOR_KEY);
-        useOrbotPreference.setEnabled(orbotHelper.isOrbotInstalled());
+        useOrbotPreference.setEnabled(OrbotHelper.isOrbotInstalled(screen.getContext()));
     }
 
     private static void configureAudioPreferences(final PreferenceScreen screen) {

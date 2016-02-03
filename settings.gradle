@@ -21,4 +21,4 @@
 
 
 
-include ':libraries:NetCipher:libnetcipher', ':libraries:Jumble', ':app'
+include ':libraries:Jumble', ':app'

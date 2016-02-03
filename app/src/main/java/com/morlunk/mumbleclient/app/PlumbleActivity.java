@@ -92,7 +92,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import info.guardianproject.onionkit.ui.OrbotHelper;
+import info.guardianproject.netcipher.proxy.OrbotHelper;
 
 public class PlumbleActivity extends ActionBarActivity implements ListView.OnItemClickListener,
         FavouriteServerListFragment.ServerConnectHandler, JumbleServiceProvider, DatabaseProvider,
@@ -546,10 +546,10 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         }
 
         // Prompt to start Orbot if enabled but not running
+        // TODO(acomminos): possibly detect onion address before connecting?
         if (mSettings.isTorEnabled()) {
-            OrbotHelper orbotHelper = new OrbotHelper(this);
-            if (!orbotHelper.isOrbotRunning()) {
-                orbotHelper.requestOrbotStart(this);
+            if (!OrbotHelper.isOrbotRunning(this)) {
+                OrbotHelper.requestShowOrbotStart(this);
                 return;
             }
         }
