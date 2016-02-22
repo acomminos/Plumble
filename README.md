@@ -16,7 +16,6 @@ Building on GNU/Linux
 ---------------------
 
     git submodule update --init --recursive
-    ndk-build -C libraries/Jumble/src/main/jni/
     ./gradlew assembleDebug
 
 It's that simple!
