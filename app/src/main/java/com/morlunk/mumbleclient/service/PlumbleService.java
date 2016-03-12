@@ -516,6 +516,11 @@ public class PlumbleService extends JumbleService implements
 
     public void markErrorShown() {
         mErrorShown = true;
+        // Dismiss the reconnection prompt if a reconnection isn't in progress.
+        if (mReconnectNotification != null && !isReconnecting()) {
+            mReconnectNotification.hide();
+            mReconnectNotification = null;
+        }
     }
 
     public boolean isErrorShown() {
