@@ -35,6 +35,8 @@ import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.db.PlumbleSQLiteDatabase;
 
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -101,7 +103,7 @@ public class CertificateImportActivity extends Activity {
     private void storeKeystore(final char[] password, final String fileName, final InputStream input) {
         KeyStore keyStore;
         try {
-            keyStore = KeyStore.getInstance("PKCS12");
+            keyStore = KeyStore.getInstance("PKCS12", new BouncyCastleProvider());
             keyStore.load(input, password);
         } catch (CertificateException e) {
             // A problem occurred when reading the stream; interpret this as a password being
