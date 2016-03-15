@@ -30,6 +30,8 @@ import com.morlunk.jumble.Constants;
 import com.morlunk.mumbleclient.db.DatabaseCertificate;
 import com.morlunk.mumbleclient.db.PlumbleSQLiteDatabase;
 
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -187,7 +189,7 @@ public class Settings {
                 File certFile = new File(certPath);
                 FileInputStream certInput = new FileInputStream(certFile);
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                KeyStore oldStore = KeyStore.getInstance("PKCS12");
+                KeyStore oldStore = KeyStore.getInstance("PKCS12", new BouncyCastleProvider());
                 oldStore.load(certInput, certPassword.toCharArray());
                 oldStore.store(outputStream, new char[0]);
 
