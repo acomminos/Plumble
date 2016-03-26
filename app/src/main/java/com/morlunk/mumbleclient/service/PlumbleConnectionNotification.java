@@ -37,7 +37,7 @@ import java.util.List;
  * Wrapper to create Plumble notifications.
  * Created by andrew on 08/08/14.
  */
-public class PlumbleNotification {
+public class PlumbleConnectionNotification {
     private static final int NOTIFICATION_ID = 1;
     private static final String BROADCAST_MUTE = "b_mute";
     private static final String BROADCAST_DEAFEN = "b_deafen";
@@ -45,7 +45,6 @@ public class PlumbleNotification {
 
     private Service mService;
     private OnActionListener mListener;
-    private List<String> mMessages;
     private String mCustomTicker;
     private String mCustomContentText;
     private boolean mActionsShown;
@@ -69,18 +68,17 @@ public class PlumbleNotification {
      * @param listener An listener for notification actions.
      * @return A new PlumbleNotification instance.
      */
-    public static PlumbleNotification showForeground(Service service, String ticker, String contentText,
+    public static PlumbleConnectionNotification showForeground(Service service, String ticker, String contentText,
                                                      OnActionListener listener) {
-        PlumbleNotification notification = new PlumbleNotification(service, ticker, contentText, listener);
+        PlumbleConnectionNotification notification = new PlumbleConnectionNotification(service, ticker, contentText, listener);
         notification.show();
         return notification;
     }
 
-    private PlumbleNotification(Service service, String ticker, String contentText,
-                                OnActionListener listener) {
+    private PlumbleConnectionNotification(Service service, String ticker, String contentText,
+                                          OnActionListener listener) {
         mService = service;
         mListener = listener;
-        mMessages = new ArrayList<String>();
         mCustomTicker = ticker;
         mCustomContentText = contentText;
         mActionsShown = false;
@@ -96,20 +94,6 @@ public class PlumbleNotification {
 
     public void setActionsShown(boolean actionsShown) {
         mActionsShown = actionsShown;
-    }
-
-    /**
-     * Updates the notification with the given message.
-     * Sets the ticker to the current message as well.
-     * @param message The message to notify.
-     */
-    public void addMessage(String message) {
-        mMessages.add(message);
-        mCustomTicker = message;
-    }
-
-    public void clearMessages() {
-        mMessages.clear();
     }
 
     /**
@@ -148,11 +132,10 @@ public class PlumbleNotification {
      */
     private Notification createNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mService);
-        builder.setSmallIcon(R.drawable.ic_stat_notify);
-        builder.setTicker(mCustomTicker);
         builder.setContentTitle(mService.getString(R.string.app_name));
         builder.setContentText(mCustomContentText);
-        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+        builder.setSmallIcon(R.drawable.ic_stat_notify);
+        builder.setPriority(NotificationCompat.PRIORITY_MIN);
         builder.setOngoing(true);
 
         if (mActionsShown) {
@@ -172,15 +155,6 @@ public class PlumbleNotification {
                             overlayIntent, PendingIntent.FLAG_CANCEL_CURRENT));
         }
 
-        // Show unread messages
-        if (mMessages.size() > 0) {
-            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-            for (String message : mMessages) {
-                inboxStyle.addLine(message);
-            }
-            builder.setStyle(inboxStyle);
-        }
-
         Intent channelListIntent = new Intent(mService, PlumbleActivity.class);
         channelListIntent.putExtra(PlumbleActivity.EXTRA_DRAWER_FRAGMENT, DrawerAdapter.ITEM_SERVER);
         // FLAG_CANCEL_CURRENT ensures that the extra always gets sent.
@@ -193,8 +167,8 @@ public class PlumbleNotification {
     }
 
     public interface OnActionListener {
-        public void onMuteToggled();
-        public void onDeafenToggled();
-        public void onOverlayToggled();
+        void onMuteToggled();
+        void onDeafenToggled();
+        void onOverlayToggled();
     }
 }
