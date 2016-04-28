@@ -121,6 +121,19 @@ public class ChannelMenu implements PermissionsPopupMenu.IOnMenuPrepareListener,
                 if(!pinned) mDatabase.addPinnedChannel(serverId, mChannel.getId());
                 else mDatabase.removePinnedChannel(serverId, mChannel.getId());
                 break;
+            case R.id.context_channel_link: {
+                IChannel channel = mService.getSessionChannel();
+                mService.linkChannels(channel, mChannel);
+                break;
+            }
+            case R.id.context_channel_unlink: {
+                IChannel channel = mService.getSessionChannel();
+                mService.unlinkChannels(channel, mChannel);
+                break;
+            }
+            case R.id.context_channel_unlink_all:
+                mService.unlinkAllChannels(mChannel);
+                break;
             default:
                 return false;
         }

@@ -36,6 +36,15 @@
         android:title="@string/remove"
         app:showAsAction="never"
         />
+    <item android:id="@+id/context_channel_link"
+          android:title="@string/context_channel_link"
+        />
+    <item android:id="@+id/context_channel_unlink"
+          android:title="@string/context_channel_unlink"
+        />
+    <item android:id="@+id/context_channel_unlink_all"
+          android:title="@string/context_channel_unlink_all"
+        />
     <item android:id="@+id/context_channel_view_description"
         android:title="@string/channel_menu_view_description"
         app:showAsAction="never"
