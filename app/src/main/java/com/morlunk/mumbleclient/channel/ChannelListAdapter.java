@@ -43,6 +43,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.Server;
@@ -156,6 +157,23 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
             cvh.mChannelExpandToggle.setVisibility(expandUsable ? View.VISIBLE : View.INVISIBLE);
 
             cvh.mChannelName.setText(channel.getName());
+
+            int nameTypeface = Typeface.NORMAL;
+            if (mService != null &&
+                    mService.getConnectionState() == JumbleService.ConnectionState.CONNECTED) {
+                if (channel.equals(mService.getSessionChannel())) {
+                    nameTypeface |= Typeface.BOLD;
+                    // Always italicize our current channel if it has a link.
+                    if (channel.getLinks().size() > 0) {
+                        nameTypeface |= Typeface.ITALIC;
+                    }
+                }
+                // Italicize channels in a link with our current channel.
+                if (channel.getLinks().contains(mService.getSessionChannel())) {
+                    nameTypeface |= Typeface.ITALIC;
+                }
+            }
+            cvh.mChannelName.setTypeface(null, nameTypeface);
 
             if (mShowChannelUserCount) {
                 cvh.mChannelUserCount.setVisibility(View.VISIBLE);
