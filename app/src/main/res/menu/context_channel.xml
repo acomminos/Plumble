@@ -37,10 +37,8 @@
         app:showAsAction="never"
         />
     <item android:id="@+id/context_channel_link"
-          android:title="@string/context_channel_link"
-        />
-    <item android:id="@+id/context_channel_unlink"
-          android:title="@string/context_channel_unlink"
+          android:title="@string/context_channel_linked"
+          android:checkable="true"
         />
     <item android:id="@+id/context_channel_unlink_all"
           android:title="@string/context_channel_unlink_all"

@@ -73,6 +73,8 @@ public class ChannelMenu implements PermissionsPopupMenu.IOnMenuPrepareListener,
             menu.findItem(R.id.context_channel_pin)
                     .setChecked(mDatabase.isChannelPinned(server.getId(), mChannel.getId()));
         }
+        menu.findItem(R.id.context_channel_link)
+                .setChecked(mChannel.getLinks().contains(mService.getSessionChannel()));
     }
 
     @Override
@@ -123,12 +125,11 @@ public class ChannelMenu implements PermissionsPopupMenu.IOnMenuPrepareListener,
                 break;
             case R.id.context_channel_link: {
                 IChannel channel = mService.getSessionChannel();
-                mService.linkChannels(channel, mChannel);
-                break;
-            }
-            case R.id.context_channel_unlink: {
-                IChannel channel = mService.getSessionChannel();
-                mService.unlinkChannels(channel, mChannel);
+                if (!item.isChecked()) {
+                    mService.linkChannels(channel, mChannel);
+                } else {
+                    mService.unlinkChannels(channel, mChannel);
+                }
                 break;
             }
             case R.id.context_channel_unlink_all:
