@@ -260,6 +260,6 @@
     <string name="error_writing_to_storage">Error writing to external storage.</string>
     <string name="export_success">Exported certificate to \'%s\'.</string>
     <string name="notification_unread_many">%d new messages</string>
-    <string name="context_channel_linked">Linked</string>
+    <string name="context_channel_link">Link</string>
     <string name="context_channel_unlink_all">Unlink All</string>
 </resources>
