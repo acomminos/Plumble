@@ -262,4 +262,10 @@
     <string name="notification_unread_many">%d new messages</string>
     <string name="context_channel_link">Link</string>
     <string name="context_channel_unlink_all">Unlink All</string>
+    <string name="context_channel_shout">Set Voice Target</string>
+    <string name="shout_include_linked">Shout to linked channels</string>
+    <string name="shout_include_subchannels">Shout to subchannels</string>
+    <string name="shout_failed">Failed to create voice target!</string>
+    <string name="shout_target">Shouting to %s</string>
+    <string name="shout_configure">Configure Voice Target</string>
 </resources>

@@ -35,18 +35,48 @@
             android:layout_gravity="top"/>
     </android.support.v4.view.ViewPager>
 
+    <FrameLayout
+        android:id="@+id/target_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimaryDark">
+
+        <TextView
+            android:id="@+id/target_panel_warning"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Shouting to Channel"
+            android:textSize="6pt"
+            android:textColor="?android:textColorPrimaryInverse"
+            android:ellipsize="marquee"
+            android:maxLines="1"
+            android:gravity="left|center_vertical"
+            android:textStyle="italic"
+            android:padding="8dp"/>
+
+        <ImageView
+            android:id="@+id/target_panel_cancel"
+            android:layout_width="24dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_action_delete_dark"
+            android:tint="?android:textColorPrimaryInverse"
+            android:layout_gravity="center_vertical|end"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+
+    </FrameLayout>
+
     <LinearLayout
         android:id="@+id/pushtotalk_view"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:background="?attr/colorPrimary">
 
         <Button
             android:id="@+id/pushtotalk"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="50dp"
             android:text="@string/ptt"
             android:textColor="?android:attr/textColorPrimaryInverse"
             android:textStyle="bold"

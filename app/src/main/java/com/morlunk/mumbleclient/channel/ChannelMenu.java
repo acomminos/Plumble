@@ -30,11 +30,17 @@ import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.Server;
+import com.morlunk.jumble.model.WhisperTargetChannel;
 import com.morlunk.jumble.net.Permissions;
+import com.morlunk.jumble.util.VoiceTargetMode;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.channel.comment.ChannelDescriptionFragment;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
@@ -135,6 +141,48 @@ public class ChannelMenu implements PermissionsPopupMenu.IOnMenuPrepareListener,
             case R.id.context_channel_unlink_all:
                 mService.unlinkAllChannels(mChannel);
                 break;
+            case R.id.context_channel_shout: {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle(R.string.shout_configure);
+                LinearLayout layout = new LinearLayout(mContext);
+                layout.setOrientation(LinearLayout.VERTICAL);
+
+                final CheckBox subchannelBox = new CheckBox(mContext);
+                subchannelBox.setText(R.string.shout_include_subchannels);
+                layout.addView(subchannelBox);
+
+                final CheckBox linkedBox = new CheckBox(mContext);
+                linkedBox.setText(R.string.shout_include_linked);
+                layout.addView(linkedBox);
+
+                builder.setView(layout);
+                builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (mService == null ||
+                            mService.getConnectionState() != JumbleService.ConnectionState.CONNECTED)
+                            return;
+
+                        // Unregister any existing voice target.
+                        if (mService.getVoiceTargetMode() == VoiceTargetMode.WHISPER) {
+                            mService.unregisterWhisperTarget(mService.getVoiceTargetId());
+                        }
+
+                        WhisperTargetChannel channelTarget = new WhisperTargetChannel(mChannel,
+                                linkedBox.isChecked(), subchannelBox.isChecked(), null);
+                        byte id = mService.registerWhisperTarget(channelTarget);
+                        if (id > 0) {
+                            mService.setVoiceTargetId(id);
+                        } else {
+                            Toast.makeText(mContext, R.string.shout_failed, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                builder.setNegativeButton(android.R.string.cancel, null);
+                builder.show();
+
+                break;
+            }
             default:
                 return false;
         }
