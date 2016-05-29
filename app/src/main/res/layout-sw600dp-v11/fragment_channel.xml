@@ -52,12 +52,49 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
+
+        <FrameLayout
+            android:id="@+id/target_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#dadada"
+                android:layout_gravity="top"/>
+
+            <TextView
+                android:id="@+id/target_panel_warning"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Shouting to Channel"
+                android:textSize="6pt"
+                android:textColor="?android:textColorPrimary"
+                android:ellipsize="marquee"
+                android:maxLines="1"
+                android:gravity="left|center_vertical"
+                android:textStyle="italic"
+                android:padding="8dp"/>
+
+            <ImageView
+                android:id="@+id/target_panel_cancel"
+                android:layout_width="24dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_action_delete_dark"
+                android:tint="?android:textColorPrimary"
+                android:layout_gravity="center_vertical|end"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+
+        </FrameLayout>
+
         <LinearLayout
             android:id="@+id/pushtotalk_view"
             android:layout_width="match_parent"
             android:layout_height="51dp"
             android:gravity="center_horizontal"
             android:orientation="vertical" >
+
 
             <View
                 android:layout_width="match_parent"
