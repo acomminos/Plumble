@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
@@ -248,14 +249,20 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
      */
     private void configureInput() {
         Settings settings = Settings.getInstance(getActivity());
+
+        ViewGroup.LayoutParams params = mTalkView.getLayoutParams();
+        params.height = settings.getPTTButtonHeight();
+        mTalkButton.setLayoutParams(params);
+
         boolean showPttButton = settings.isPushToTalkButtonShown() && settings.getInputMethod().equals(Settings.ARRAY_INPUT_METHOD_PTT);
         mTalkView.setVisibility(showPttButton ? View.VISIBLE : View.GONE);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if(Settings.PREF_INPUT_METHOD.equals(key) ||
-                Settings.PREF_PUSH_BUTTON_HIDE_KEY.equals(key))
+        if(Settings.PREF_INPUT_METHOD.equals(key)
+            || Settings.PREF_PUSH_BUTTON_HIDE_KEY.equals(key)
+            || Settings.PREF_PTT_BUTTON_HEIGHT.equals(key))
             configureInput();
     }
 

@@ -102,6 +102,8 @@
     <string name="useTorSum">Requires Orbot app</string>
     <string name="inputQuality">Input Quality</string>
     <string name="inputQualitySum">The target input quality in bps.</string>
+    <string name="pttButtonHeight">Push-To-Talk Button height</string>
+    <string name="pttButtonHeightSum">Change the height of Push-To-Talk Button.</string>
     <string name="pressKey">Press a hardware key to bind to push-to-talk.</string>
     <string name="pressKeyInfo">Note: due to limitations in Android, the app must be open to use hardware key push to talk.</string>
     <string name="loadImagesSum">Whether to load external images in chat.</string>

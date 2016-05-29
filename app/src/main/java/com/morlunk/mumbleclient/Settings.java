@@ -105,6 +105,9 @@ public class Settings {
     public static final String ARRAY_THEME_SOLARIZED_LIGHT = "solarizedLight";
     public static final String ARRAY_THEME_SOLARIZED_DARK = "solarizedDark";
 
+    public static final String PREF_PTT_BUTTON_HEIGHT = "pttButtonHeight";
+    public static final int DEFAULT_PTT_BUTTON_HEIGHT = 150;
+
     /** @deprecated use {@link #PREF_CERT_ID } */
     public static final String PREF_CERT_DEPRECATED = "certificatePath";
     /** @deprecated use {@link #PREF_CERT_ID } */
@@ -321,6 +324,11 @@ public class Settings {
         else if(ARRAY_THEME_SOLARIZED_DARK.equals(theme))
             return R.style.Theme_Plumble_Solarized_Dark;
         return -1;
+    }
+
+    /* @return the height of PTT button */
+    public int getPTTButtonHeight() {
+        return preferences.getInt(Settings.PREF_PTT_BUTTON_HEIGHT, DEFAULT_PTT_BUTTON_HEIGHT);
     }
 
     /**
