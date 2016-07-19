@@ -31,6 +31,7 @@ import android.os.RemoteException;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +49,7 @@ import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.model.TalkState;
+import com.morlunk.mumbleclient.Constants;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.drawable.CircleDrawable;
@@ -456,8 +458,10 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
      */
     public void setService(IJumbleService service) {
         mService = service;
-        updateChannels();
-        notifyDataSetChanged();
+        if (service.getConnectionState() == JumbleService.ConnectionState.CONNECTED) {
+            updateChannels();
+            notifyDataSetChanged();
+        }
     }
 
     @Override
