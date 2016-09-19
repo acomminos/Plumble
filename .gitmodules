@@ -1,6 +1,3 @@
 [submodule "libraries/Jumble"]
 	path = libraries/Jumble
 	url = https://www.github.com/Morlunk/Jumble.git
-[submodule "libraries/Leeroy-Gradle"]
-	path = libraries/Leeroy-Gradle
-	url = https://github.com/Morlunk/Leeroy-Gradle.git

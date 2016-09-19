@@ -15,14 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-
-
-
-
-
-
 buildscript {
     repositories {
         mavenCentral()
@@ -32,7 +24,6 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
-apply from: '../libraries/Leeroy-Gradle/leeroy.gradle'
 
 repositories {
     mavenCentral()
@@ -68,8 +59,6 @@ android {
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         buildConfigField "boolean", "DONATE_NAG", "false"
     }
-
-    setupLeeroy("../libraries/Leeroy-Gradle", ".*\\.apk")
 
     productFlavors {
 
