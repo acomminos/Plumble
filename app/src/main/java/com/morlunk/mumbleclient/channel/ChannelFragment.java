@@ -208,6 +208,16 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (getService() != null && !Settings.getInstance(getActivity()).isPushToTalkToggle()) {
+            // XXX: This ensures that push to talk is disabled when we pause.
+            // We don't want to leave the talk state active if the fragment is paused while pressed.
+            getService().setTalkingState(false);
+        }
+    }
+
+    @Override
     public void onDestroy() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         preferences.unregisterOnSharedPreferenceChangeListener(this);
