@@ -17,6 +17,7 @@
 
 package com.morlunk.mumbleclient.channel;
 
+import android.animation.Animator;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -35,6 +36,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -75,6 +79,9 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     /** Chat target listeners, notified when the chat target is changed. */
     private List<OnChatTargetSelectedListener> mChatTargetListeners = new ArrayList<OnChatTargetSelectedListener>();
 
+    /** True iff the talk button has been hidden (e.g. when muted) */
+    private boolean mTalkButtonHidden;
+
     private JumbleObserver mObserver = new JumbleObserver() {
         @Override
         public void onUserTalkStateUpdated(IUser user) {
@@ -91,6 +98,13 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
                         mTalkButton.setPressed(false);
                         break;
                 }
+            }
+        }
+
+        @Override
+        public void onUserStateUpdated(IUser user) {
+            if (user != null && user.getSession() == getService().getSession()) {
+                configureInput();
             }
         }
 
@@ -233,6 +247,7 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     public void onServiceBound(IJumbleService service) {
         super.onServiceBound(service);
         configureTargetPanel();
+        configureInput();
     }
 
     private void configureTargetPanel() {
@@ -264,8 +279,47 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
         params.height = settings.getPTTButtonHeight();
         mTalkButton.setLayoutParams(params);
 
-        boolean showPttButton = settings.isPushToTalkButtonShown() && settings.getInputMethod().equals(Settings.ARRAY_INPUT_METHOD_PTT);
-        mTalkView.setVisibility(showPttButton ? View.VISIBLE : View.GONE);
+        IUser user = getService().getSessionUser();
+        boolean muted = false;
+        if (user != null) {
+            muted = user.isMuted() || user.isSuppressed() || user.isSelfMuted();
+        }
+        boolean showPttButton =
+                !muted &&
+                settings.isPushToTalkButtonShown() &&
+                settings.getInputMethod().equals(Settings.ARRAY_INPUT_METHOD_PTT);
+        setTalkButtonHidden(!showPttButton);
+    }
+
+    private void setTalkButtonHidden(final boolean hidden) {
+        if (hidden ^ mTalkButtonHidden) {
+            Settings settings = Settings.getInstance(getActivity());
+            mTalkView.animate()
+                    .setDuration(300)
+                    .translationY(hidden ? settings.getPTTButtonHeight() : 0)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            mTalkView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mTalkView.setVisibility(hidden ? View.GONE : View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    });
+        }
+        mTalkButtonHidden = hidden;
     }
 
     @Override
