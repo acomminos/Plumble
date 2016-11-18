@@ -135,7 +135,7 @@ public class PlumbleConnectionNotification {
         builder.setContentTitle(mService.getString(R.string.app_name));
         builder.setContentText(mCustomContentText);
         builder.setSmallIcon(R.drawable.ic_stat_notify);
-        builder.setPriority(NotificationCompat.PRIORITY_MIN);
+        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         builder.setOngoing(true);
 
         if (mActionsShown) {
