@@ -246,8 +246,10 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     @Override
     public void onServiceBound(IJumbleService service) {
         super.onServiceBound(service);
-        configureTargetPanel();
-        configureInput();
+        if (service.getConnectionState() == JumbleService.ConnectionState.CONNECTED) {
+            configureTargetPanel();
+            configureInput();
+        }
     }
 
     private void configureTargetPanel() {
