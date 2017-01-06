@@ -281,9 +281,9 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
         params.height = settings.getPTTButtonHeight();
         mTalkButton.setLayoutParams(params);
 
-        IUser user = getService().getSessionUser();
         boolean muted = false;
-        if (user != null) {
+        if (getService().getConnectionState() == JumbleService.ConnectionState.CONNECTED) {
+            IUser user = getService().getSessionUser();
             muted = user.isMuted() || user.isSuppressed() || user.isSelfMuted();
         }
         boolean showPttButton =
