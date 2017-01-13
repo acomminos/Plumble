@@ -157,18 +157,20 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
         });
         mTargetPanel = view.findViewById(R.id.target_panel);
         mTargetPanelCancel = (ImageView) view.findViewById(R.id.target_panel_cancel);
-        mTargetPanelCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getService() != null &&
-                        getService().getConnectionState() == JumbleService.ConnectionState.CONNECTED &&
-                        getService().getVoiceTargetMode() == VoiceTargetMode.WHISPER) {
-                    byte target = getService().getVoiceTargetId();
-                    getService().setVoiceTargetId((byte) 0);
-                    getService().unregisterWhisperTarget(target);
+        if (mTargetPanelCancel != null) {
+            mTargetPanelCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (getService() != null &&
+                            getService().getConnectionState() == JumbleService.ConnectionState.CONNECTED &&
+                            getService().getVoiceTargetMode() == VoiceTargetMode.WHISPER) {
+                        byte target = getService().getVoiceTargetId();
+                        getService().setVoiceTargetId((byte) 0);
+                        getService().unregisterWhisperTarget(target);
+                    }
                 }
-            }
-        });
+            });
+        }
         mTargetPanelText = (TextView) view.findViewById(R.id.target_panel_warning);
         configureInput();
         return view;
@@ -256,10 +258,14 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
         VoiceTargetMode mode = getService().getVoiceTargetMode();
         if (mode == VoiceTargetMode.WHISPER) {
             WhisperTarget target = getService().getWhisperTarget();
-            mTargetPanel.setVisibility(View.VISIBLE);
+            if (mTargetPanel != null) {
+                mTargetPanel.setVisibility(View.VISIBLE);
+            }
             mTargetPanelText.setText(getString(R.string.shout_target, target.getName()));
         } else {
-            mTargetPanel.setVisibility(View.GONE);
+            if (mTargetPanel != null) {
+                mTargetPanel.setVisibility(View.GONE);
+            }
         }
     }
 
