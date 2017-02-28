@@ -79,6 +79,7 @@ public class PlumbleService extends JumbleService implements
      */
     private boolean mErrorShown;
     private List<IChatMessage> mMessageLog;
+    private boolean mSuppressNotifications;
 
     private TextToSpeech mTTS;
     private TextToSpeech.OnInitListener mTTSInitListener = new TextToSpeech.OnInitListener() {
@@ -115,16 +116,20 @@ public class PlumbleService extends JumbleService implements
                 mReconnectNotification = null;
             }
 
-            mNotification = PlumbleConnectionNotification.showForeground(PlumbleService.this,
+            mNotification = PlumbleConnectionNotification.create(PlumbleService.this,
                     getString(R.string.plumbleConnecting),
                     getString(R.string.connecting),
                     PlumbleService.this);
+            if (!mSuppressNotifications) {
+                mNotification.show();
+            }
+
             mErrorShown = false;
         }
 
         @Override
         public void onConnected() {
-            if (mNotification != null) {
+            if (mNotification != null && !mSuppressNotifications) {
                 mNotification.setCustomTicker(getString(R.string.plumbleConnected));
                 mNotification.setCustomContentText(getString(R.string.connected));
                 mNotification.setActionsShown(true);
@@ -138,7 +143,7 @@ public class PlumbleService extends JumbleService implements
                 mNotification.hide();
                 mNotification = null;
             }
-            if (e != null) {
+            if (e != null && !mSuppressNotifications) {
                 mReconnectNotification =
                         PlumbleReconnectNotification.show(PlumbleService.this, e.getMessage(),
                                 isReconnecting(),
@@ -159,7 +164,7 @@ public class PlumbleService extends JumbleService implements
         public void onUserStateUpdated(IUser user) {
             if(user.getSession() == getSession()) {
                 mSettings.setMutedAndDeafened(user.isSelfMuted(), user.isSelfDeafened()); // Update settings mute/deafen state
-                if(mNotification != null) {
+                if(mNotification != null && !mSuppressNotifications) {
                     String contentText;
                     if (user.isSelfMuted() && user.isSelfDeafened())
                         contentText = getString(R.string.status_notify_muted_and_deafened);
@@ -240,8 +245,7 @@ public class PlumbleService extends JumbleService implements
 
         @Override
         public void onPermissionDenied(String reason) {
-            if(mSettings.isChatNotifyEnabled() &&
-                    mNotification != null) {
+            if(mNotification != null && !mSuppressNotifications) {
                 mNotification.setCustomTicker(reason);
                 mNotification.show();
             }
@@ -564,5 +568,20 @@ public class PlumbleService extends JumbleService implements
 
     public void clearMessageLog() {
         mMessageLog.clear();
+    }
+
+    /**
+     * Sets whether or not notifications should be suppressed.
+     *
+     * It's typically a good idea to do this when the main activity is foreground, so that the user
+     * is not bombarded with redundant alerts.
+     *
+     * <b>Chat notifications are NOT suppressed.</b> They may be if a chat indicator is added in the
+     * activity itself. For now, the user may disable chat notifications manually.
+     *
+     * @param suppressNotifications true if Plumble is to disable notifications.
+     */
+    public void setSuppressNotifications(boolean suppressNotifications) {
+        mSuppressNotifications = suppressNotifications;
     }
 }

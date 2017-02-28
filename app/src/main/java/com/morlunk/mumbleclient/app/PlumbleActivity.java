@@ -123,6 +123,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mService = (PlumbleService)((JumbleService.JumbleBinder) service).getService();
+            mService.setSuppressNotifications(true);
             mService.registerObserver(mObserver);
             mService.clearChatNotifications(); // Clear chat notifications on resume.
             mDrawerAdapter.notifyDataSetChanged();
@@ -355,6 +356,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 fragment.setServiceBound(false);
             }
             mService.unregisterObserver(mObserver);
+            mService.setSuppressNotifications(false);
         }
         unbindService(mConnection);
     }

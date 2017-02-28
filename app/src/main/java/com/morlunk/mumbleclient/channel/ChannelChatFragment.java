@@ -43,6 +43,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.IMessage;
@@ -334,7 +335,8 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
                 public void visit(IChatMessage.TextMessage message) {
                     IMessage textMessage = message.getMessage();
                     String targetMessage = getContext().getString(R.string.unknown);
-                    boolean selfAuthored = textMessage.getActor() == mService.getSession();
+                    boolean selfAuthored = mService.getConnectionState() == JumbleService.ConnectionState.CONNECTED &&
+                            textMessage.getActor() == mService.getSession();
 
                     if (textMessage.getTargetChannels() != null && !textMessage.getTargetChannels().isEmpty()) {
                         IChannel currentChannel = (IChannel) textMessage.getTargetChannels().get(0);

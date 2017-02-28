@@ -68,11 +68,9 @@ public class PlumbleConnectionNotification {
      * @param listener An listener for notification actions.
      * @return A new PlumbleNotification instance.
      */
-    public static PlumbleConnectionNotification showForeground(Service service, String ticker, String contentText,
-                                                     OnActionListener listener) {
-        PlumbleConnectionNotification notification = new PlumbleConnectionNotification(service, ticker, contentText, listener);
-        notification.show();
-        return notification;
+    public static PlumbleConnectionNotification create(Service service, String ticker, String contentText,
+                                                       OnActionListener listener) {
+        return new PlumbleConnectionNotification(service, ticker, contentText, listener);
     }
 
     private PlumbleConnectionNotification(Service service, String ticker, String contentText,
