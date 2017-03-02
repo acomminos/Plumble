@@ -31,6 +31,8 @@ public class ChannelDescriptionFragment extends AbstractCommentFragment {
 
     @Override
     public void requestComment(final IJumbleService service) {
+        if (!service.isConnected())
+            return;
         service.registerObserver(new JumbleObserver() {
             @Override
             public void onChannelStateUpdated(IChannel channel) {
@@ -41,7 +43,7 @@ public class ChannelDescriptionFragment extends AbstractCommentFragment {
                 }
             }
         });
-        service.requestChannelDescription(getChannelId());
+        service.getSession().requestChannelDescription(getChannelId());
     }
 
     @Override

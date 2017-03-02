@@ -44,6 +44,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.IJumbleSession;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.util.IJumbleObserver;
@@ -66,7 +67,8 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
         public void onUserJoinedChannel(IUser user, IChannel newChannel, IChannel oldChannel) {
             mChannelListAdapter.updateChannels();
             mChannelListAdapter.notifyDataSetChanged();
-            if(getService().getSession() == user.getSession()) {
+            if(getService().isConnected() &&
+                    getService().getSession().getSessionId() == user.getSession()) {
                 scrollToChannel(newChannel.getId());
             }
         }
@@ -99,7 +101,7 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
         public void onUserRemoved(IUser user, String reason) {
             // If we are the user being removed, don't update the channel list.
             // We won't be in a synchronized state.
-            if (!getService().isSynchronized())
+            if (!getService().isConnected())
                 return;
 
             mChannelListAdapter.updateChannels();
@@ -212,19 +214,20 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
         MenuItem muteItem = menu.findItem(R.id.menu_mute_button);
         MenuItem deafenItem = menu.findItem(R.id.menu_deafen_button);
 
-        if(getService() != null
-                && getService().isSynchronized()) {
+        if(getService() != null && getService().isConnected()) {
+            IJumbleSession session = getService().getSession();
+
             // Color the action bar icons to the primary text color of the theme, TODO move this elsewhere
             int foregroundColor = getActivity().getTheme().obtainStyledAttributes(new int[]{android.R.attr.textColorPrimaryInverse}).getColor(0, -1);
 
-            IUser self = getService().getSessionUser();
+            IUser self = session.getSessionUser();
             muteItem.setIcon(self.isSelfMuted() ? R.drawable.ic_action_microphone_muted : R.drawable.ic_action_microphone);
             deafenItem.setIcon(self.isSelfDeafened() ? R.drawable.ic_action_audio_muted : R.drawable.ic_action_audio);
             muteItem.getIcon().mutate().setColorFilter(foregroundColor, PorterDuff.Mode.MULTIPLY);
             deafenItem.getIcon().mutate().setColorFilter(foregroundColor, PorterDuff.Mode.MULTIPLY);
 
             MenuItem bluetoothItem = menu.findItem(R.id.menu_bluetooth);
-            bluetoothItem.setChecked(getService().usingBluetoothSco());
+            bluetoothItem.setChecked(session.usingBluetoothSco());
         }
     }
 
@@ -245,14 +248,18 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
 
             @Override
             public boolean onSuggestionClick(int i) {
+                if (getService() == null || !getService().isConnected())
+                    return false;
                 CursorWrapper cursor = (CursorWrapper) searchView.getSuggestionsAdapter().getItem(i);
                 int typeColumn = cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA);
                 int dataIdColumn = cursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_INTENT_DATA);
                 String itemType = cursor.getString(typeColumn);
                 int itemId = cursor.getInt(dataIdColumn);
+
+                IJumbleSession session = getService().getSession();
                 if(ChannelSearchProvider.INTENT_DATA_CHANNEL.equals(itemType)) {
-                    if(getService().getSessionChannel().getId() != itemId) {
-                        getService().joinChannel(itemId);
+                    if(session.getSessionChannel().getId() != itemId) {
+                        session.joinChannel(itemId);
                     } else {
                         scrollToChannel(itemId);
                     }
@@ -268,24 +275,27 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (getService() == null || !getService().isConnected())
+            return super.onOptionsItemSelected(item);
 
+        IJumbleSession session = getService().getSession();
         switch (item.getItemId()) {
             case R.id.menu_mute_button: {
-                IUser self = getService().getSessionUser();
+                IUser self = session.getSessionUser();
 
                 boolean muted = !self.isSelfMuted();
                 boolean deafened = self.isSelfDeafened();
                 deafened &= muted; // Undeafen if mute is off
-                getService().setSelfMuteDeafState(muted, deafened);
+                session.setSelfMuteDeafState(muted, deafened);
 
                 getActivity().supportInvalidateOptionsMenu();
                 return true;
             }
             case R.id.menu_deafen_button: {
-                IUser self = getService().getSessionUser();
+                IUser self = session.getSessionUser();
 
                 boolean deafened = !self.isSelfDeafened();
-                getService().setSelfMuteDeafState(deafened, deafened);
+                session.setSelfMuteDeafState(deafened, deafened);
 
                 getActivity().supportInvalidateOptionsMenu();
                 return true;
@@ -295,9 +305,9 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
             case R.id.menu_bluetooth:
                 item.setChecked(!item.isChecked());
                 if (item.isChecked()) {
-                    getService().enableBluetoothSco();
+                    session.enableBluetoothSco();
                 } else {
-                    getService().disableBluetoothSco();
+                    session.disableBluetoothSco();
                 }
                 return true;
         }

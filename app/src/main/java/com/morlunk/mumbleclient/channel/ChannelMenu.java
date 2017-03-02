@@ -35,6 +35,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.IJumbleSession;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.Server;
@@ -74,21 +75,26 @@ public class ChannelMenu implements PermissionsPopupMenu.IOnMenuPrepareListener,
         menu.findItem(R.id.context_channel_view_description)
                 .setVisible(mChannel.getDescription() != null ||
                         mChannel.getDescriptionHash() != null);
-        Server server = mService.getConnectedServer();
+        Server server = mService.getTargetServer();
         if(server != null) {
             menu.findItem(R.id.context_channel_pin)
                     .setChecked(mDatabase.isChannelPinned(server.getId(), mChannel.getId()));
         }
-        menu.findItem(R.id.context_channel_link)
-                .setChecked(mChannel.getLinks().contains(mService.getSessionChannel()));
+        if (mService.isConnected()) {
+            menu.findItem(R.id.context_channel_link)
+                    .setChecked(mChannel.getLinks().contains(mService.getSession().getSessionChannel()));
+        }
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+        if (!mService.isConnected())
+            return false;
+
         boolean adding = false;
         switch(item.getItemId()) {
             case R.id.context_channel_join:
-                mService.joinChannel(mChannel.getId());
+                mService.getSession().joinChannel(mChannel.getId());
                 break;
             case R.id.context_channel_add:
                 adding = true;
@@ -108,7 +114,9 @@ public class ChannelMenu implements PermissionsPopupMenu.IOnMenuPrepareListener,
                 adb.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mService.removeChannel(mChannel.getId());
+                        if (mService.isConnected()) {
+                            mService.getSession().removeChannel(mChannel.getId());
+                        }
                     }
                 });
                 adb.setNegativeButton(android.R.string.cancel, null);
@@ -124,22 +132,22 @@ public class ChannelMenu implements PermissionsPopupMenu.IOnMenuPrepareListener,
                 commentFragment.show(mFragmentManager, ChannelDescriptionFragment.class.getName());
                 break;
             case R.id.context_channel_pin:
-                long serverId = mService.getConnectedServer().getId();
+                long serverId = mService.getTargetServer().getId();
                 boolean pinned = mDatabase.isChannelPinned(serverId, mChannel.getId());
                 if(!pinned) mDatabase.addPinnedChannel(serverId, mChannel.getId());
                 else mDatabase.removePinnedChannel(serverId, mChannel.getId());
                 break;
             case R.id.context_channel_link: {
-                IChannel channel = mService.getSessionChannel();
+                IChannel channel = mService.getSession().getSessionChannel();
                 if (!item.isChecked()) {
-                    mService.linkChannels(channel, mChannel);
+                    mService.getSession().linkChannels(channel, mChannel);
                 } else {
-                    mService.unlinkChannels(channel, mChannel);
+                    mService.getSession().unlinkChannels(channel, mChannel);
                 }
                 break;
             }
             case R.id.context_channel_unlink_all:
-                mService.unlinkAllChannels(mChannel);
+                mService.getSession().unlinkAllChannels(mChannel);
                 break;
             case R.id.context_channel_shout: {
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -159,20 +167,21 @@ public class ChannelMenu implements PermissionsPopupMenu.IOnMenuPrepareListener,
                 builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (mService == null ||
-                            mService.getConnectionState() != JumbleService.ConnectionState.CONNECTED)
+                        if (!mService.isConnected())
                             return;
 
+                        IJumbleSession session = mService.getSession();
+
                         // Unregister any existing voice target.
-                        if (mService.getVoiceTargetMode() == VoiceTargetMode.WHISPER) {
-                            mService.unregisterWhisperTarget(mService.getVoiceTargetId());
+                        if (session.getVoiceTargetMode() == VoiceTargetMode.WHISPER) {
+                            session.unregisterWhisperTarget(session.getVoiceTargetId());
                         }
 
                         WhisperTargetChannel channelTarget = new WhisperTargetChannel(mChannel,
                                 linkedBox.isChecked(), subchannelBox.isChecked(), null);
-                        byte id = mService.registerWhisperTarget(channelTarget);
+                        byte id = session.registerWhisperTarget(channelTarget);
                         if (id > 0) {
-                            mService.setVoiceTargetId(id);
+                            session.setVoiceTargetId(id);
                         } else {
                             Toast.makeText(mContext, R.string.shout_failed, Toast.LENGTH_LONG).show();
                         }

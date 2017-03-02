@@ -19,10 +19,13 @@ package com.morlunk.mumbleclient.service;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
+import android.os.Binder;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
@@ -55,7 +58,7 @@ import java.util.List;
 public class PlumbleService extends JumbleService implements
         SharedPreferences.OnSharedPreferenceChangeListener,
         PlumbleConnectionNotification.OnActionListener,
-        PlumbleReconnectNotification.OnActionListener {
+        PlumbleReconnectNotification.OnActionListener, IPlumbleService {
     /** Undocumented constant that permits a proximity-sensing wake lock. */
     public static final int PROXIMITY_SCREEN_OFF_WAKE_LOCK = 32;
     public static final int TTS_THRESHOLD = 250; // Maximum number of characters to read
@@ -162,7 +165,7 @@ public class PlumbleService extends JumbleService implements
 
         @Override
         public void onUserStateUpdated(IUser user) {
-            if(user.getSession() == getSession()) {
+            if(user.getSession() == getSessionId()) {
                 mSettings.setMutedAndDeafened(user.isSelfMuted(), user.isSelfDeafened()); // Update settings mute/deafen state
                 if(mNotification != null && !mSuppressNotifications) {
                     String contentText;
@@ -254,7 +257,7 @@ public class PlumbleService extends JumbleService implements
         @Override
         public void onUserTalkStateUpdated(IUser user) {
             if (isConnectionEstablished() &&
-                    getSession() == user.getSession() &&
+                    getSessionId() == user.getSession() &&
                     getTransmitMode() == Constants.TRANSMIT_PUSH_TO_TALK &&
                     user.getTalkState() == TalkState.TALKING &&
                     mPTTSoundEnabled) {
@@ -291,6 +294,11 @@ public class PlumbleService extends JumbleService implements
         mTalkReceiver = new TalkBroadcastReceiver(this);
         mMessageLog = new ArrayList<>();
         mMessageNotification = new PlumbleMessageNotification(PlumbleService.this);
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new PlumbleBinder(this);
     }
 
     @Override
@@ -505,6 +513,7 @@ public class PlumbleService extends JumbleService implements
         super.cancelReconnect();
     }
 
+    @Override
     public void setOverlayShown(boolean showOverlay) {
         if(!mChannelOverlay.isShown()) {
             mChannelOverlay.show();
@@ -513,14 +522,17 @@ public class PlumbleService extends JumbleService implements
         }
     }
 
+    @Override
     public boolean isOverlayShown() {
         return mChannelOverlay.isShown();
     }
 
+    @Override
     public void clearChatNotifications() {
         mMessageNotification.dismiss();
     }
 
+    @Override
     public void markErrorShown() {
         mErrorShown = true;
         // Dismiss the reconnection prompt if a reconnection isn't in progress.
@@ -530,6 +542,7 @@ public class PlumbleService extends JumbleService implements
         }
     }
 
+    @Override
     public boolean isErrorShown() {
         return mErrorShown;
     }
@@ -538,6 +551,7 @@ public class PlumbleService extends JumbleService implements
      * Called when a user presses a talk key down (i.e. when they want to talk).
      * Accounts for talk logic if toggle PTT is on.
      */
+    @Override
     public void onTalkKeyDown() {
         if(isConnectionEstablished()
                 && Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod())) {
@@ -551,6 +565,7 @@ public class PlumbleService extends JumbleService implements
      * Called when a user releases a talk key (i.e. when they do not want to talk).
      * Accounts for talk logic if toggle PTT is on.
      */
+    @Override
     public void onTalkKeyUp() {
         if(isConnectionEstablished()
                 && Settings.ARRAY_INPUT_METHOD_PTT.equals(mSettings.getInputMethod())) {
@@ -562,10 +577,12 @@ public class PlumbleService extends JumbleService implements
         }
     }
 
+    @Override
     public List<IChatMessage> getMessageLog() {
         return Collections.unmodifiableList(mMessageLog);
     }
 
+    @Override
     public void clearMessageLog() {
         mMessageLog.clear();
     }
@@ -581,7 +598,20 @@ public class PlumbleService extends JumbleService implements
      *
      * @param suppressNotifications true if Plumble is to disable notifications.
      */
+    @Override
     public void setSuppressNotifications(boolean suppressNotifications) {
         mSuppressNotifications = suppressNotifications;
+    }
+
+    public static class PlumbleBinder extends Binder {
+        private final PlumbleService mService;
+
+        private PlumbleBinder(PlumbleService service) {
+            mService = service;
+        }
+
+        public IPlumbleService getService() {
+            return mService;
+        }
     }
 }

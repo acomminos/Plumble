@@ -17,39 +17,31 @@
 
 package com.morlunk.mumbleclient.channel;
 
-import android.animation.AnimatorInflater;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.RemoteException;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.IJumbleSession;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.IUser;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.model.TalkState;
-import com.morlunk.mumbleclient.Constants;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.db.PlumbleDatabase;
 import com.morlunk.mumbleclient.drawable.CircleDrawable;
@@ -102,7 +94,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
 
         mRootChannels = new ArrayList<Integer>();
         if(showPinnedOnly) {
-            mRootChannels = mDatabase.getPinnedChannels(mService.getConnectedServer().getId());
+            mRootChannels = mDatabase.getPinnedChannels(mService.getTargetServer().getId());
         } else {
             mRootChannels.add(0);
         }
@@ -161,9 +153,9 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
             cvh.mChannelName.setText(channel.getName());
 
             int nameTypeface = Typeface.NORMAL;
-            if (mService != null &&
-                    mService.getConnectionState() == JumbleService.ConnectionState.CONNECTED) {
-                if (channel.equals(mService.getSessionChannel())) {
+            if (mService != null && mService.isConnected()) {
+                IJumbleSession session = mService.getSession();
+                if (channel.equals(session.getSessionChannel())) {
                     nameTypeface |= Typeface.BOLD;
                     // Always italicize our current channel if it has a link.
                     if (channel.getLinks().size() > 0) {
@@ -171,7 +163,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
                     }
                 }
                 // Italicize channels in a link with our current channel.
-                if (channel.getLinks().contains(mService.getSessionChannel())) {
+                if (channel.getLinks().contains(session.getSessionChannel())) {
                     nameTypeface |= Typeface.ITALIC;
                 }
             }
@@ -196,7 +188,8 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
             cvh.mJoinButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mService.joinChannel(channel.getId());
+                    if (mService.isConnected())
+                        mService.getSession().joinChannel(channel.getId());
                 }
             });
 
@@ -228,7 +221,14 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
             });
 
             uvh.mUserName.setText(user.getName());
-            uvh.mUserName.setTypeface(null, user.getSession() == mService.getSession() ? Typeface.BOLD : Typeface.NORMAL);
+
+            final int typefaceStyle;
+            if (mService.isConnected() && mService.getSession().getSessionId() == user.getSession()) {
+                typefaceStyle = Typeface.BOLD;
+            } else {
+                typefaceStyle = Typeface.NORMAL;
+            }
+            uvh.mUserName.setTypeface(null, typefaceStyle);
 
             uvh.mUserTalkHighlight.setImageDrawable(getTalkStateDrawable(user));
             uvh.mTalkingIndicator.setAlpha(
@@ -293,12 +293,15 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
     /**
      * Updates the channel tree model.
      * To be used after any channel tree modifications.
-     * @throws IllegalStateException if the service is not synchronized when calling this.
      */
     public void updateChannels() {
+        if (!mService.isConnected())
+            return;
+
+        IJumbleSession session = mService.getSession();
         mNodes.clear();
         for (int cid : mRootChannels) {
-            IChannel channel = mService.getChannel(cid);
+            IChannel channel = session.getChannel(cid);
             if (channel != null) {
                 constructNodes(null, channel, 0, mNodes);
             }
@@ -469,7 +472,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
         notifyDataSetChanged();
 
         // Add or remove registered user from local mute history
-        final Server server = mService.getConnectedServer();
+        final Server server = mService.getTargetServer();
 
         if (user.getUserId() >= 0 && server.isSaved()) {
             new Thread(new Runnable() {

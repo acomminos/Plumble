@@ -26,6 +26,7 @@ import android.view.View;
 
 import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.util.IJumbleObserver;
+import com.morlunk.mumbleclient.service.IPlumbleService;
 import com.morlunk.mumbleclient.service.PlumbleService;
 
 /**
@@ -99,7 +100,7 @@ public abstract class JumbleServiceFragment extends Fragment {
             onServiceDetached(mServiceProvider.getService());
     }
 
-    public PlumbleService getService() {
+    public IPlumbleService getService() {
         return mServiceProvider.getService();
     }
 }

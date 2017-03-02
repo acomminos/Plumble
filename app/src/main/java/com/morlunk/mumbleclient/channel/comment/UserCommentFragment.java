@@ -31,6 +31,8 @@ public class UserCommentFragment extends AbstractCommentFragment {
 
     @Override
     public void requestComment(final IJumbleService service) {
+        if (!service.isConnected())
+            return;
         service.registerObserver(new JumbleObserver() {
             @Override
             public void onUserStateUpdated(IUser user) {
@@ -41,12 +43,14 @@ public class UserCommentFragment extends AbstractCommentFragment {
                 }
             }
         });
-        service.requestComment(getSession());
+        service.getSession().requestComment(getSession());
     }
 
     @Override
     public void editComment(IJumbleService service, String comment) {
-        service.setUserComment(getSession(), comment);
+        if (!service.isConnected())
+            return;
+        service.getSession().setUserComment(getSession(), comment);
     }
 
     public int getSession() {

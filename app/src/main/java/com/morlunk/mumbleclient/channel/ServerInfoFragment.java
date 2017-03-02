@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.IJumbleSession;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.net.JumbleConnection;
 import com.morlunk.jumble.net.JumbleUDPMessageType;
@@ -77,18 +78,19 @@ public class ServerInfoFragment extends JumbleServiceFragment {
      * Updates the info from the service.
      */
     public void updateData() throws RemoteException {
-        if(getService() == null
-                || !getService().isSynchronized())
+        if(getService() == null || !getService().isConnected())
             return;
 
-        mProtocolView.setText(getString(R.string.server_info_protocol, getService().getServerRelease()));
-        mOSVersionView.setText(getString(R.string.server_info_version, getService().getServerOSName(), getService().getServerOSVersion()));
-        mTCPLatencyView.setText(getString(R.string.server_info_latency, (float)getService().getTCPLatency()*Math.pow(10, -3)));
-        mUDPLatencyView.setText(getString(R.string.server_info_latency, (float)getService().getUDPLatency()*Math.pow(10, -3)));
-        mHostView.setText(getString(R.string.server_info_host, getService().getConnectedServer().getHost(), getService().getConnectedServer().getPort()));
+        IJumbleSession session = getService().getSession();
+
+        mProtocolView.setText(getString(R.string.server_info_protocol, session.getServerRelease()));
+        mOSVersionView.setText(getString(R.string.server_info_version, session.getServerOSName(), session.getServerOSVersion()));
+        mTCPLatencyView.setText(getString(R.string.server_info_latency, (float)session.getTCPLatency()*Math.pow(10, -3)));
+        mUDPLatencyView.setText(getString(R.string.server_info_latency, (float)session.getUDPLatency()*Math.pow(10, -3)));
+        mHostView.setText(getString(R.string.server_info_host, getService().getTargetServer().getHost(), getService().getTargetServer().getPort()));
 
         String codecName;
-        JumbleUDPMessageType codecType = getService().getCodec();
+        JumbleUDPMessageType codecType = session.getCodec();
         switch (codecType) {
             case UDPVoiceOpus:
                 codecName = "Opus";
@@ -106,8 +108,8 @@ public class ServerInfoFragment extends JumbleServiceFragment {
                 codecName = "???";
         }
 
-        mMaxBandwidthView.setText(getString(R.string.server_info_max_bandwidth, (float)getService().getMaxBandwidth()/1000f));
-        mCurrentBandwidthView.setText(getString(R.string.server_info_current_bandwidth, (float)getService().getCurrentBandwidth()/1000f));
+        mMaxBandwidthView.setText(getString(R.string.server_info_max_bandwidth, (float)session.getMaxBandwidth()/1000f));
+        mCurrentBandwidthView.setText(getString(R.string.server_info_current_bandwidth, (float)session.getCurrentBandwidth()/1000f));
         mCodecView.setText(getString(R.string.server_info_codec, codecName));
     }
 

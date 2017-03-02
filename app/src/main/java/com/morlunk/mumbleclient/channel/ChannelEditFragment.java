@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.morlunk.jumble.IJumbleSession;
 import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.net.Permissions;
@@ -67,13 +68,17 @@ public class ChannelEditFragment extends DialogFragment {
         mTemporaryBox = (CheckBox) view.findViewById(R.id.channel_edit_temporary);
 
         // If we can only make temporary channels, remove the option.
-        IChannel parentChannel = mServiceProvider.getService().getChannel(getParent());
-        int combinedPermissions = mServiceProvider.getService().getPermissions() | parentChannel.getPermissions();
-        boolean canMakeChannel = (combinedPermissions & Permissions.MakeChannel) > 0;
-        boolean canMakeTempChannel = (combinedPermissions & Permissions.MakeTempChannel) > 0;
-        boolean onlyTemp = canMakeTempChannel && !canMakeChannel;
-        mTemporaryBox.setChecked(onlyTemp);
-        mTemporaryBox.setEnabled(!onlyTemp);
+        if (mServiceProvider.getService().isConnected()) {
+            // TODO: we probably should just stop this dialog in its tracks if we're disconnected.
+            IJumbleSession session = mServiceProvider.getService().getSession();
+            IChannel parentChannel = session.getChannel(getParent());
+            int combinedPermissions = session.getPermissions() | parentChannel.getPermissions();
+            boolean canMakeChannel = (combinedPermissions & Permissions.MakeChannel) > 0;
+            boolean canMakeTempChannel = (combinedPermissions & Permissions.MakeTempChannel) > 0;
+            boolean onlyTemp = canMakeTempChannel && !canMakeChannel;
+            mTemporaryBox.setChecked(onlyTemp);
+            mTemporaryBox.setEnabled(!onlyTemp);
+        }
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle(isAdding() ? R.string.channel_add : R.string.channel_edit)
@@ -81,8 +86,8 @@ public class ChannelEditFragment extends DialogFragment {
                 .setPositiveButton(isAdding() ? R.string.add : R.string.save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(isAdding()) {
-                            mServiceProvider.getService().createChannel(getParent(),
+                        if(isAdding() && mServiceProvider.getService().isConnected()) {
+                            mServiceProvider.getService().getSession().createChannel(getParent(),
                                     mNameField.getText().toString(),
                                     mDescriptionField.getText().toString(),
                                     Integer.parseInt(mPositionField.getText().toString()), // We can guarantee this to be an int. InputType is numberSigned.

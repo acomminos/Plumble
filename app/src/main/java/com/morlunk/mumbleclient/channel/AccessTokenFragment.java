@@ -120,7 +120,9 @@ public class AccessTokenFragment extends JumbleServiceFragment {
 
 		mTokenList.smoothScrollToPosition(mTokens.size() - 1);
         mProvider.getDatabase().addAccessToken(getServerId(), tokenText);
-		getService().sendAccessTokens(mTokens);
+		if (getService().isConnected()) {
+			getService().getSession().sendAccessTokens(mTokens);
+		}
     }
 
     private long getServerId() {
@@ -158,7 +160,9 @@ public class AccessTokenFragment extends JumbleServiceFragment {
                     mTokens.remove(position);
 					notifyDataSetChanged();
                     mProvider.getDatabase().removeAccessToken(getServerId(), token);
-					getService().sendAccessTokens(mTokens);
+					if (getService().isConnected()) {
+						getService().getSession().sendAccessTokens(mTokens);
+					}
                 }
 			});
 

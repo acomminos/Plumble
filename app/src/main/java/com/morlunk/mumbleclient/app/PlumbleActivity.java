@@ -31,7 +31,6 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -51,9 +50,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.morlunk.jumble.IJumbleService;
-import com.morlunk.jumble.JumbleService;
+import com.morlunk.jumble.IJumbleSession;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.protobuf.Mumble;
+import com.morlunk.jumble.util.JumbleDisconnectedException;
 import com.morlunk.jumble.util.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.jumble.util.MumbleURLParser;
@@ -73,6 +73,7 @@ import com.morlunk.mumbleclient.preference.Preferences;
 import com.morlunk.mumbleclient.servers.FavouriteServerListFragment;
 import com.morlunk.mumbleclient.servers.PublicServerListFragment;
 import com.morlunk.mumbleclient.servers.ServerEditFragment;
+import com.morlunk.mumbleclient.service.IPlumbleService;
 import com.morlunk.mumbleclient.service.PlumbleService;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.util.JumbleServiceProvider;
@@ -80,14 +81,11 @@ import com.morlunk.mumbleclient.util.PlumbleTrustStore;
 
 import org.spongycastle.util.encoders.Hex;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.net.MalformedURLException;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,7 +101,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
      */
     public static final String EXTRA_DRAWER_FRAGMENT = "drawer_fragment";
 
-    private PlumbleService mService;
+    private IPlumbleService mService;
     private PlumbleDatabase mDatabase;
     private Settings mSettings;
 
@@ -122,7 +120,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mService = (PlumbleService)((JumbleService.JumbleBinder) service).getService();
+            mService = ((PlumbleService.PlumbleBinder) service).getService();
             mService.setSuppressNotifications(true);
             mService.registerObserver(mObserver);
             mService.clearChatNotifications(); // Clear chat notifications on resume.
@@ -133,7 +131,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
             // Re-show server list if we're showing a fragment that depends on the service.
             if(getSupportFragmentManager().findFragmentById(R.id.content_frame) instanceof JumbleServiceFragment &&
-                    !mService.isSynchronized()) {
+                    !mService.isConnected()) {
                 loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
             }
             updateConnectionState(getService());
@@ -174,7 +172,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
         @Override
         public void onTLSHandshakeFailed(X509Certificate[] chain) {
-            final Server lastServer = getService().getConnectedServer();
+            final Server lastServer = getService().getTargetServer();
 
             if (chain.length == 0)
                 return;
@@ -262,10 +260,11 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
             public void onDrawerStateChanged(int newState) {
                 super.onDrawerStateChanged(newState);
                 // Prevent push to talk from getting stuck on when the drawer is opened.
-                if (getService() != null
-                        && getService().isSynchronized()
-                        && getService().isTalking() && !mSettings.isPushToTalkToggle()) {
-                    getService().setTalkingState(false);
+                if (getService() != null && getService().isConnected()) {
+                    IJumbleSession session = getService().getSession();
+                    if (session.isTalking() && !mSettings.isPushToTalkToggle()) {
+                        session.setTalkingState(false);
+                    }
                 }
             }
 
@@ -290,8 +289,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
         dadb.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(mService != null && mService.isConnectionEstablished())
-                    mService.disconnect();
+                if(mService != null) mService.disconnect();
                 loadDrawerFragment(DrawerAdapter.ITEM_FAVOURITES);
             }
         });
@@ -372,7 +370,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem disconnectButton = menu.findItem(R.id.action_disconnect);
-        disconnectButton.setVisible(mService != null && mService.isSynchronized());
+        disconnectButton.setVisible(mService != null && mService.isConnected());
 
         // Color the action bar icons to the primary text color of the theme.
         int foregroundColor = getSupportActionBar().getThemedContext()
@@ -436,7 +434,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
     @Override
     public void onBackPressed() {
-        if(mService != null && mService.isSynchronized()) {
+        if(mService != null && mService.isConnected()) {
             mDisconnectPromptBuilder.show();
             return;
         }
@@ -495,8 +493,9 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                 break;
             case DrawerAdapter.ITEM_ACCESS_TOKENS:
                 fragmentClass = AccessTokenFragment.class;
-                args.putLong("server", mService.getConnectedServer().getId());
-                args.putStringArrayList("access_tokens", (ArrayList<String>) mDatabase.getAccessTokens(mService.getConnectedServer().getId()));
+                Server connectedServer = getService().getTargetServer();
+                args.putLong("server", connectedServer.getId());
+                args.putStringArrayList("access_tokens", (ArrayList<String>) mDatabase.getAccessTokens(connectedServer.getId()));
                 break;
             case DrawerAdapter.ITEM_PINNED_CHANNELS:
                 fragmentClass = ChannelFragment.class;
@@ -525,7 +524,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
     public void connectToServer(final Server server) {
         // Check if we're already connected to a server; if so, inform user.
-        if(mService != null && mService.isConnectionEstablished()) {
+        if(mService != null && mService.isConnected()) {
             AlertDialog.Builder adb = new AlertDialog.Builder(this);
             adb.setMessage(R.string.reconnect_dialog_message);
             adb.setPositiveButton(R.string.connect, new DialogInterface.OnClickListener() {
@@ -610,7 +609,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
         switch (mService.getConnectionState()) {
             case CONNECTING:
-                Server server = service.getConnectedServer();
+                Server server = service.getTargetServer();
                 mConnectingDialog = new ProgressDialog(this);
                 mConnectingDialog.setIndeterminate(true);
                 mConnectingDialog.setCancelable(true);
@@ -657,7 +656,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                         ab.setPositiveButton(R.string.reconnect, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Server server = getService().getConnectedServer();
+                                Server server = getService().getTargetServer();
                                 if (server == null)
                                     return;
                                 String password = passwordField.getText().toString();
@@ -698,7 +697,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
      */
 
     @Override
-    public PlumbleService getService() {
+    public IPlumbleService getService() {
         return mService;
     }
 
@@ -738,13 +737,13 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
 
     @Override
     public boolean isConnected() {
-        return mService != null && mService.isSynchronized();
+        return mService != null && mService.isConnected();
     }
 
     @Override
     public String getConnectedServerName() {
-        if(mService != null && mService.isSynchronized()) {
-            Server server = mService.getConnectedServer();
+        if(mService != null && mService.isConnected()) {
+            Server server = mService.getTargetServer();
             return server.getName().equals("") ? server.getHost() : server.getName();
         }
         if (BuildConfig.DEBUG)

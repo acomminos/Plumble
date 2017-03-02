@@ -21,7 +21,6 @@ import android.animation.Animator;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -36,19 +35,14 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.IJumbleSession;
 import com.morlunk.jumble.JumbleService;
 import com.morlunk.jumble.model.IUser;
-import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.model.WhisperTarget;
 import com.morlunk.jumble.util.IJumbleObserver;
 import com.morlunk.jumble.util.JumbleObserver;
@@ -85,26 +79,32 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     private JumbleObserver mObserver = new JumbleObserver() {
         @Override
         public void onUserTalkStateUpdated(IUser user) {
-            if (user != null && user.getSession() == getService().getSession()) {
-                // Manually set button selection colour when we receive a talk state update.
-                // This allows representation of talk state when using hot corners and PTT toggle.
-                switch (user.getTalkState()) {
-                    case TALKING:
-                    case SHOUTING:
-                    case WHISPERING:
-                        mTalkButton.setPressed(true);
-                        break;
-                    case PASSIVE:
-                        mTalkButton.setPressed(false);
-                        break;
+            if (getService().isConnected()) {
+                IJumbleSession session = getService().getSession();
+                if (user != null && user.getSession() == session.getSessionId()) {
+                    // Manually set button selection colour when we receive a talk state update.
+                    // This allows representation of talk state when using hot corners and PTT toggle.
+                    switch (user.getTalkState()) {
+                        case TALKING:
+                        case SHOUTING:
+                        case WHISPERING:
+                            mTalkButton.setPressed(true);
+                            break;
+                        case PASSIVE:
+                            mTalkButton.setPressed(false);
+                            break;
+                    }
                 }
             }
         }
 
         @Override
         public void onUserStateUpdated(IUser user) {
-            if (user != null && user.getSession() == getService().getSession()) {
-                configureInput();
+            if (getService().isConnected()) {
+                IJumbleSession session = getService().getSession();
+                if (user != null && user.getSession() == session.getSessionId()) {
+                    configureInput();
+                }
             }
         }
 
@@ -160,12 +160,14 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
         mTargetPanelCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (getService() != null &&
-                        getService().getConnectionState() == JumbleService.ConnectionState.CONNECTED &&
-                        getService().getVoiceTargetMode() == VoiceTargetMode.WHISPER) {
-                    byte target = getService().getVoiceTargetId();
-                    getService().setVoiceTargetId((byte) 0);
-                    getService().unregisterWhisperTarget(target);
+                if (getService() == null || !getService().isConnected())
+                    return;
+
+                IJumbleSession session = getService().getSession();
+                if (session.getVoiceTargetMode() == VoiceTargetMode.WHISPER) {
+                    byte target = session.getVoiceTargetId();
+                    session.setVoiceTargetId((byte) 0);
+                    session.unregisterWhisperTarget(target);
                 }
             }
         });
@@ -224,10 +226,11 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     @Override
     public void onPause() {
         super.onPause();
-        if (getService() != null && !Settings.getInstance(getActivity()).isPushToTalkToggle()) {
+        if (getService() != null && getService().isConnected() &&
+            !Settings.getInstance(getActivity()).isPushToTalkToggle()) {
             // XXX: This ensures that push to talk is disabled when we pause.
             // We don't want to leave the talk state active if the fragment is paused while pressed.
-            getService().setTalkingState(false);
+            getService().getSession().setTalkingState(false);
         }
     }
 
@@ -253,9 +256,13 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
     }
 
     private void configureTargetPanel() {
-        VoiceTargetMode mode = getService().getVoiceTargetMode();
+        if (!getService().isConnected())
+            return;
+
+        IJumbleSession session = getService().getSession();
+        VoiceTargetMode mode = session.getVoiceTargetMode();
         if (mode == VoiceTargetMode.WHISPER) {
-            WhisperTarget target = getService().getWhisperTarget();
+            WhisperTarget target = session.getWhisperTarget();
             mTargetPanel.setVisibility(View.VISIBLE);
             mTargetPanelText.setText(getString(R.string.shout_target, target.getName()));
         } else {
@@ -282,8 +289,8 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
         mTalkButton.setLayoutParams(params);
 
         boolean muted = false;
-        if (getService().getConnectionState() == JumbleService.ConnectionState.CONNECTED) {
-            IUser user = getService().getSessionUser();
+        if (getService().isConnected()) {
+            IUser user = getService().getSession().getSessionUser();
             muted = user.isMuted() || user.isSuppressed() || user.isSelfMuted();
         }
         boolean showPttButton =

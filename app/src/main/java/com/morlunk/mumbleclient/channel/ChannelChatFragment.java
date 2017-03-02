@@ -43,18 +43,16 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.morlunk.jumble.IJumbleService;
-import com.morlunk.jumble.JumbleService;
-import com.morlunk.jumble.model.Channel;
+import com.morlunk.jumble.IJumbleSession;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.IMessage;
 import com.morlunk.jumble.model.IUser;
-import com.morlunk.jumble.model.Message;
 import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.IJumbleObserver;
+import com.morlunk.jumble.util.JumbleDisconnectedException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.service.IChatMessage;
-import com.morlunk.mumbleclient.service.PlumbleService;
 import com.morlunk.mumbleclient.util.JumbleServiceFragment;
 import com.morlunk.mumbleclient.util.MumbleImageGetter;
 
@@ -63,7 +61,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -94,11 +91,15 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
 
         @Override
         public void onUserJoinedChannel(IUser user, IChannel newChannel, IChannel oldChannel) {
-            if (user != null && getService().getSessionUser() != null &&
-                    user.equals(getService().getSessionUser()) &&
-                    mTargetProvider.getChatTarget() == null) {
-                // Update chat target when user changes channels without a target.
-                updateChatTargetText(null);
+            IJumbleService service = getService();
+            if (service.isConnected()) {
+                IJumbleSession session = service.getSession();
+                if (user != null && session.getSessionUser() != null &&
+                        user.equals(session.getSessionUser()) &&
+                        mTargetProvider.getChatTarget() == null) {
+                    // Update chat target when user changes channels without a target.
+                    updateChatTargetText(null);
+                }
             }
         }
     };
@@ -148,22 +149,14 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
 		mSendButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    sendMessage();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                sendMessage();
             }
         });
 		
 		mChatTextEdit.setOnEditorActionListener(new OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                try {
-                    sendMessage();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                sendMessage();
                 return true;
             }
         });
@@ -228,20 +221,21 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
     /**
      * Sends the message currently in {@link com.morlunk.mumbleclient.channel.ChannelChatFragment#mChatTextEdit}
      * to the remote server. Clears the message box if the message was sent successfully.
-     * @throws RemoteException If the service failed to send the message.
+     * @throws JumbleDisconnectedException If the service is disconnected.
      */
-	private void sendMessage() throws RemoteException {
+	private void sendMessage() throws JumbleDisconnectedException {
         if(mChatTextEdit.length() == 0) return;
         String message = mChatTextEdit.getText().toString();
         String formattedMessage = markupOutgoingMessage(message);
         ChatTargetProvider.ChatTarget target = mTargetProvider.getChatTarget();
         IMessage responseMessage = null;
+        IJumbleSession session = getService().getSession();
         if(target == null)
-            responseMessage = getService().sendChannelTextMessage(getService().getSessionChannel().getId(), formattedMessage, false);
+            responseMessage = session.sendChannelTextMessage(session.getSessionChannel().getId(), formattedMessage, false);
         else if(target.getUser() != null)
-            responseMessage = getService().sendUserTextMessage(target.getUser().getSession(), formattedMessage);
+            responseMessage = session.sendUserTextMessage(target.getUser().getSession(), formattedMessage);
         else if(target.getChannel() != null)
-            responseMessage = getService().sendChannelTextMessage(target.getChannel().getId(), formattedMessage, false);
+            responseMessage = session.sendChannelTextMessage(target.getChannel().getId(), formattedMessage, false);
         addChatMessage(new IChatMessage.TextMessage(responseMessage), true);
         mChatTextEdit.setText("");
 	}
@@ -267,12 +261,13 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
 	/**
 	 * Updates hint displaying chat target.
 	 */
-	public void updateChatTargetText(ChatTargetProvider.ChatTarget target) {
-        if(getService() == null) return;
+	public void updateChatTargetText(final ChatTargetProvider.ChatTarget target) {
+        if(getService() == null || !getService().isConnected()) return;
 
+        IJumbleSession session = getService().getSession();
         String hint = null;
-        if(target == null && getService().getSessionChannel() != null) {
-            hint = getString(R.string.messageToChannel, getService().getSessionChannel().getName());
+        if(target == null && session.getSessionChannel() != null) {
+            hint = getString(R.string.messageToChannel, session.getSessionChannel().getName());
         } else if(target != null && target.getUser() != null) {
             hint = getString(R.string.messageToUser, target.getUser().getName());
         } else if(target != null && target.getChannel() != null) {
@@ -335,8 +330,12 @@ public class ChannelChatFragment extends JumbleServiceFragment implements ChatTa
                 public void visit(IChatMessage.TextMessage message) {
                     IMessage textMessage = message.getMessage();
                     String targetMessage = getContext().getString(R.string.unknown);
-                    boolean selfAuthored = mService.getConnectionState() == JumbleService.ConnectionState.CONNECTED &&
-                            textMessage.getActor() == mService.getSession();
+                    boolean selfAuthored;
+                    try {
+                        selfAuthored = textMessage.getActor() == mService.getSession().getSessionId();
+                    } catch (JumbleDisconnectedException e) {
+                        selfAuthored = false;
+                    }
 
                     if (textMessage.getTargetChannels() != null && !textMessage.getTargetChannels().isEmpty()) {
                         IChannel currentChannel = (IChannel) textMessage.getTargetChannels().get(0);

@@ -19,7 +19,6 @@ package com.morlunk.mumbleclient.service;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
-import android.os.RemoteException;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -28,10 +27,8 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-import com.morlunk.jumble.model.Channel;
 import com.morlunk.jumble.model.IChannel;
 import com.morlunk.jumble.model.IUser;
-import com.morlunk.jumble.model.User;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.mumbleclient.R;
 import com.morlunk.mumbleclient.Settings;
@@ -61,7 +58,7 @@ public class PlumbleOverlay {
 
         @Override
         public void onUserJoinedChannel(IUser user, IChannel newChannel, IChannel oldChannel) {
-            if(user.getSession() == mService.getSession()) // Session user has changed channels
+            if(user.getSession() == mService.getSessionId()) // Session user has changed channels
                 mChannelAdapter.setChannel(mService.getSessionChannel());
             else if(newChannel.getId() == mService.getSessionChannel().getId() ||
                     oldChannel.getId() == mService.getSessionChannel().getId())

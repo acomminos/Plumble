@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.morlunk.jumble.IJumbleService;
+import com.morlunk.jumble.IJumbleSession;
 
 /**
  * Created by andrew on 08/08/14.
@@ -42,14 +43,17 @@ public class TalkBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (BROADCAST_TALK.equals(intent.getAction())) {
+            if (!mService.isConnected())
+                return;
+            IJumbleSession session = mService.getSession();
             String status = intent.getStringExtra(EXTRA_TALK_STATUS);
             if (status == null) status = TALK_STATUS_TOGGLE;
             if (TALK_STATUS_ON.equals(status)) {
-                mService.setTalkingState(true);
+                session.setTalkingState(true);
             } else if (TALK_STATUS_OFF.equals(status)) {
-                mService.setTalkingState(false);
+                session.setTalkingState(false);
             } else if (TALK_STATUS_TOGGLE.equals(status)) {
-                mService.setTalkingState(!mService.isTalking());
+                session.setTalkingState(!session.isTalking());
             }
         } else {
             throw new UnsupportedOperationException();

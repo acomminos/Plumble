@@ -21,7 +21,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
@@ -62,7 +61,7 @@ public class UserMenu implements PermissionsPopupMenu.IOnMenuPrepareListener, Po
     @Override
     public void onMenuPrepare(Menu menu, int permissions) {
         // Use permission data to determine the actions available.
-        boolean self = mUser.getSession() == mService.getSession();
+        boolean self = mUser.getSession() == mService.getSessionId();
         int perms = mService.getPermissions();
         IChannel channel = mUser.getChannel();
         int channelPerms = channel.getId() != 0 ? channel.getPermissions() : perms;
@@ -95,7 +94,7 @@ public class UserMenu implements PermissionsPopupMenu.IOnMenuPrepareListener, Po
         menu.findItem(R.id.context_ignore_messages).setVisible(!self);
 
         // TODO info
-//            informationItem.enabled = (((perms & (Permissions.Write | Permissions.Register))) > 0 || (channelPermissions & (Permissions.Write | Permissions.Enter)) > 0 || (mUser.getSession() == mService.getSession()));
+//            informationItem.enabled = (((perms & (Permissions.Write | Permissions.Register))) > 0 || (channelPermissions & (Permissions.Write | Permissions.Enter)) > 0 || (mUser.getSessionId() == mService.getSessionId()));
 
         // Highlight toggles
         menu.findItem(R.id.context_mute).setChecked(mUser.isMuted() || mUser.isSuppressed());
