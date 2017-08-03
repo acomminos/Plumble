@@ -123,16 +123,14 @@ public class PlumbleService extends JumbleService implements
                     getString(R.string.plumbleConnecting),
                     getString(R.string.connecting),
                     PlumbleService.this);
-            if (!mSuppressNotifications) {
-                mNotification.show();
-            }
+            mNotification.show();
 
             mErrorShown = false;
         }
 
         @Override
         public void onConnected() {
-            if (mNotification != null && !mSuppressNotifications) {
+            if (mNotification != null) {
                 mNotification.setCustomTicker(getString(R.string.plumbleConnected));
                 mNotification.setCustomContentText(getString(R.string.connected));
                 mNotification.setActionsShown(true);
@@ -167,7 +165,7 @@ public class PlumbleService extends JumbleService implements
         public void onUserStateUpdated(IUser user) {
             if(user.getSession() == getSessionId()) {
                 mSettings.setMutedAndDeafened(user.isSelfMuted(), user.isSelfDeafened()); // Update settings mute/deafen state
-                if(mNotification != null && !mSuppressNotifications) {
+                if(mNotification != null) {
                     String contentText;
                     if (user.isSelfMuted() && user.isSelfDeafened())
                         contentText = getString(R.string.status_notify_muted_and_deafened);

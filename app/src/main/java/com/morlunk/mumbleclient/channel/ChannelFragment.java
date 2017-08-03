@@ -289,7 +289,7 @@ public class ChannelFragment extends JumbleServiceFragment implements SharedPref
         mTalkButton.setLayoutParams(params);
 
         boolean muted = false;
-        if (getService().isConnected()) {
+        if (getService() != null && getService().isConnected()) {
             IUser user = getService().getSession().getSessionUser();
             muted = user.isMuted() || user.isSuppressed() || user.isSelfMuted();
         }
