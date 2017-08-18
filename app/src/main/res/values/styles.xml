@@ -43,8 +43,7 @@
         <item name="android:textColorSecondary">#DDD</item>
         <item name="android:textColorPrimaryInverse">#FFF</item>
         <item name="android:textColorSecondaryInverse">#AAA</item>
-        <item name="android:windowBackground">@android:color/black</item>
-        <item name="android:colorBackground">@android:color/black</item>
+
 
         <item name="android:actionBarStyle">@style/PlumbleDarkActionBar</item>
         <item name="actionBarStyle">@style/PlumbleDarkActionBar</item>
