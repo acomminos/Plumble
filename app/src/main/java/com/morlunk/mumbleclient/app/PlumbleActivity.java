@@ -145,7 +145,11 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     private JumbleObserver mObserver = new JumbleObserver() {
         @Override
         public void onConnected() {
+<<<<<<< HEAD
             if (mSettings.shouldStartUpInPinnedMode()) {
+=======
+            if (mSettings.isStartUpInPinnedMode()) {
+>>>>>>> 9b6844c89531b6ae3e8cc7b10f4421ce0d7502a8
                 loadDrawerFragment(DrawerAdapter.ITEM_PINNED_CHANNELS);
             } else {
                 loadDrawerFragment(DrawerAdapter.ITEM_SERVER);
