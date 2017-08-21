@@ -53,7 +53,6 @@ import com.morlunk.jumble.IJumbleService;
 import com.morlunk.jumble.IJumbleSession;
 import com.morlunk.jumble.model.Server;
 import com.morlunk.jumble.protobuf.Mumble;
-import com.morlunk.jumble.util.JumbleDisconnectedException;
 import com.morlunk.jumble.util.JumbleException;
 import com.morlunk.jumble.util.JumbleObserver;
 import com.morlunk.jumble.util.MumbleURLParser;
@@ -146,7 +145,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
     private JumbleObserver mObserver = new JumbleObserver() {
         @Override
         public void onConnected() {
-            if (mSettings.isStartUpInPinnedMode()) {
+            if (mSettings.shouldStartUpInPinnedMode()) {
                 loadDrawerFragment(DrawerAdapter.ITEM_PINNED_CHANNELS);
             } else {
                 loadDrawerFragment(DrawerAdapter.ITEM_SERVER);
