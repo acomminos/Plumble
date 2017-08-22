@@ -65,4 +65,17 @@
         android:key="useTor"
         android:summary="@string/useTorSum"
         android:title="@string/useTor"/>
+
+    <CheckBoxPreference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:defaultValue="false"
+        android:key="startUpInPinnedMode"
+<<<<<<< HEAD
+        android:summary="@string/pref_start_up_in_pinned_mode_sum"
+        android:title="@string/pref_start_up_in_pinned_mode" />
+=======
+        android:summary="@string/pref_startUpInPinnedModeSum"
+        android:title="@string/pref_startUpInPinnedMode" />
+>>>>>>> 9b6844c89531b6ae3e8cc7b10f4421ce0d7502a8
 </PreferenceScreen>

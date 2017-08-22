@@ -51,9 +51,9 @@ public class DrawerAdapter extends ArrayAdapter<DrawerAdapter.DrawerRow> {
     // Drawer rows, integer value is id
     public static final int HEADER_CONNECTED_SERVER = 0;
     public static final int ITEM_SERVER = 1;
-    public static final int ITEM_INFO = 2;
-    public static final int ITEM_ACCESS_TOKENS = 3;
-    public static final int ITEM_PINNED_CHANNELS = 4;
+    public static final int ITEM_PINNED_CHANNELS = 2;
+    public static final int ITEM_INFO = 3;
+    public static final int ITEM_ACCESS_TOKENS = 4;
     public static final int HEADER_SERVERS = 5;
     public static final int ITEM_FAVOURITES = 6;
 //    public static final int ITEM_LAN = 7;
@@ -99,9 +99,9 @@ public class DrawerAdapter extends ArrayAdapter<DrawerAdapter.DrawerRow> {
         mProvider = provider;
         add(new DrawerAdapter.DrawerHeader(HEADER_CONNECTED_SERVER, context.getString(R.string.drawer_not_connected)));
         add(new DrawerAdapter.DrawerItem(ITEM_SERVER, context.getString(R.string.drawer_server), R.drawable.ic_action_channels));
+        add(new DrawerAdapter.DrawerItem(ITEM_PINNED_CHANNELS, context.getString(R.string.drawer_pinned), R.drawable.ic_action_comment));
         add(new DrawerAdapter.DrawerItem(ITEM_INFO, context.getString(R.string.information), R.drawable.ic_action_info_dark));
         add(new DrawerAdapter.DrawerItem(ITEM_ACCESS_TOKENS, context.getString(R.string.drawer_tokens), R.drawable.ic_action_save));
-        add(new DrawerAdapter.DrawerItem(ITEM_PINNED_CHANNELS, context.getString(R.string.drawer_pinned), R.drawable.ic_action_comment));
         add(new DrawerAdapter.DrawerHeader(HEADER_SERVERS, context.getString(R.string.drawer_header_servers)));
         add(new DrawerAdapter.DrawerItem(ITEM_FAVOURITES, context.getString(R.string.drawer_favorites), R.drawable.ic_action_favourite_on));
 //        add(new DrawerAdapter.DrawerItem(ITEM_LAN, context.getString(R.string.drawer_lan), R.drawable.ic_action_fullscreen)); // Coming soon, TODO
