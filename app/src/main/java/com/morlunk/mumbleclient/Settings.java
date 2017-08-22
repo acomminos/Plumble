@@ -165,11 +165,7 @@ public class Settings {
     public static final boolean DEFAULT_SHOW_USER_COUNT = false;
 
     public static final String PREF_START_UP_IN_PINNED_MODE = "startUpInPinnedMode";
-<<<<<<< HEAD
     public static final boolean DEFAULT_START_UP_IN_PINNED_MODE = false;
-=======
-    public static final boolean DEFAULT_START_UP_IN_PINNED_MODE = true;
->>>>>>> 9b6844c89531b6ae3e8cc7b10f4421ce0d7502a8
 
     static {
         ARRAY_INPUT_METHODS = new HashSet<String>();
@@ -457,11 +453,7 @@ public class Settings {
         return preferences.getBoolean(PREF_SHOW_USER_COUNT, DEFAULT_SHOW_USER_COUNT);
     }
 
-<<<<<<< HEAD
     public boolean shouldStartUpInPinnedMode() {
-=======
-    public boolean isStartUpInPinnedMode() {
->>>>>>> 9b6844c89531b6ae3e8cc7b10f4421ce0d7502a8
         return preferences.getBoolean(PREF_START_UP_IN_PINNED_MODE, DEFAULT_START_UP_IN_PINNED_MODE);
     }
 }
