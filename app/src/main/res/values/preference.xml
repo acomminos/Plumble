@@ -131,4 +131,6 @@
     <string name="pref_export_certificate_summary">Exports a certificate to external storage.</string>
     <string name="pref_show_user_count">Show Channel User Count</string>
     <string name="pref_show_user_count_summary">Show a counter with the number of users in a channel subtree.</string>
+    <string name="pref_start_up_in_pinned_mode">Start Up In Pinned Mode</string>
+    <string name="pref_start_upIn_pinned_mode_sum">When connecting to a server, only the pinned channels will be displayed.</string>
 </resources>
