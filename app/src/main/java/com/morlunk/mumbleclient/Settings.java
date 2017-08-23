@@ -165,7 +165,7 @@ public class Settings {
     public static final boolean DEFAULT_SHOW_USER_COUNT = false;
 
     public static final String PREF_START_UP_IN_PINNED_MODE = "startUpInPinnedMode";
-    public static final boolean DEFAULT_START_UP_IN_PINNED_MODE = true;
+    public static final boolean DEFAULT_START_UP_IN_PINNED_MODE = false;
 
     static {
         ARRAY_INPUT_METHODS = new HashSet<String>();
