@@ -123,7 +123,7 @@ public class Preferences extends PreferenceActivity {
         // Scan each bitrate and determine if the device supports it
         ListPreference inputQualityPreference = (ListPreference) screen.findPreference(Settings.PREF_INPUT_RATE);
         String[] bitrateNames = new String[inputQualityPreference.getEntryValues().length];
-        for(int x=0;x<bitrateNames.length;x++) {
+        for(int x=0; x < inputQualityPreference.getEntries().length; ++x) {
             int bitrate = Integer.parseInt(inputQualityPreference.getEntryValues()[x].toString());
             boolean supported = AudioRecord.getMinBufferSize(bitrate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT) > 0;
             bitrateNames[x] = bitrate+"Hz" + (supported ? "" : " (unsupported)");

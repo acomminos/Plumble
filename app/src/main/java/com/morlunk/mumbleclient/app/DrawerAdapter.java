@@ -143,12 +143,10 @@ public class DrawerAdapter extends ArrayAdapter<DrawerAdapter.DrawerRow> {
             title.setText(item.title);
             icon.setImageResource(item.icon);
 
-            boolean enabled = isEnabled(position);
-
             // Set text and icon color+alpha based on enabled/disabled state
             int textColor = title.getCurrentTextColor();
             textColor &= 0x00FFFFFF; // Clear alpha bits
-            textColor |= enabled ? 0xFF000000 : 0x55000000; // Set alpha bits depending on whether the state is enabled or disabled
+            textColor |= isEnabled(position) ? 0xFF000000 : 0x55000000; // Set alpha bits depending on whether the state is enabled or disabled
             title.setTextColor(textColor);
             icon.setColorFilter(textColor, PorterDuff.Mode.MULTIPLY);
 
@@ -163,9 +161,10 @@ public class DrawerAdapter extends ArrayAdapter<DrawerAdapter.DrawerRow> {
     }
 
     public DrawerRow getItemWithId(int id) {
-        for(int x=0;x<getCount();x++) {
+        for(int x=0; x < getCount(); ++x) {
             DrawerRow row = getItem(x);
-            if(row.id == id) return row;
+            if(row.id == id)
+            	return row;
         }
         return null;
     }
@@ -194,7 +193,7 @@ public class DrawerAdapter extends ArrayAdapter<DrawerAdapter.DrawerRow> {
         Object item = getItem(position);
         if(item instanceof DrawerHeader)
             return HEADER_TYPE;
-        else if(item instanceof DrawerItem)
+        if(item instanceof DrawerItem)
             return ITEM_TYPE;
         return ITEM_TYPE;
     }
