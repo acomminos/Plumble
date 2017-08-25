@@ -78,9 +78,9 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:text="@string/ptt"
-            android:textColor="?android:attr/textColorPrimaryInverse"
+            android:textColor="@color/holo_red_dark"
             android:textStyle="bold"
-            android:textSize="12sp"
+            android:textSize="18sp"
             android:background="?attr/selectableItemBackground"/>
     </LinearLayout>
 
