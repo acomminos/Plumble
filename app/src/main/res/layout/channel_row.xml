@@ -37,7 +37,7 @@
         android:id="@+id/channel_row_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="0.77"
         android:gravity="center_vertical|left"
         android:minHeight="48dp"
         android:padding="4dp"
@@ -48,17 +48,17 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:padding="10dp"
         android:text="10"
-        android:textStyle="bold"
-        android:padding="10dp"/>
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/channel_row_join"
-        android:layout_width="32dp"
+        android:layout_width="22dp"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_action_move"
-        android:tint="?android:attr/textColorSecondary"
-        android:background="?attr/selectableItemBackgroundBorderless"/>
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/sym_action_chat"
+        android:tint="?android:attr/textColorSecondary" />
 
     <ImageView
         android:id="@+id/channel_row_more"
