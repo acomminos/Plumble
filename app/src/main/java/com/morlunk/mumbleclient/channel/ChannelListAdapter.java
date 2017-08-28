@@ -124,14 +124,6 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
         if (node.isChannel()) {
             final IChannel channel = node.getChannel();
             final ChannelViewHolder cvh = (ChannelViewHolder) viewHolder;
-            cvh.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mChannelClickListener != null) {
-                        mChannelClickListener.onChannelClick(channel);
-                    }
-                }
-            });
 
             final boolean expandUsable = channel.getSubchannels().size() > 0 ||
                     channel.getSubchannelUserCount() > 0;
@@ -185,11 +177,14 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
                     cvh.mChannelHolder.getPaddingRight(),
                     cvh.mChannelHolder.getPaddingBottom());
 
-            cvh.mJoinButton.setOnClickListener(new View.OnClickListener() {
+            // Actions.
+
+            cvh.mChatChannelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mService.isConnected())
-                        mService.getSession().joinChannel(channel.getId());
+                    if (mChannelClickListener != null) {
+                        mChannelClickListener.onChannelClick(channel);
+                    }
                 }
             });
 
@@ -201,9 +196,18 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
                 }
             });
 
+            cvh.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mService.isConnected())
+                        mService.getSession().joinChannel(channel.getId());
+                }
+
+            });
             cvh.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+                    //ToDo: olzzon Long Click join Channel - Setting Secure Channel Shift
                     cvh.mMoreButton.performClick();
                     return true;
                 }
@@ -516,7 +520,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
         public ImageView mChannelExpandToggle;
         public TextView mChannelName;
         public TextView mChannelUserCount;
-        public ImageView mJoinButton;
+        public ImageView mChatChannelButton;
         public ImageView mMoreButton;
 
         public ChannelViewHolder(View itemView) {
@@ -525,7 +529,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter implements UserMenu
             mChannelExpandToggle = (ImageView) itemView.findViewById(R.id.channel_row_expand);
             mChannelName = (TextView) itemView.findViewById(R.id.channel_row_name);
             mChannelUserCount = (TextView) itemView.findViewById(R.id.channel_row_count);
-            mJoinButton = (ImageView) itemView.findViewById(R.id.channel_row_join);
+            mChatChannelButton = (ImageView) itemView.findViewById(R.id.channel_row_join);
             mMoreButton = (ImageView) itemView.findViewById(R.id.channel_row_more);
         }
     }
