@@ -330,14 +330,14 @@ public class ChannelListFragment extends JumbleServiceFragment implements OnChan
 	 */
 	public void scrollToChannel(int channelId) {
 		int channelPosition = mChannelListAdapter.getChannelPosition(channelId);
-        mChannelView.smoothScrollToPosition(channelPosition);
+        mChannelView.scrollToPosition(channelPosition);
     }
 	/**
 	 * Scrolls to the passed user.
 	 */
 	public void scrollToUser(int userId) {
 		int userPosition = mChannelListAdapter.getUserPosition(userId);
-		mChannelView.smoothScrollToPosition(userPosition);
+		mChannelView.scrollToPosition(userPosition);
 	}
 
     private boolean isShowingPinnedChannels() {
