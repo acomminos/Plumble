@@ -626,7 +626,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                     }
                 });
                 mConnectingDialog.setMessage(getString(R.string.connecting_to_server, server.getHost(),
-                        server.getPort()));
+                        String.valueOf(server.getPort())));
                 mConnectingDialog.show();
                 break;
             case CONNECTION_LOST:
@@ -647,8 +647,7 @@ public class PlumbleActivity extends ActionBarActivity implements ListView.OnIte
                             }
                         });
                     } else if (error.getReason() == JumbleException.JumbleDisconnectReason.REJECT &&
-                               (error.getReject().getType() == Mumble.Reject.RejectType.WrongUserPW ||
-                                error.getReject().getType() == Mumble.Reject.RejectType.WrongServerPW)) {
+                               error.isAuthenticationFailure()) {
                         // FIXME(acomminos): Long conditional.
                         final EditText passwordField = new EditText(this);
                         passwordField.setInputType(InputType.TYPE_CLASS_TEXT |
